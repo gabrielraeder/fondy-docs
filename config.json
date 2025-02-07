@@ -118,12 +118,12 @@
               "subpages": [
                 "flow/accounts/business-accounts/create-accounts",
                 "flow/accounts/business-accounts/view-accounts"
-            ]
+              ]
             },
             {
-            "groupName": "Split Accounts",
-            "page": "flow/accounts/split-accounts/split-accounts",
-            "subpages": [
+              "groupName": "Split Accounts",
+              "page": "flow/accounts/split-accounts/split-accounts",
+              "subpages": [
                 "flow/accounts/split-accounts/creating-a-split-account",
                 "flow/accounts/split-accounts/managing-profiles",
                 "flow/accounts/split-accounts/make-payouts",

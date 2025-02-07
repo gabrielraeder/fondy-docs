@@ -293,16 +293,16 @@
             margin-left: 12px
         }
 
-        .fondy-page .footer {
+        .fondy-page .fondy_footer {
             background-color: #39058b
         }
 
-        .fondy-page .footer .container {
+        .fondy-page .fondy_footer .container {
             display: grid;
             grid-template-columns: 1fr
         }
 
-        .fondy-page .footer .content {
+        .fondy-page .fondy_footer .content {
             border-bottom: 1px solid hsla(0, 0%, 100%, .08);
             color: #fff;
             font-size: 12px;
@@ -312,16 +312,16 @@
             text-align: center
         }
 
-        .fondy-page .footer .content p {
+        .fondy-page .fondy_footer .content p {
             margin: 0 auto;
             max-width: 800px
         }
 
-        .fondy-page .footer .content span {
+        .fondy-page .fondy_footer .content span {
             color: #70d0cc
         }
 
-        .fondy-page .footer .copyright {
+        .fondy-page .fondy_footer .copyright {
             color: #fff;
             font-size: 14px;
             font-weight: 400;
