@@ -1,0 +1,28 @@
+---
+title: "Introduction"
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+
+# Fondy Flow API
+
+The Fondy Flow API is designed to provide a secure and streamlined method for onboarding partners, creating wallets, and creating payments and payouts. It includes a single endpoint, the [Encrypted Request](/reference/encrypted), which requires the encryption of all requests and responses to ensure data security and integrity.
+
+The Fondy Flow API has the following characteristics:
+
+* **Encryption**: All data is encrypted using a combination of AES and RSA encryption to ensure maximum security.
+* **Digital Signing**: Requests and responses are digitally signed for authenticity and integrity.
+* **Secure Communication**: The API ensures secure communication between your application and Fondy’s servers.
+
+The basic steps to use the [Encrypted Request](/reference/flow/encrypted) endpoint are the following:
+
+1. **Encryption**: Encrypt your requested data using the required encryption standards.
+2. **Digital Signing**: Sign the encrypted data to ensure authenticity.
+3. **Send Request**: Send the signed and encrypted request to the Encrypted Endpoint.
+4. **Decryption**: Decrypt the response data to access the required information.
+
+For a complete guide on integrating the Fondy Flow API, visit the [How to Integrate Fondy API](/docs/how-to-integrate-fondy-api) page.
+

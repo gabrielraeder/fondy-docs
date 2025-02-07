@@ -1,0 +1,765 @@
+---
+title: "Integrate Fondy with Embedded Custom Checkout"
+description: "Integrate Fondy's payment processing capabilities into your website with the Embedded Custom Checkout."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Embedded Custom Checkout lets merchants directly integrate a customized payment page into their websites. Using HTML and CSS, merchants can design the payment page to match their brand's visual identity and deliver a seamless checkout experience.
+
+The Embedded Custom Checkout solution creates a smooth, personalized payment experience without redirecting customers to external pages. It simplifies the checkout process, increasing conversion rates and enhancing customer satisfaction. Merchants control the design and functionality of the payment page, aligning it with their brand identity and specific business needs.
+
+## How to Use the Embedded Custom Checkout
+
+To add the Embedded Custom Checkout to your page, you must import the JavaScript SDK and CSS files into your HTML project.
+
+* **JavaScript SDK**: `https://pay.fondy.eu/latest/checkout.js`
+* **CSS**: `https://pay.fondy.eu/latest/checkout.css`
+
+The following code block presents an example of adding these settings to your project:
+
+  ```html 
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Fondy Integration</title>
+      
+      <!-- Import Fondy CSS -->
+      <link rel="stylesheet" href="https://pay.fondy.eu/latest/checkout.css">
+  </head>
+  <body>
+      
+      <!-- Your Content Here -->
+      <div id="payment-container"></div>
+
+      <!-- Import Fondy JavaScript SDK -->
+      <script src="https://pay.fondy.eu/latest/checkout.js"></script>
+
+  </body>
+  </html>
+  ```
+
+After including the JavaScript SDK and CSS files, you need to set the customizations you will use with the Embedded Custom Checkout. These customizations are defined through a JSON file as displayed in the following code block:
+
+  ```json 
+  {
+    options: {},
+    regular: {},
+    recurring: {},
+    params: {},
+    messages: {},
+    validate: {}
+  }
+  ```
+
+Each of the available objects that define the Embedded Custom Checkout behavior are described in the following sections:
+
+* [`options`](#options)
+* [`regular`](#regular)
+* [`recurring`](#recurring)
+* [`params`](#params)
+* [`messages`](#messages)
+* [`validate`](#validate)
+
+The following code block presents an example of the configuration of the Embedded Custom Checkout.
+
+  ```javascript 
+  var Options = {
+  	options: {
+  		methods: ['card', 'banklinks_eu','wallets'],
+  		cardIcons: ['mastercard', 'visa'],
+  		active_tab: 'card',
+  		default_country: 'PL',
+  		countries: ["PL","IE","GB","CZ","GE"],
+  		fields: false,
+  		title: 'my_title',
+  		link: 'https://shop.com',
+  		fullScreen: true,
+  		button: true,
+  		locales: ['fr','en','cs','sk'],
+  		email: true,
+  		tooltip: true,
+  		fee: true,
+  	},
+  	params: {
+  		merchant_id: 1396424,
+  		required_rectoken: 'y',
+  		currency: 'USD',
+  		amount: 500,
+  		order_desc: 'my_order_desc',
+  		response_url: 'http://shop.com/thankyoupage',
+  		email: '',
+  		lang: 'en'
+  	},
+  	messages: {
+  		pl: {
+  			card_number: 'Numer karty',
+  			my_title: 'Cel płatności',
+  			my_order_desc: 'Płatność testowa'
+  		},
+  		en: {
+  			card_number: 'Card number',
+  			my_title: 'Order description',
+  			my_order_desc: 'Test order'
+  		}
+  	}
+  }
+  ```
+
+As the last step, to display the checkout for your customer, you need to call the `fondy(<html-component>, <options>)` informing the HTML where the checkout should be rendered and the configuration options:
+
+  ```javascript 
+  fondy("#app", Options);
+  ```
+
+## Configure the Embedded Custom Checkout
+
+The following sections list and describe the available configurations you can set with the Embedded Custom Checkout:
+
+* [`options`](#options)
+* [`regular`](#regular)
+* [`recurring`](#recurring)
+* [`params`](#params)
+* [`messages`](#messages)
+* [`validate`](#validate)
+
+### `options`
+
+The available configurations for the `options` object are listed and described in the following table.
+
+| Parameter name | Parameter type | Default value                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------- | -------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `methods`      | Array          | \['`card`', `banklinks_eu`,`wallets`] | Enable payment methods for checkout: cards, internet banking, Google Pay, Apple Pay, and local payment options. Supported values include: - `card`: Bank cards - `banklinks_eu`: Internet banking and local payment options (e.g., iDEAL, Giropay, MyBank, Blick) - `wallets`: Google Pay and Apple Pay - `local_methods`: Local country methods, such as GiroPay, EPS, SafetyPay, Multibanco, MyBank, OXXO, Skrill, iDeal, Blik. |
+| `cardIcons`    | Array          | \[`mastercard`, `visa`]               | Specifies the set of payment system logos. Supported values include: - `mastercard` - `visa` - `mir` - `prostir` - `diners-club` - `american-express`                                                                                                                                                                                                                                                                             |
+| `fields`       | Boolean        | `false`                               | Enables additional input fields on the checkout page.                                                                                                                                                                                                                                                                                                                                                                             |
+| `title`        | String         |                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `link`         | String         |                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `fullScreen`   | Boolean        | `true`                                | Defines whether the checkout form will be placed in a compact area (`false`) or in a full page (`true`).                                                                                                                                                                                                                                                                                                                          |
+| `button`       | Boolean        | `true`                                | Defines whether the default pay button should be shown or will be custom.                                                                                                                                                                                                                                                                                                                                                         |
+| `locales`      | Array          |                                       | Lists the available locales for the checkout page. Supported values include: \` - `en` - `pl` - `lv` - `fr` - `cs` - `sk`[Support languages](/getting-started/reference-pages/checkout-language#supported-languages)                                                                                                                                                                                                                                                           |
+| `email`        | Boolean        | `false`                               | Defines if email must be provided on the checkout page by the customer.                                                                                                                                                                                                                                                                                                                                                           |
+| `tooltip`      | Boolean        | `true`                                |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `apiDomain`    | String         | `api.fondy.eu`                        |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `fee`          | Boolean        | `true`                                | Client fee.                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `css`          | String         |                                       | Supported values: `bootstrap3`, `bootstrap4`, `foundation6`.                                                                                                                                                                                                                                                                                                                                                                      |
+
+### `regular`
+
+Enables the subscription option on the checkout page. This allows users to configure recurring payments.
+
+The examples [Subscription](#subscription-1) and [Subscription 2](#subscription-2) illustrate a use case for the parameters described below.
+
+| Parameter name | Parameter type | Default value                             | Description                                                           |
+| -------------- | -------------- | ----------------------------------------- | --------------------------------------------------------------------- |
+| `insert`       | Boolean        | `false`                                   | Enables subscription payments.                                        |
+| `open`         | Boolean        | `false`                                   | Shows frequency and period options for subscription payments.         |
+| `hide`         | Boolean        | `false`                                   | Make subscription options read-only for customers.                    |
+| `period`       | Array          | \[`‘day’`, `‘week’`, `‘month’`, `‘year’`] | Subscription period Supported values: `day`, `week`, `month`, `year`. |
+
+### `recurring`
+
+Defines the subscription parameters, including period, frequency, start date, end date, and regular amount. These parameters configure the recurring payment settings.
+
+| Parameter name | Parameter type | Default value | Description                                                                                                |
+| -------------- | -------------- | ------------- | ---------------------------------------------------------------------------------------------------------- |
+| `every`        | Integer        | `1`           | Number of intervals.                                                                                       |
+| `period`       | String         | `month`       | The interval with which a subscription should be charged Supported values: `day`, `week`, `month`, `year`. |
+| `amount`       | Integer        | `100`         | The amount to be charged at the interval specified if it differs from the order amount.                    |
+| `start_time`   | String         |               | Date when the first payment must be charged. Format `YYYY-MM-DD`.                                          |
+| `end_time`     | String         |               | Date when subscription must be stopped. Format `YYYY-MM-DD`.                                               |
+
+### `params`
+
+Defines the order parameters as described.
+
+| Parameter Name      | Parameter Type | Default Value | Description                                                                                                            |
+| ------------------- | -------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `merchant_id`       | Integer        | `1396424`     | The unique identifier assigned to the merchant by Fondy.                                                               |
+| `order_desc`        | String         |               | Description of the order or transaction.                                                                               |
+| `amount`            | Integer        | `100`         | Transaction amount in the smallest currency unit (e.g., cents for USD).                                                |
+| `currency`          | String         |               | Currency code in ISO 4217 format (e.g., `USD` for U.S. Dollar).                                                        |
+| `response_url`      | String         |               | URL to which the customer will be redirected after payment completion.                                                 |
+| `lang`              | String         | `en`          | Language code for the payment page (e.g., `en` for English).                                                           |
+| `required_rectoken` | String         |               | Indicates whether a recurring token is required. Supported values: `Y`, `N`, `y`, `n`.                                 |
+| `verification`      | String         |               | Specifies if the transaction is for verification purposes. Supported values: `Y`, `N`, `y`, `n`.                       |
+| `verification_type` | String         |               | Type of verification to be performed. Supported values: 'amount' (verify by amount), 'code' (verify by code).          |
+| `email`             | String         |               | Customer's email address. It must be in a valid email format.                                                          |
+| `token`             | String         |               | Unique token for the transaction, typically 40 characters in length.                                                   |
+| `offer`             | Boolean        | `false`       | Indicates whether the transaction is an offer.                                                                         |
+| `custom`            | Object         |               | Custom parameters defined by the merchant. This can be used to pass additional information related to the transaction. |
+
+### `messages`
+
+Allows you to specify custom messages to use on the checkout page.
+
+  ```json 
+  {  
+    messages: {  
+      {en}: {  
+        {id}: {value},  
+        ...  
+      },  
+      ...  
+    },  
+  }
+  ```
+
+### `validate`
+
+Defines the localization settings for form validation error messages.
+
+  ```json 
+  {  
+    validate: {  
+      {en}: {  
+        {id}: {value},  
+        ...  
+      },  
+      ...  
+    },  
+  }
+  ```
+
+## Embedded Custom Checkout Use Cases
+
+The Embedded Custom Checkout solution is versatile and designed to adapt to a wide range of payment scenarios. It addresses all your business needs for receiving payments efficiently. This section highlights various use cases for Embedded Custom Checkout, detailing the configurations used and providing interactive examples for each.
+
+Below, you find a complete list of the available use cases:
+
+* [Basic Checkout Design](#basic-checkout-design)
+* [Basic Checkout with Light Background](#style-light-background)
+* [Basic Checkout with Dark Background](#style-dark-background)
+* [Additional Merchant Fields](#additional-merchant-fields)
+* [Subscription](#subscription)
+* [Subscription 2](#subscription-2)
+* [Extended Payment Methods](#extended-payment-methods)
+* [Handling of Pay-Button Click Event](#handling-of-pay-button-click-event)
+* [JavaScript Callbacks](#javascript-callbacks)
+* [ApplePay and GooglePay Buttons](#applepay-and-googlepay-buttons)
+* [Order Created on Back-End](#order-created-on-back-end)
+* [Customize Bank Links Payment Method](#customize-bank-links-payment-method)
+* [Using Color Presets](#using-color-presets)
+
+### Basic Checkout Design
+
+This is the simplest way to use the Embedded Custom Checkout. This use case sets the checkout page to receive payments from cards and Google Pay.
+
+The following code block displays the configurations used to set the basic checkout:
+
+  ```json 
+  {
+    "options": {
+      "methods": ["card"], // Defines the available payment methods (only cards in this case)
+      "cardIcons": ["mastercard", "visa", "diners-club", "american-express"], // Displays icons for supported card types (MasterCard, Visa, Diners Club, American Express)
+      "fields": false, // Disables additional custom fields in the checkout form
+      "title": "my_title", // Sets the title of the checkout form using the "my_title" key from the "messages" object
+      "link": "https://shop.com", // URL to the merchant's website
+      "fullScreen": true, // Enables a fullscreen display for the checkout interface
+      "button": true, // Uses the default payment button from the Embedded Custom Checkout interface
+      "locales": ["en"], // Specifies the languages available for the checkout (English only in this case)
+      "email": true, // Requires the user to provide an email address during checkout
+      "tooltip": true, // Enables tooltips for additional guidance during the checkout process
+      "fee": true // Displays the order amount (fee) during checkout
+    },
+    "params": {
+      "merchant_id": 1396424, // The unique ID of the merchant account
+      "required_rectoken": "y", // Requires a recurring token for subscription or future payments
+      "currency": "USD", // Specifies the payment currency (US Dollars)
+      "amount": 500, // Sets the payment amount in cents (500 = $5.00)
+      "order_desc": "my_order_desc", // Sets the order description using the "my_order_desc" key from the "messages" object
+      "response_url": "http://shop.com/thankyoupage", // URL to redirect users after successful payment
+      "email": "", // Placeholder for the customer's email address (left blank initially)
+      "lang": "pl" // Sets the default language for the checkout interface (Polish in this case)
+    },
+    "messages": {
+      "pl": {
+        "card_number": "Numer karty", // Label for the card number input field (in Polish)
+        "my_title": "Cel płatności", // Title for the payment purpose (in Polish)
+        "my_order_desc": "Płatność testowa", // Order description text (in Polish)
+        "pay": "Zapłać" // Text on the payment button (in Polish)
+      },
+      "en": {
+        "card_number": "Card number", // Label for the card number input field (in English)
+        "my_title": "Order description", // Title for the payment purpose (in English)
+        "my_order_desc": "Test order", // Order description text (in English)
+        "pay": "Pay now" // Text on the payment button (in English)
+      }
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[Basic Result](https://codepen.io/cloudipsp/embed/RxRXPy)
+
+### Style Light Background
+
+Style combines a light-colored background with dark interface elements, creating a high-contrast design that enhances readability and draws focus to essential details. This layout provides a clear, user-friendly structure ideal for streamlined payment experiences.
+
+The following instruction contains the parameters that need to be added to define with the following style.:
+
+  ```json 
+  {
+    "options": {
+      "methods_disabled": [], // Specifies payment methods that are disabled; an empty array means no methods are currently disabled.
+      "full_screen": false, // Disables the fullscreen display for the checkout interface.
+      "active_tab": "card", // Sets the initial active tab in the checkout interface to "card".
+      "theme": {
+        "type": "light", // Sets the theme type of the checkout interface to "light mode".
+        "preset": "black" // Applies the "black" preset to the checkout theme.
+      }
+    },
+    "params": {
+      "order_id": new Date().getTime() // Generates a unique order ID based on the current date and time.
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[Light Background](https://codepen.io/cloudipsp/embed/abZZavx)
+
+### Style Dark Background
+
+Style combines a dark-colored background with silver interface elements, creating a high-contrast design that enhances readability and emphasizes essential details. This layout offers a clear, user-friendly structure, ideal for streamlined payment experiences.
+
+The following parameters are used to modify the style as previously mentioned:
+
+  ```json 
+  {
+    "options": {
+      "theme": {
+        "type": "dark", // Sets the theme to "dark mode" in the second file.
+        "preset": "silver" // Applies the "silver" preset to the dark theme in the second file.
+      }
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[Dark Background](https://codepen.io/cloudipsp/embed/qBNNJPj)
+
+### Additional Merchant Fields
+
+Include contract number, email, and full name, allowing for more detailed merchant information. These fields support streamlined data handling and improved transaction tracking within payment systems.
+
+To add additional fields, the following parameters must be added to the JSON file:
+
+  ```json 
+  {
+    "options": {
+      "methods": ["card", "banklinks_eu", "wallets", "local_methods"], // Adds support for bank links, wallets, and local payment methods.
+      "methods_disabled": [], // Placeholder for disabling specific payment methods; currently, none are disabled.
+      "default_country": "GB", // Sets the default country for the checkout form to the United Kingdom.
+      "card_icons": ["mastercard", "visa", "maestro"], // Replaces "diners-club" and "american-express" with "maestro" in the list of card icons.
+      "active_tab": "card", // Sets the default active tab to "card" in the checkout interface.
+      "fields": true, // Enables additional fields in the checkout form.
+      "title": "Demo checkout" // Changes the title to "Demo checkout".
+    },
+    "params": {
+      "currency": "EUR", // Changes the currency from USD to EUR.
+      "order_desc": "Demo order" // Updates the order description to "Demo order".
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[Payment Page Design](https://codepen.io/cloudipsp/embed/QWEEZeb?default-tab=result)
+
+### Subscription
+
+After the first successful payment, the payment gateway sets a schedule for recurring payments. The payment page parameters define the interval and frequency of these payments.
+
+See below how to set up recurring payments for your embedded custom checkout:
+
+  ```json 
+  {
+    "options": {
+      "methods": ["card", "wallets"], // Adds support for digital wallets.
+      "methods_disabled": ["banklinks_eu", "local_methods"], // Disables bank links and local payment methods.
+      "card_icons": ["mastercard", "visa", "maestro"], // Replaces "diners-club" and "american-express" with "maestro".
+      "active_tab": "card", // Sets "card" as the default active tab.
+      "title": "Demo subscription checkout", // Changes the title to "Demo subscription checkout".
+      "subscription": {
+        "type": "shown_edit_on", // Allows users to edit subscription details in the checkout interface.
+        "periods": ["week", "month", "day"] // Defines available subscription periods.
+      }
+    },
+    "params": {
+      "currency": "EUR", // Changes the currency to Euros.
+      "order_desc": "Demo subscription", // Updates the order description.
+      "recurring_data": {
+        "every": 1, // Sets the recurring payment interval to every 1 period.
+        "amount": 1000, // Specifies the recurring payment amount (in cents, 1000 = €10.00).
+        "period": "month", // Sets the subscription period to "month".
+        "end_time": "2026-11-14", // Specifies the end date for the subscription.
+        "start_time": "2019-11-11" // Specifies the start date for the subscription.
+      }
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[subscription 1](https://codepen.io/cloudipsp/embed/oNLLmoG)
+
+### Subscription 2
+
+See the modified parameters for another recurring payment option:
+
+  ```json 
+  {
+    "options": {
+      "lang": ["en", "fr"], // Adds support for English and French languages.
+      "fields": true, // Enables additional fields in the checkout form.
+      "subscription": {
+        "type": "shown_readonly", // Sets the subscription interface to readonly mode.
+        "periods": ["week", "month", "day"], // Defines available subscription periods.
+        "readonly": true // Marks the subscription as readonly.
+      }
+    },
+    "messages": {
+      "en": { /* Includes detailed field labels and descriptions for English */ },
+      "fr": { /* Includes detailed field labels and descriptions for French */ }
+    },
+    "validate": {
+      "en": {
+        "credit_card": "Validation function for credit card fields in English.",
+        "custom_field_1": "Validation function for custom_field_1 in English.",
+        "custom_field_2": "Validation function for custom_field_2 in English."
+      },
+      "fr": {
+        "credit_card": "Validation function for credit card fields in French.",
+        "custom_field_1": "Validation function for custom_field_1 in French.",
+        "custom_field_2": "Validation function for custom_field_2 in French."
+      }
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[subscription 2](https://codepen.io/cloudipsp/embed/RwRRvBB)
+
+### Extended Payment Methods
+
+The payment gateway supports a range of additional payment options. These methods can be configured within the payment page parameters to enhance flexibility for various transaction needs.
+
+See the added JSON parameters to enable more payment methods for the embedded custom checkout:
+
+  ```json 
+  {
+    "options": {
+      "methods": ["card", "banklinks_eu", "wallets", "local_methods"], // Adds support for bank links, digital wallets, and local payment methods.
+      "methods_disabled": [], // Allows disabling specific payment methods; currently, none are disabled.
+      "card_icons": ["mastercard", "visa", "maestro"], // Replaces Diners Club and American Express with Maestro.
+      "active_tab": "card", // Sets the default active tab to "card".
+      "title": "Demo checkout" // Updates the title to "Demo checkout".
+    },
+    "params": {
+      "currency": "EUR", // Changes the currency to Euros.
+      "order_desc": "Demo order" // Updates the order description to "Demo order".
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[Extend payment methods](https://codepen.io/cloudipsp/embed/wvWWYxZ)
+
+### Handling of Pay-Button Click Event
+
+This example shows how to manage the pay-button click event. It enables custom functions to run when the pay button clicks, allowing additional user interactions.
+
+See the JavaScript functions for the mentioned model:
+
+  ```javascript 
+  // Initialize the Fondy Checkout App
+  var app = fondy("#checkout-container", Options);
+
+  // Add event listener for the submit button
+  document.getElementById('submit').addEventListener('click', function () {
+    app.submit(); // Submits the checkout form
+  });
+
+  // Add event listener to navigate to the "card" payment method
+  document.getElementById('go-card').addEventListener('click', function () {
+    app.location('card'); // Changes the payment method to 'card'
+  });
+
+  // Add event listener to navigate to the "banklinks_eu" payment method
+  document.getElementById('go-ibank').addEventListener('click', function () {
+    app.location('banklinks_eu'); // Changes the payment method to 'banklinks_eu'
+  });
+
+  // Add event listener to navigate to the "local_methods" payment method
+  document.getElementById('go-local').addEventListener('click', function () {
+    app.location('local_methods'); // Changes the payment method to 'local_methods'
+  });
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[Handling](https://codepen.io/cloudipsp/embed/BazzbdN)
+
+### JavaScript Callbacks
+
+Demonstrates how to use JavaScript callbacks, allowing custom actions to run at defined stages of the payment process.
+
+See the JavaScript functions for the mentioned model:
+
+  ```javascript 
+  // Initialize the Fondy Checkout App
+  var app = fondy("#checkout-container", Options)
+    // Attach a listener for the "success" event
+    .$on("success", function (model) {
+      // Log that the success event has been triggered
+      console.log("success event handled");
+
+      // Retrieve the order status from the model data
+      var order_status = model.attr("order.order_data.order_status");
+
+      // Check if the order status is "approved"
+      if (order_status == "approved") {
+        // Log a message indicating the order is approved
+        console.log("Order is approved. Do something on approve...");
+        
+        // Add custom actions here, e.g., redirecting to a confirmation page or updating the UI
+      }
+    })
+    // Attach a listener for the "error" event
+    .$on("error", function (model) {
+      // Log that the error event has been triggered
+      console.log("error event handled");
+
+      // Retrieve the error code from the model data
+      var response_code = model.attr("error.code");
+      
+      // Retrieve the error message from the model data
+      var response_description = model.attr("error.message");
+
+      // Log the error details (code and message) to the console
+      console.log(
+        "Order is declined: " +
+        response_code + // Error code
+        ", description: " +
+        response_description // Error description
+      );
+
+      // Add custom actions here, e.g., showing an error message to the user or retrying the payment
+    });
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[JavaScript callbacks](https://codepen.io/cloudipsp/embed/YzWWgab)
+
+### ApplePay and GooglePay Buttons
+
+Demonstrates how to implement Apple Pay and Google Pay buttons, enabling seamless integration of these payment methods into the checkout process.
+
+See below which JSON parameters were updated to implement the digital wallet payment buttons:
+
+  ```json 
+  {
+    "options": {
+      "methods": ["wallets"], // Supports wallets as the only payment method.
+      "methods_disabled": ["card", "banklinks_eu", "local_methods", "receipt", "loans", "most_popular", "installments"], // Disables multiple payment methods.
+      "title": "Demo checkout", // Sets a fixed title for the checkout interface.
+      "full_screen": false // Disables fullscreen mode.
+    },
+    "params": {
+      "currency": "EUR", // Changes the currency to Euros.
+      "order_desc": "Demo order" // Sets a fixed order description.
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available.
+
+[digital wallet](https://codepen.io/cloudipsp/embed/dyXXrer)
+
+### Order Created on Back-End
+
+You can create an order from your back-end using an API request:
+
+  ```curl 
+  curl -i -X POST \
+   -H "Content-Type:application/json" \
+   -d \
+  '{
+    "request": {
+      "server_callback_url": "http://myshop/callback/",
+      "order_id": "TestOrder_JSSDK_v2",
+      "currency": "USD",
+      "merchant_id": 1396424,
+      "order_desc": "Test payment",
+      "lifetime" : 999999,
+      "amount": 1000,
+      "signature": "91ea7da493a8367410fe3d7f877fb5e0ed666490"
+    }
+  }' \
+   'https://pay.fondy.eu/api/checkout/token'
+  ```
+
+In the response, you will receive a token to use to render the checkout page:
+
+  ```json 
+  {
+    "response":{
+      "response_status":"success",
+      "token":"b3c178ad84446ef36eaab365b1e12e6987e9b3d9"
+    }
+  }
+  ```
+
+Use the token when setting the options to create the checkout page, as shown in the following code block:
+
+  ```javascript 
+  var Options = {
+    options: {
+      methods: ['card', 'banklinks_eu', 'wallets', 'local_methods'],
+      methods_disabled: [],
+      card_icons: ['mastercard', 'visa', 'maestro'],
+      active_tab: 'card',
+      fields: false,
+      title: 'Demo checkout',
+      link: 'https://shop.com',
+      full_screen: true,
+      button: true,
+      email: true
+    },
+    params: {
+      token: "13c178ad84446ef36eaab365b1e12e6987e9b3d9" // Inform the received token
+    }
+  }
+  fondy("#checkout-container", Options);
+  ```
+
+Below, you find an example of the checkout page:
+
+[load checkout](https://codepen.io/cloudipsp/embed/KKMMEEX)
+
+### Customize Bank Links Payment Method
+
+Configure and customize the Bank Links payment method to enhance the checkout experience and meet your business needs.
+
+Specify the parameters:
+
+  ```json 
+  {
+    "options": {
+      "methods": ["card", "banklinks_eu", "wallets", "local_methods"], // Expands the supported payment methods.
+      "methods_disabled": [], // Introduces a mechanism to disable specific payment methods (currently empty).
+      "card_icons": ["mastercard", "visa", "maestro"], // Replaces Diners Club and American Express with Maestro.
+      "active_tab": "banklinks_eu", // Sets the default active tab to "banklinks_eu".
+      "default_country": "PL", // Sets the default country to Poland.
+      "countries": ["PL", "IE", "GB", "CZ"], // Restricts the supported countries to Poland, Ireland, the UK, and the Czech Republic.
+      "banklinks_eu_icons": [ // Specifies a list of icons for the "banklinks_eu" method.
+        "credit_agricole",
+        "alior_bank",
+        "bank_millennium",
+        "skycash",
+        "eurobank",
+        "pekao_sa",
+        "volkswagen_bank",
+        "inteligo",
+        "pko_bp",
+        "bgz_bnp_paribas_polska",
+        "getin_bank",
+        "ing_bank_slaski",
+        "mbank",
+        "citi_handlowy",
+        "paysafecard",
+        "pbsbank",
+        "blik",
+        "raiffeisen_polbank",
+        "noble_bank",
+        "santander",
+        "t_mobile_uslugi_bankowe",
+        "bank_pocztowy",
+        "banki_spoldzielcze",
+        "nest_bank",
+        "toyota_bank",
+        "bank_ochrony_srodowiska",
+        "plus_bank",
+        "plac_z_orange",
+        "skrill",
+        "idea_bank"
+      ]
+    },
+    "params": {
+      "currency": "EUR", // Changes the currency to Euros.
+      "order_desc": "Demo order" // Updates the order description to "Demo order".
+    },
+    "messages": {
+      "en": {
+        "banklinks_eu": "Bank links", // Adds localized text for the "banklinks_eu" method.
+        "local_methods": "Skrill" // Adds localized text for the "local_methods" method.
+      }
+    }
+  }
+  ```
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available:
+
+[customize payments](https://codepen.io/cloudipsp/embed/VwjjRNo)
+
+### Using Color Presets
+
+Use gradient color presets with the object **theme** in the **options** section to customize appearance..
+
+  ```json 
+      options: {
+        methods: ['card', 'banklinks_eu', 'wallets', 'local_methods'],
+        ...
+        ,
+        theme: {
+          type: "light",
+          preset: "black"
+      }
+      }
+  ```
+
+* **type:** The attribute can be "light" or "dark."
+* **preset:** attribute can be set to one of the following values:
+
+<Image src="/media/docs/gateway/preset_namings.png"/>
+
+Use custom flat colors with the `css_variable` parameter by setting `preset: "reset"`.
+
+Below, you find the resulting checkout page using the above configuration. You can test it and edit the options to explore the options available:
+
+[css edit](https://codepen.io/cloudipsp/embed/XWKKwrW)
+
+Recommend colors:
+
+```
+valencia: #D94343
+flame_pea: #DF583D
+jaffa: #E86F33
+zest: #E58626
+gamboge: #EBA212
+citron: #A9B221
+sushi: #82B536
+chelsea_cucumber: #6BA854
+fruit_salad: #54A868
+breaker_bay: #54A199
+pelorous: #43ABBF
+havelock_blue: #57A4DC
+curious_blue: #4F8BE0
+indigo: #6073D1
+fuchsia_blue: #7054C7
+studio: #8453B5
+wisteria: #9D55B5
+fuchsia_pink: #BA5BB2
+mulberry: #C74E8A
+cabaret: #D4486B
+```
+

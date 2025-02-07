@@ -1,0 +1,211 @@
+---
+title: "Create Payment"
+description: "The Create Payment process in the Fondy Gateway allows merchants to send payment requests using a host-to-host integration. This method lets you send payment requests directly from your server to the Fondy payment gateway, providing enhanced security by keeping sensitive data on the server side."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Create Payment process in the Fondy Gateway allows merchants to send payment requests using a host-to-host integration. This method lets you send payment requests directly from your server to the Fondy payment gateway, providing enhanced security by keeping sensitive data on the server side.
+
+This integration allows Fondy to securely handle all payment data by redirecting customers to a Fondy-managed payment page. It is also optimized for payments via mobile devices, ensuring a smooth and efficient user experience.
+
+Before proceeding to the step-by-step guide, make sure you know how to use your [Signature](/gateway/signatures) and that you have your Merchant ID (`merchant_id`). To get your Merchant ID, go to the [Fondy Dashboard](https://portal.fondy.eu/mportal/#/) and log in. In the left sidebar, select **Merchant Settings** and then **Technical**. You can copy the **Merchant ID** by clicking the green button to the right of the number.
+
+<Image src="/media/docs/gateway/create-payment-1.png"/>
+
+## Creating a Payment
+
+To create a payment, follow these steps:
+
+1. Prepare the request data with the required fields:
+
+   * `server_callback_url`: Callback URL for payment updates.
+   * `order_id`: Unique order identifier.
+   * `currency`: Payment currency.
+   * `order_desc`: Order description.
+   * `amount`: Payment amount.
+   * `merchant_id`: Your merchant ID.
+   * `signature`: The request signature.
+
+2. Use your preferred protocol to send a `POST` request to the [Accept Purchase endpoint](/reference/gateway/accept-purchase-fondy-checkout).
+
+<Callout type="info" title="Supported Request Formats">
+  The supported protocols for this request are:
+
+  * **URL-encoded form**
+  * **XML**
+  * **JSON**
+</Callout>
+
+3. Handle the response to retrieve the `checkout_url` and use it to redirect the customer to complete the payment.
+4. After finishing, Fondy will send a `POST` request with the final payment information to the `server_callback_url` containing all the information from the processed payment. For more details, access the [Callbacks](/gateway/direct-integration/callbacks) guide.
+
+### Example Requests and Responses
+
+Below, you find examples of requests and responses for each supported protocol.
+
+**JSON Example**
+
+<Tabs>
+  <TabItem value="request1" label="Request">
+  ```json 
+  curl -i -X POST \
+   -H "Content-Type:application/json" \
+   -d \
+  '{
+   "request": {
+   "server_callback_url": "http://myshop/callback/",
+   "order_id": "TestOrder2",
+   "currency": "GBP",
+   "merchant_id": 1396424,
+   "order_desc": "Test payment",
+   "amount": 1000,
+   "signature": "91ea7da493a8367410fe3d7f877fb5e0ed666490"
+   }
+  }' \
+   'https://pay.fondy.eu/api/checkout/url'
+  ```
+  </TabItem>
+
+  <TabItem value="response1" label="Normal Response">
+  ```json 
+  {
+    "response":{
+      "response_status":"success",
+      "checkout_url":"https://pay.fondy.eu/checkout?token=afcb21aef707b1fea2565b66bac7dc41d7833390"
+    }
+  }
+  </TabItem>
+
+  <TabItem value="error-response1" label="Error Response">
+  ```json 
+  {
+    "response":{
+    "response_status":"failure",
+    "error_message":"Parameter `amount` is mandatory",
+    "error_code":"1008"
+    }
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+**XML Example**
+
+<Tabs>
+  <TabItem value="request2" label="Request">
+  ```xml 
+  curl -i -X POST \
+   -H "Content-Type:application/xml" \
+   -d \
+  '
+  <?xml version="1.0" encoding="UTF-8"?>
+  <request>
+   <response_url>http://myshop/callback/</response_url>
+   <order_id>TestOrderXML211</order_id>
+   <order_desc>Test payment</order_desc>
+   <currency>GBP</currency>
+   <amount>100</amount>
+   <signature>f0174cbeb6f3a400550481aa2fca0879626c902d</signature>
+   <merchant_id>1396424</merchant_id>
+  </request>
+  ' \
+   'https://pay.fondy.eu/api/checkout/url'
+  ```
+  </TabItem>
+
+  <TabItem value="response2" label="Normal Response">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+    <response_status>success</response_status>
+    <checkout_url>https://pay.fondy.eu/checkout?token=6c67efad5fd68921f58836cabc2a3d27c5f02b23</checkout_url>
+  </response>
+  ```
+  </TabItem>
+
+  <TabItem value="error-response2" label="Error Response">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+    <response_status>failure</response_status>
+    <error_message>Parameter `amount` is mandatory</error_message>
+    <error_code>1008</error_code>
+  </response>
+  ```
+  </TabItem>
+</Tabs>
+
+**URL-encoded form example**
+
+<Tabs>
+  <TabItem value="request3" label="Request">
+  ```curl 
+  curl -i -X POST \
+   -H "Content-Type:application/x-www-form-urlencoded" \
+   -d 'response_url=http://myshop/callback/&order_id=TestOrderURLEncode211&order_desc=Test payment&currency=GBP&amount=100&signature=b7acb85c7f02882049c9e19813025f27cb09ad63&merchant_id=1396424' \
+  'https://pay.fondy.eu/api/checkout/url'
+  ```
+  </TabItem>
+
+  <TabItem value="response3" label="Normal Response">
+  ```curl 
+  response_status=success&checkout_url=http%3A%2F%2Flocalhost%2Fcheckout%3Ftoken%3D643f3cea682e066f142099a76b0fa9d1613969dc
+  ```
+  </TabItem>
+
+  <TabItem value="error-response3" label="Error Response">
+  ```curl 
+  response_status=failure&error_message=Parameter%20%60amount%60%20is%20mandatory&error_code=1008
+  ```
+  </TabItem>
+</Tabs>
+
+### Final Response Example
+
+Fondy will send a POST request once the payment is finished to the `server_callback_url`. Below you find a JSON response example.
+
+
+  ```json 
+  {
+   "rrn": "429417347068",
+   "masked_card": "444455XXXXXX6666",
+   "sender_cell_phone": "",
+   "response_signature_string": "**********|3324000|GBP|3324000|027440|444455|VISA|GBP|444455XXXXXX6666|1396424|
+    14#1500639628|approved|21.07.2017 15:20:27|51247263|card|success|0|429417347068|[email protected]|0|purchase",
+   "response_status": "success",
+   "sender_account": "",
+   "fee": "",
+   "rectoken_lifetime": "",
+   "reversal_amount": "0",
+   "settlement_amount": "0",
+   "actual_amount": "3324000",
+   "order_status": "approved",
+   "response_description": "",
+   "verification_status": "",
+   "order_time": "21.07.2017 15:20:27",
+   "actual_currency": "GBP",
+   "order_id": "14#1500639628",
+   "parent_order_id": "",
+   "merchant_data": "",
+   "tran_type": "purchase",
+   "eci": "",
+   "settlement_date": "",
+   "payment_system": "card",
+   "rectoken": "",
+   "approval_code": "027440",
+   "merchant_id": 1396424,
+   "settlement_currency": "",
+   "payment_id": 51247263,
+   "product_id": "",
+   "currency": "GBP",
+   "card_bin": 444455,
+   "response_code": "",
+   "card_type": "VISA",
+   "amount": "3324000",
+   "sender_email": "[email protected]",
+   "signature": "47bdcaf61b99edd31e3ec7913225a14d2ce07575"
+  }
+  ```

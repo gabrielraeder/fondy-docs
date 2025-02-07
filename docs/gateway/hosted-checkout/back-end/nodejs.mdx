@@ -1,0 +1,1876 @@
+---
+title: "Node.js"
+description: "Integrate Fondy's payment processing capabilities into your Node.js applications."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Node.js SDK for Fondy Gateway allows developers to integrate Fondy payment processing services seamlessly into their Node.js applications. With this SDK, you can quickly manage payment requests, verify transactions, and build customized payment workflows. This documentation provides a step-by-step guide to help you get started and use the SDK effectively.
+
+## Requirements
+
+Before installing and using the SDK, ensure your environment meets the following prerequisites:
+
+* **Node.js version:** 7 or higher.
+
+## Installation
+
+You can install the Fondy Gateway Node.js SDK using npm or manually from the repository.
+
+### Using npm
+
+Run the following command in your terminal:
+
+
+  ```bash 
+  npm install cloudipsp-node-js-sdk
+  ```
+
+
+### Manual Installation
+
+If you prefer a manual setup, clone the repository and switch to the master branch:
+
+
+  ```bash 
+  git clone -b master https://github.com/cloudipsp/node-js-sdk.git
+  ```
+
+
+## How to Use the SDK
+
+Start by importing the SDK into your Node.js project:
+
+  ```javascript 
+  const CloudIpsp = require('cloudipsp-node-js-sdk');
+  ```
+
+
+After importing the SDK into your project, create an instance of the SDK by passing your merchant credentials:
+
+  ```javascript 
+  const fondy = new CloudIpsp({
+    merchantId: 1396424,
+    secretKey: 'test'
+  });
+  ```
+
+The above example uses the [testing credentials](/gateway/test-gateway-payments). When performing your integration, replace the `merchantId` and `secretKey` with your actual Fondy credentials.
+
+Define the data required for your payment request. The following code block presents an example to create a payment.
+
+
+  ```javascript 
+  const requestData = {
+    order_id: 'Your Order Id',
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000' // Amount in cents
+  };
+  ```
+
+
+After, send a checkout request using the `fondy` library and handle the response:
+
+
+  ```javascript 
+  fondy.Checkout(requestData)
+    .then(data => {
+      console.log('Payment Response:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  ```
+
+
+The above example uses the `Checkout `function. The list of all available functions will be provided in the following section.
+
+Fondy SDK will return a `data` object with the `checkout_url`to redirect your user to finish the payment. The following code block presents the complete response from Fondy SDK:
+
+
+  ```javascript 
+  {
+    checkout_url: 'https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=ca58c831b07b9d3be5caef03d9f8b1cf92a9e9f8',
+    payment_id: '832290483',
+    response_status: 'success'
+  }
+  ```
+
+## Usage Examples
+
+This section provides practical examples to help you understand and utilize the features of the Fondy Node.js SDK. Use the links below to navigate to specific examples:
+
+* [Checkout](#checkout)
+* [PCI DSS One Step](#pci-dss-one-step)
+* [PCI DSS Two Step](#pci-dss-two-step)
+* [Capture](#capture)
+* [Verification](#verification)
+* [Reports](#reports)
+* [Reverse](#reverse)
+* [Status](#status)
+* [Subscription](#subscription)
+* [Transaction List by Order](#transaction-list-by-order)
+
+### Checkout
+
+The Checkout feature allows you to generate a URL that redirects your customers to a secure payment page where they can complete their transactions. The Fondy SDK simplifies this process by returning a `checkout_url` in the response. Use this URL to redirect your customers. The following code block presents an example of how to use the `Checkout` function and the response you can expect from the function:
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript 
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test'
+    }
+  )
+  const requestData = {
+    order_id: 'Your Order Id 123',
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000'
+  }
+  fondy.Checkout(requestData).then(data => {
+    console.log(data)
+  }).catch((error) => {
+    console.log(error)
+  })
+  ```
+  </TabItem>
+  <TabItem value="response" label="Response">
+  ```json Checkout response
+  {
+    checkout_url: 'https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=ca58c831b07b9d3be5caef03d9f8b1cf92a9e9f8',
+    payment_id: '832290483',
+    response_status: 'success'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### PCI DSS One Step
+
+The PCI DSS One Step feature is designed for PCI-compliant merchants that can handle sensitive card data directly. This feature allows you to create payments using the Fondy Node.js SDK when you have access to the customer's card details, such as the `card_number`, `cvv2`, and `expiry_date`.
+
+This feature is suitable for scenarios where cardholder data is securely collected and stored within your system, ensuring compliance with PCI DSS standards.
+
+To create a payment, you will use the `PciDssOne` function. This function processes the payment and returns a detailed response, which includes information about the transaction status, masked card details, and other relevant metadata. You can also validate the response using the SDK's `isValidResponse` method to ensure its integrity.
+
+The following code demonstrates how to use the `PciDssOne` function to create a payment and validate the response. In addition, it also presents the response from the SDK, which contains detailed information about the processed payment.
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript javascript
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test'
+    }
+  )
+  const data = {
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000',
+    card_number: '4444555511116666',
+    cvv2: '333',
+    expiry_date: '1232',
+    client_ip: '127.2.2.1'
+  }
+  fondy.PciDssOne(data).then(data => {
+    console.log(data)
+    console.log(fondy.isValidResponse(data))
+  }).catch((error) => {
+    console.log(error)
+  })
+  ```
+  </TabItem>
+  <TabItem value="sdkresponse" label="SDK response">
+  ```json 
+  {
+    rrn: '413957824276',
+    masked_card: '444455XXXXXX6666',
+    sender_cell_phone: '',
+    sender_account: '',
+    currency: 'GBP',
+    fee: '',
+    reversal_amount: '0',
+    settlement_amount: '0',
+    actual_amount: '1000',
+    response_description: '',
+    sender_email: '',
+    order_status: 'approved',
+    response_status: 'success',
+    order_time: '26.11.2024 13:49:16',
+    actual_currency: 'GBP',
+    order_id: '1396424_AIKvXbigRopodFFuULa1njUXWwEm8l5obzV1ZP4y',
+    tran_type: 'purchase',
+    eci: '7',
+    settlement_date: '',
+    payment_system: 'card',
+    approval_code: '426504',
+    merchant_id: 1396424,
+    settlement_currency: '',
+    payment_id: 832293829,
+    card_bin: 444455,
+    response_code: '',
+    card_type: 'VISA',
+    amount: '1000',
+    signature: '70e13603363caa5b18e70a63d59fffa8806d4aef',
+    product_id: '',
+    merchant_data: '',
+    rectoken: '',
+    rectoken_lifetime: '',
+    verification_status: '',
+    parent_order_id: '',
+    additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760658, "bank_response_code": null, "bank_response_descr
+  iption": null, "client_fee": 0.0, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null, "
+  timeend": "26.11.2024 13:49:18", "ipaddress_v4": "127.2.2.1", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_test": true}',
+    response_signature_string: '**********|1000|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760658, "bank_response_cod
+  e": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_v
+  isa", "card_category": null, "timeend": "26.11.2024 13:49:18", "ipaddress_v4": "127.2.2.1", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_*********
+  *": true}|1000|426504|444455|VISA|GBP|7|444455XXXXXX6666|1396424|1396424_AIKvXbigRopodFFuULa1njUXWwEm8l5obzV1ZP4y|approved|26.11.2024 13:49:16|832293829|card|success|0|41395
+  7824276|0|purchase'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### PCI DSS Two Step
+
+The PCI DSS Two Step process is designed for PCI-compliant systems that need to validate cardholder data using 3DS authentication before completing a transaction. This method involves two steps:
+
+1. **Validation (Step One):** Use the `PciDssOne` function to verify cardholder information. The response provides the data needed for 3D Secure authentication, including `order_id`, `md`, and `pares`.
+2. **Payment (Step Two):** After validating the cardholder's information using the data from the first step, use the `PciDssTwo` function to complete the payment.
+
+The following code block presents an example of how to create the payment using the `PciDssOne` and `PciDssTwo`. The code block also displays the responses from each function:
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript javascript
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test'
+    }
+  )
+  const dataS1 = {
+    order_id: Date.now(),
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000',
+    card_number: '4444555566661111',
+    cvv2: '222',
+    expiry_date: '1232'
+  }
+
+  fondy.PciDssOne(dataS1).then(data => {
+    const dataStwo = {
+      order_id: dataS1.order_id,
+      md: data.md,
+      pares: data.pareq
+    }
+    fondy.PciDssTwo(dataStwo).then(data => {
+      console.log(data)
+    }).catch((error) => {
+      console.log(error)
+    })
+  })
+  ```
+  </TabItem>
+  <TabItem value="pcidssoneresponse" label="PciDssOne response">
+  ```json 
+  {
+    response_status: 'success',
+    acs_url: 'https://pay.fondy.eu/acs/2042784334/ccb2b29ce5b5da111821a1cbabde55d6b1668076',
+    pareq: 'eJxtU21vgjAQ/u6vIP4A+gJRNKVJHUvUiRpwS/aRYYNsgljA6b8fLTpFuISE5+5pe/fcHdnsBOeOz8NScNrTKiMuz/Mg4lq8tfuDyqxRv46o6Jp5/HjHynfiIo8PKUU61DEBN9gkuVyEuyAtmm4VCsLjZLakpjUyDUT
+  AFbZ5CRczhxpDDCsjoIZtWhoknC7Y5mM2Z762Zv6GaRO2fGMEqFD7RHgo00JcqIktAm6gTSvFnu6KIsvHQD6uysn1ffal708EyGizZNBdM1mX0p13ZXKOt9R12O/Th5ffn3jl/NgESEb73DYoOMUQmdDCloaGY4jGaECA8nconsgi
+  KdYh1F7fvUrz2tFmZjJXdqVL1R8dHUqWQvA0vNDRUEp5Q20iP2eHlMtLCfj/f5KvWyfyMu2cobCopsFNVsZ8yhdHL1rNkedH0Ev8yLblVClCZyZx1W4DozqV+Ln3BDy+WKV1XwHZYrUttEdAY5f+AHcC0ak=',
+    md: '2042784334'
+  }
+  ```
+  </TabItem>
+  <TabItem value="pcidssonetworesponse" label="PciDssTwo response">
+  ```json 
+  {
+    rrn: '',
+    masked_card: '444455XXXXXX1111',
+    sender_cell_phone: '',
+    sender_account: '',
+    currency: 'GBP',
+    fee: '',
+    reversal_amount: '0',
+    settlement_amount: '0',
+    actual_amount: '',
+    response_description: '3DSecure authentication failed',
+    sender_email: '',
+    order_status: 'declined',
+    response_status: 'success',
+    order_time: '26.11.2024 14:44:33',
+    actual_currency: 'GBP',
+    order_id: '1732625072478',
+    tran_type: 'purchase',
+    eci: '',
+    settlement_date: '',
+    payment_system: 'card',
+    approval_code: '',
+    merchant_id: 1396424,
+    settlement_currency: '',
+    payment_id: 832306148,
+    card_bin: 444455,
+    response_code: 1024,
+    card_type: 'VISA',
+    amount: '1000',
+    signature: 'c6311032e4a5cc090d3ff5b6a2448dcfa39153d2',
+    product_id: '',
+    merchant_data: '',
+    rectoken: '',
+    rectoken_lifetime: '',
+    verification_status: '',
+    parent_order_id: '',
+    additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": null, "bank_response_code": null, "bank_response_description
+  ": null, "client_fee": null, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null, "timee
+  nd": "26.11.2024 14:44:34", "ipaddress_v4": "186.209.205.205", "payment_method": "card"}',
+    response_signature_string: '**********|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": null, "bank_response_code": null, "
+  bank_response_description": null, "client_fee": null, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "car
+  d_category": null, "timeend": "26.11.2024 14:44:34", "ipaddress_v4": "186.209.205.205", "payment_method": "card"}|1000|444455|VISA|GBP|444455XXXXXX1111|1396424|1732625072478
+  |declined|26.11.2024 14:44:33|832306148|card|1024|3DSecure authentication failed|success|0|0|purchase'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Capture
+
+The Capture function allows you to finalize a previously pre-authorized payment by capturing the held amount on a card. This process is the second stage in a two-stage payment flow, where the initial authorization (preauth = 'Y') reserves the specified amount. The capture can be a full or partial amount of the pre-authorized funds.
+
+The process to use the capture function is composed of two steps:
+
+1. **Pre-authorization (Step One):** Initiate a payment with `preauth: 'Y'`, reserving the amount on the card. You can use the `PciDssOne` or `Checkout` functions to create the payment.
+2. **Capture (Step Two):** Use the `Capture` function to confirm and capture the reserved funds, completing the transaction.
+
+The following example demonstrates creating a pre-authorized payment and capturing the total amount. In addition, the code block also presents the response from the pre-authorization (`PciDssOne`) which provides details of the transaction and the response from the `Capture` operation.
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript javascript
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test'
+    }
+  )
+  const data = {
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000',
+    card_number: '4444555511116666',
+    cvv2: '333',
+    expiry_date: '1232',
+    preauth: 'Y'
+  }
+  fondy.PciDssOne(data).then(data => {
+    console.log(data);
+    const captureData = {
+      currency: data.currency,
+      amount: data.amount,
+      order_id: data.order_id
+    }
+    fondy.Capture(captureData).then(data => {
+      console.log(data)
+    })
+  })
+  ```
+  </TabItem>
+  <TabItem value="pcidssoneresponse" label="PciDssOne response">
+  ```json 
+  {
+    rrn: '413957824276',
+    masked_card: '444455XXXXXX6666',
+    sender_cell_phone: '',
+    sender_account: '',
+    currency: 'GBP',
+    fee: '',
+    reversal_amount: '0',
+    settlement_amount: '0',
+    actual_amount: '1000',
+    response_description: '',
+    sender_email: '',
+    order_status: 'approved',
+    response_status: 'success',
+    order_time: '26.11.2024 15:18:57',
+    actual_currency: 'GBP',
+    order_id: '1396424_QH4T7LCaAyUOr89fMdAGuNoqoIZqCA1fha4nvS6p',
+    tran_type: 'purchase',
+    eci: '7',
+    settlement_date: '',
+    payment_system: 'card',
+    approval_code: '426504',
+    merchant_id: 1396424,
+    settlement_currency: '',
+    payment_id: 832313603,
+    card_bin: 444455,
+    response_code: '',
+    card_type: 'VISA',
+    amount: '1000',
+    signature: 'edb0485b7c13843a3658c201ffd23e2af89e4af9',
+    product_id: '',
+    merchant_data: '',
+    rectoken: '',
+    rectoken_lifetime: '',
+    verification_status: '',
+    parent_order_id: '',
+    additional_info: '{"capture_status": "hold", "capture_amount": 0.0, "reservation_data": null, "transaction_id": 2042798309, "bank_response_code": null, "bank_response_desc
+  ription": null, "client_fee": 0.0, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null, 
+  "timeend": "26.11.2024 15:18:59", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_test": true}',
+    response_signature_string: '**********|1000|GBP|{"capture_status": "hold", "capture_amount": 0.0, "reservation_data": null, "transaction_id": 2042798309, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_
+  visa", "card_category": null, "timeend": "26.11.2024 15:18:59", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_**
+  ********": true}|1000|426504|444455|VISA|GBP|7|444455XXXXXX6666|1396424|1396424_QH4T7LCaAyUOr89fMdAGuNoqoIZqCA1fha4nvS6p|approved|26.11.2024 15:18:57|832313603|card|success|
+  0|413957824276|0|purchase'
+  }
+  ```
+  </TabItem>
+  <TabItem value="captureresponse" label="Capture response">  
+  ```json 
+  {
+    capture_status: 'captured',
+    order_id: '1396424_QH4T7LCaAyUOr89fMdAGuNoqoIZqCA1fha4nvS6p',
+    response_description: '',
+    response_code: '',
+    merchant_id: 1396424,
+    response_status: 'success'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Verification
+
+The Verification feature allows you to validate customer cards by generating a secure checkout URL. This URL redirects the customer to a page where they can input their card details for validation. Fondy validates the card details and returns the results via a callback. The following steps summarize the process:
+
+1. Use the `Verification` function to receive the `checkout_url`.
+2. Redirect the customer to the `checkout_url` returned in the response.
+3. The customer provides card details, and Fondy validates the information.
+4. The verification results are sent to your system via a [callback](/gateway/direct-integration/callbacks).
+
+The following example shows how to use the `Verification` function and handle its response. It also presents the response from the `Verification` function.
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript 
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test'
+    }
+  )
+  const data = {
+    order_desc: 'test order',
+    currency: 'GBP'
+  }
+  fondy.Verification(data).then(data => {
+    console.log(data)
+  }).catch((error) => {
+    console.log(error)
+  })
+  ```
+  </TabItem>
+  <TabItem value="verificationresponse" label="Verification response">
+  ```json 
+  {
+    checkout_url: 'https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=ffa368298afd7174720c3569d42f715620550ff1',
+    payment_id: '832316216',
+    response_status: 'success'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Reports
+
+The Reports feature lets you retrieve detailed data about your operations within a specified date range using the Fondy Node.js SDK. Reports provide valuable insights into your transactions and can help you monitor and analyze your payment activities.
+
+To use the `Reports` function, you have to provide the `date_from` and `date_to` parameters to define the interval for the report. The SDK fetches the data and returns it in JSON format.
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript 
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test'
+    }
+  )
+  const now = new Date()
+  const NotNow = new Date()
+  NotNow.setHours(NotNow.getHours() - 1)
+
+  const data = {
+    date_from: NotNow,
+    date_to: now
+  }
+
+  fondy.Reports(data).then(data => {
+    console.log(data)
+  }).catch((error) => {
+    console.log(error)
+  })
+  ```
+  </TabItem>
+  <TabItem value="reportresponse" label="Report response">
+  ```json 
+  [
+  	{
+      rrn: '413957824276',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '1000',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:32:13',
+      actual_currency: 'GBP',
+      order_id: '1396424_j3YmKgdky0OjILiyCRqI4rt1dUvzdl8Mpu4MfzpK',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '426504',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832289694,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '1000',
+      signature: '0b50ece7e7cdc48903bf6a17b6ef5289476fc84e',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": "captured", "capture_amount": 10.0, "reservation_data": null, "transaction_id": 2042753336, "bank_response_code": null, "bank_respon
+  se_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category"
+  : null, "timeend": "26.11.2024 13:32:19", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_test": true}',
+      response_signature_string: '**********|1000|GBP|{"capture_status": "captured", "capture_amount": 10.0, "reservation_data": null, "transaction_id": 2042753336, "bank_resp
+  onse_code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product":
+   "empty_visa", "card_category": null, "timeend": "26.11.2024 13:32:19", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless"
+  , "is_**********": true}|1000|426504|444455|VISA|GBP|7|444455XXXXXX6666|1396424|1396424_j3YmKgdky0OjILiyCRqI4rt1dUvzdl8Mpu4MfzpK|approved|26.11.2024 13:32:13|832289694|card|
+  success|0|413957824276|purchase'
+    },
+    {
+      rrn: '413957824276',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '1000',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:33:01',
+      actual_currency: 'GBP',
+      order_id: '1396424_GRAKsJCyJGKawN71rg1DNVHuK8rVzkV4DzNNtzO1',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '426504',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832289908,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '1000',
+      signature: '10230da9492e92c19cec1e6e211d5b1165e4108f',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": "captured", "capture_amount": 10.0, "reservation_data": null, "transaction_id": 2042753719, "bank_response_code": null, "bank_respon
+  se_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category"
+  : null, "timeend": "26.11.2024 13:33:07", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_test": true}',
+      response_signature_string: '**********|1000|GBP|{"capture_status": "captured", "capture_amount": 10.0, "reservation_data": null, "transaction_id": 2042753719, "bank_resp
+  onse_code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product":
+   "empty_visa", "card_category": null, "timeend": "26.11.2024 13:33:07", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless"
+  , "is_**********": true}|1000|426504|444455|VISA|GBP|7|444455XXXXXX6666|1396424|1396424_GRAKsJCyJGKawN71rg1DNVHuK8rVzkV4DzNNtzO1|approved|26.11.2024 13:33:01|832289908|card|
+  success|0|413957824276|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:33:52',
+      actual_currency: 'GBP',
+      order_id: 'test6069444088',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832290142,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: '48ce088bc008613dc79e3e9e13c634223ad4adad',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042754051, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:33:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042754051, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:33:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********6069444088|approved|26.11.2024 13:33:52|832290142|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:34:59',
+      actual_currency: 'GBP',
+      order_id: 'test103909937',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832290400,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: 'a632e8263b8cd1839faa8671b1915191e21af29b',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042754497, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:35:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042754497, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:35:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********103909937|approved|26.11.2024 13:34:59|832290400|card|success|0|111111111111|purchase'
+    },
+    {
+      data: 'eyJvcmRlciI6IHsicnJuIjogIjExMTExMTExMTExMSIsICJtYXNrZWRfY2FyZCI6ICI0NDQ0NTVYWFhYWFgxMTExIiwgInNlbmRlcl9jZWxsX3Bob25lIjogIiIsICJzZW5kZXJfYWNjb3VudCI6ICIiLCAiY3Vycm
+  VuY3kiOiAiVUFIIiwgImZlZSI6ICIiLCAicmV2ZXJzYWxfYW1vdW50IjogIjAiLCAic2V0dGxlbWVudF9hbW91bnQiOiAiIiwgImFjdHVhbF9hbW91bnQiOiAiMzAwMDAiLCAicmVzcG9uc2VfZGVzY3JpcHRpb24iOiAiIiwgInN
+  lbmRlcl9lbWFpbCI6ICIiLCAib3JkZXJfc3RhdHVzIjogImFwcHJvdmVkIiwgInJlc3BvbnNlX3N0YXR1cyI6ICJzdWNjZXNzIiwgIm9yZGVyX3RpbWUiOiAiMjYuMTEuMjAyNCAxMzozNToxOCIsICJhY3R1YWxfY3VycmVuY3ki
+  OiAiVUFIIiwgIm9yZGVyX2lkIjogImU5ZTExZGNhLWY0MTAtNDE0Ni04NzAwLTBhODMyNzkyNDc0YiIsICJ0cmFuX3R5cGUiOiAicHVyY2hhc2UiLCAiZWNpIjogIjUiLCAic2V0dGxlbWVudF9kYXRlIjogIiIsICJwYXltZW50X
+  3N5c3RlbSI6ICJjYXJkIiwgImFwcHJvdmFsX2NvZGUiOiAiMTIzNDU2IiwgIm1lcmNoYW50X2lkIjogMTM5NjQyNCwgInNldHRsZW1lbnRfY3VycmVuY3kiOiAiIiwgInBheW1lbnRfaWQiOiA4MzIyOTA0OTIsICJjYXJkX2Jpbi
+  I6IDQ0NDQ1NSwgInJlc3BvbnNlX2NvZGUiOiAiIiwgImNhcmRfdHlwZSI6ICJWSVNBIiwgImFtb3VudCI6ICIzMDAwMCIsICJwcm9kdWN0X2lkIjogIjUiLCAibWVyY2hhbnRfZGF0YSI6ICJ7XCJjbGllbnRfaWRcIjozfSIsICJ
+  yZWN0b2tlbiI6ICJhNDEwODdlZDdjZTZkOGEzZTY1OTU0OWQwZTE5NzgzOTNkZGMyNjYiLCAicmVjdG9rZW5fbGlmZXRpbWUiOiAiIiwgInZlcmlmaWNhdGlvbl9zdGF0dXMiOiAiIiwgInBhcmVudF9vcmRlcl9pZCI6ICIiLCAi
+  ZmVlX29wbGF0YSI6ICIiLCAiYWRkaXRpb25hbF9pbmZvIjogIntcImNhcHR1cmVfc3RhdHVzXCI6IG51bGwsIFwiY2FwdHVyZV9hbW91bnRcIjogbnVsbCwgXCJyZXNlcnZhdGlvbl9kYXRhXCI6IG51bGwsIFwidHJhbnNhY3Rpb
+  25faWRcIjogMjA0Mjc1NDY1OSwgXCJiYW5rX3Jlc3BvbnNlX2NvZGVcIjogbnVsbCwgXCJiYW5rX3Jlc3BvbnNlX2Rlc2NyaXB0aW9uXCI6IG51bGwsIFwiY2xpZW50X2ZlZVwiOiAwLjAsIFwic2V0dGxlbWVudF9mZWVcIjogbn
+  VsbCwgXCJiYW5rX25hbWVcIjogbnVsbCwgXCJiYW5rX2NvdW50cnlcIjogbnVsbCwgXCJjYXJkX3R5cGVcIjogXCJWSVNBXCIsIFwiY2FyZF9wcm9kdWN0XCI6IFwiZW1wdHlfdmlzYVwiLCBcImNhcmRfY2F0ZWdvcnlcIjogbnV
+  sbCwgXCJ0aW1lZW5kXCI6IFwiMjYuMTEuMjAyNCAxMzozNToxOVwiLCBcImlwYWRkcmVzc192NFwiOiBcIjE4NS4xMDQuNDQuMTQ2XCIsIFwicGF5bWVudF9tZXRob2RcIjogXCJjYXJkXCIsIFwiaXNfdGVzdFwiOiB0cnVlfSJ9
+  fQ==',
+      version: '2.0',
+      signature: '9d5be7a71d6c5c2e2e7690121bd29d3493f5a2b0'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:38:53',
+      actual_currency: 'GBP',
+      order_id: 'test5749467893',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832291362,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: '7fa495b4b6414c86eefbc2bbc2d1f9b27a034fa6',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042756199, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:38:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042756199, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:38:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********5749467893|approved|26.11.2024 13:38:53|832291362|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX1111',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '50000',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:39:34',
+      actual_currency: 'GBP',
+      order_id: '2520_141135',
+      tran_type: 'purchase',
+      eci: '5',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832291509,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '50000',
+      signature: '10a6a9a654d236485c28726e6cf61bc02e52cd7c',
+      product_id: '',
+      merchant_data: '2520;0;0',
+      rectoken: 'a41087ed7ce6d8a3e659549d0e1978393ddc266',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042756469, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:39:35", "ipaddress_v4": "193.218.145.68", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|50000|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042756469, "bank_response_
+  code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "emp
+  ty_visa", "card_category": null, "timeend": "26.11.2024 13:39:35", "ipaddress_v4": "193.218.145.68", "payment_method": "card", "is_**********": true}|50000|123456|444455|VIS
+  A|GBP|5|444455XXXXXX1111|2520;0;0|1396424|2520_141135|approved|26.11.2024 13:39:34|832291509|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111111|purchase'   
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:39:58',
+      actual_currency: 'GBP',
+      order_id: 'test226599472',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832291589,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: 'e94d9fe61813dfff644c9da57c6198b9bfe710e1',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042756628, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:40:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042756628, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:40:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********226599472|approved|26.11.2024 13:39:58|832291589|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX1111',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '30000',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:42:04',
+      actual_currency: 'GBP',
+      order_id: '1396424_9e6c7b64f5a228ad1df0c10f7888edb5',
+      tran_type: 'purchase',
+      eci: '5',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832292079,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '30000',
+      signature: '5d7ec807c53126fc9872debe9ef0bfdd3035dc0f',
+      product_id: '',
+      merchant_data: '',
+      rectoken: 'a41087ed7ce6d8a3e659549d0e1978393ddc266',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042757530, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:42:05", "ipaddress_v4": "193.0.61.237", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|30000|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042757530, "bank_response_
+  code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "emp
+  ty_visa", "card_category": null, "timeend": "26.11.2024 13:42:05", "ipaddress_v4": "193.0.61.237", "payment_method": "card", "is_**********": true}|30000|123456|444455|VISA|
+  GBP|5|444455XXXXXX1111|1396424|1396424_9e6c7b64f5a228ad1df0c10f7888edb5|approved|26.11.2024 13:42:04|832292079|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|1111111
+  11111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX1111',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '8000',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:43:03',
+      actual_currency: 'GBP',
+      order_id: '1396424_8234574aec8cdd02e21fdd3d3c3bcfad',
+      tran_type: 'purchase',
+      eci: '5',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832292336,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '8000',
+      signature: '2cbf792957611a5cde0a3b61d2e1b5f1895323c2',
+      product_id: '',
+      merchant_data: '',
+      rectoken: 'a41087ed7ce6d8a3e659549d0e1978393ddc266',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042757973, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:43:04", "ipaddress_v4": "193.0.61.237", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|8000|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042757973, "bank_response_c
+  ode": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empt
+  y_visa", "card_category": null, "timeend": "26.11.2024 13:43:04", "ipaddress_v4": "193.0.61.237", "payment_method": "card", "is_**********": true}|8000|123456|444455|VISA|UA
+  H|5|444455XXXXXX1111|1396424|1396424_8234574aec8cdd02e21fdd3d3c3bcfad|approved|26.11.2024 13:43:03|832292336|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111
+  111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:43:53',
+      actual_currency: 'GBP',
+      order_id: 'test3135879179',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832292518,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: '40ef826aa2aa16acba43d5a70bddaa1841154439',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042758307, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:43:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042758307, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:43:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********3135879179|approved|26.11.2024 13:43:53|832292518|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:44:58',
+      actual_currency: 'GBP',
+      order_id: 'test8507756092',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832292772,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: 'a21732fbf70fd7b30a97c60ea72129acb6192bf3',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042758789, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:45:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042758789, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:45:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********8507756092|approved|26.11.2024 13:44:58|832292772|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:48:52',
+      actual_currency: 'GBP',
+      order_id: 'test2991089660',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832293751,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: 'df801e14cb53f8b90af9198a8aa7a67291bdf767',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760526, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:48:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760526, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:48:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********2991089660|approved|26.11.2024 13:48:52|832293751|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '413957824276',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '1000',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:49:16',
+      actual_currency: 'GBP',
+      order_id: '1396424_AIKvXbigRopodFFuULa1njUXWwEm8l5obzV1ZP4y',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '426504',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832293829,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '1000',
+      signature: '3e3665bf40cdc8e13e96d576aea9475b6c47c1eb',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760658, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:49:18", "ipaddress_v4": "127.2.2.1", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_test": true}',
+      response_signature_string: '**********|1000|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760658, "bank_response_c
+  ode": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empt
+  y_visa", "card_category": null, "timeend": "26.11.2024 13:49:18", "ipaddress_v4": "127.2.2.1", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_******
+  ****": true}|1000|426504|444455|VISA|GBP|7|444455XXXXXX6666|1396424|1396424_AIKvXbigRopodFFuULa1njUXWwEm8l5obzV1ZP4y|approved|26.11.2024 13:49:16|832293829|card|success|0|41
+  3957824276|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:49:58',
+      actual_currency: 'GBP',
+      order_id: 'test7277084350',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832293990,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: '7549b47261c59a4b367d5226794496156aec4b07',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760921, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:50:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042760921, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:50:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********7277084350|approved|26.11.2024 13:49:58|832293990|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:53:52',
+      actual_currency: 'GBP',
+      order_id: 'test676940378',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832294835,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: '1c451ac3610da85e4d2e61153a5973cc924bb648',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042762586, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:53:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042762586, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:53:56", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********676940378|approved|26.11.2024 13:53:52|832294835|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX1111',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '122099',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:54:29',
+      actual_currency: 'GBP',
+      order_id: '2520_1426394',
+      tran_type: 'purchase',
+      eci: '5',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832294976,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '122099',
+      signature: '3fe77a9dbe09c749c6412837837ddbc6b603ef8a',
+      product_id: '',
+      merchant_data: '2520;0;0',
+      rectoken: 'a41087ed7ce6d8a3e659549d0e1978393ddc266',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042762856, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:54:29", "ipaddress_v4": "193.218.145.68", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|122099|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042762856, "bank_response
+  _code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "em
+  pty_visa", "card_category": null, "timeend": "26.11.2024 13:54:29", "ipaddress_v4": "193.218.145.68", "payment_method": "card", "is_**********": true}|122099|123456|444455|V
+  ISA|GBP|5|444455XXXXXX1111|2520;0;0|1396424|2520_1426394|approved|26.11.2024 13:54:29|832294976|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '555566XXXXXX1111',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '3200',
+      response_description: '',
+      sender_email: '[email protected]',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:45:05',
+      actual_currency: 'GBP',
+      order_id: '2000024650#1732621505',
+      tran_type: 'purchase',
+      eci: '5',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832292806,
+      card_bin: 555566,
+      response_code: '',
+      card_type: 'MASTERCARD',
+      amount: '3200',
+      signature: '5521a97bbb9489d0ef733cd93619ec866668200e',
+      product_id: 'Fondy',
+      merchant_data: '[{"Fullname":"Test  User"}]',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": "{\\"customer_zip\\": \\"\\", \\"customer_name\\": \\"Test  User\\", \\"customer_s
+  tate\\": \\"\\", \\"customer_country\\": \\"UA\\", \\"phonemobile\\": \\"380967971542\\", \\"account\\": \\"[email protected]\\", \\"products_sku\\": \\"88847\\", \\"S
+  hipping total\\": \\"0.00\\", \\"order_id\\": \\"2000024650\\", \\"order_total\\": \\"32.00\\"}", "transaction_id": 2042763024, "bank_response_code": null, "bank_response_de
+  scription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "MASTERCARD", "card_product": null, "card_category": null,
+   "timeend": "26.11.2024 13:55:01", "ipaddress_v4": "46.96.85.194", "payment_method": "card", "version_3ds": 1, "is_test": true}',
+      response_signature_string: '**********|3200|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": "{\\"customer_zip\\": \\"\\", \\"customer_name\\": \
+  \"Test  User\\", \\"customer_state\\": \\"\\", \\"customer_country\\": \\"UA\\", \\"phonemobile\\": \\"380967971542\\", \\"account\\": \\"2**********.02**********email@email.com
+  \\", \\"products_sku\\": \\"88847\\", \\"Shipping total\\": \\"0.00\\", \\"order_id\\": \\"2000024650\\", \\"order_total\\": \\"32.00\\"}", "transaction_id": 2042763024, "ba
+  nk_response_code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "MASTERCARD", "c
+  ard_product": null, "card_category": null, "timeend": "26.11.2024 13:55:01", "ipaddress_v4": "46.96.85.194", "payment_method": "card", "version_3ds": 1, "is_**********": tru
+  e}|3200|123456|555566|MASTERCARD|GBP|5|555566XXXXXX1111|[{"Fullname":"Test  User"}]|1396424|2000024650#1732621505|approved|26.11.2024 13:45:05|832292806|card|Fondy|success|0
+  |111111111111|2**********.02**********email@email.com|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:54:59',
+      actual_currency: 'GBP',
+      order_id: 'test3538473753',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832295095,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: 'b750e6fce2d7622852b6a5ca0b9eedfa40e9ace9',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042763074, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:55:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042763074, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:55:02", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********3538473753|approved|26.11.2024 13:54:59|832295095|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX1111',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '4845',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:56:50',
+      actual_currency: 'GBP',
+      order_id: '2520_1435817',
+      tran_type: 'purchase',
+      eci: '5',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832295519,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '4845',
+      signature: '04ba285cfcc865e29793205b43e83bf4c23814a0',
+      product_id: '',
+      merchant_data: '2520;0;0',
+      rectoken: 'a41087ed7ce6d8a3e659549d0e1978393ddc266',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042763886, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:56:51", "ipaddress_v4": "193.218.145.68", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|4845|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042763886, "bank_response_c
+  ode": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empt
+  y_visa", "card_category": null, "timeend": "26.11.2024 13:56:51", "ipaddress_v4": "193.218.145.68", "payment_method": "card", "is_**********": true}|4845|123456|444455|VISA|
+  GBP|5|444455XXXXXX1111|2520;0;0|1396424|2520_1435817|approved|26.11.2024 13:56:50|832295519|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111111|purchase'    
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:58:52',
+      actual_currency: 'GBP',
+      order_id: 'test7663951113',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832295952,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: '0914d0263e4ac85f60b879f4ca9b3bd1271f44bd',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042764735, "bank_response_code": null, "bank_response_des
+  cription": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null
+  , "timeend": "26.11.2024 13:58:57", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042764735, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty
+  _visa", "card_category": null, "timeend": "26.11.2024 13:58:57", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP
+  |7|444455XXXXXX6666|1396424|**********7663951113|approved|26.11.2024 13:58:52|832295952|card|success|0|111111111111|purchase'
+    },
+    {
+      rrn: '111111111111',
+      masked_card: '444455XXXXXX6666',
+      sender_cell_phone: '',
+      sender_account: '',
+      currency: 'GBP',
+      fee: '',
+      reversal_amount: '0',
+      settlement_amount: '',
+      actual_amount: '100',
+      response_description: '',
+      sender_email: '',
+      order_status: 'approved',
+      response_status: 'success',
+      order_time: '26.11.2024 13:59:58',
+      actual_currency: 'GBP',
+      order_id: 'test7280639849',
+      tran_type: 'purchase',
+      eci: '7',
+      settlement_date: '',
+      payment_system: 'card',
+      approval_code: '123456',
+      merchant_id: 1396424,
+      settlement_currency: '',
+      payment_id: 832296220,
+      card_bin: 444455,
+      response_code: '',
+      card_type: 'VISA',
+      amount: '100',
+      signature: '964b8a388ba4c19d54bfff26c39aa19a2616b4ce',
+      product_id: '',
+      merchant_data: '',
+      rectoken: '',
+      rectoken_lifetime: '',
+      verification_status: '',
+      parent_order_id: '',
+      fee_oplata: '',
+      additional_info: '{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042765201, "bank_response_code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null, "timeend": "26.11.2024 14:00:01", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_test": true}',
+      response_signature_string: '**********|100|GBP|{"capture_status": null, "capture_amount": null, "reservation_data": null, "transaction_id": 2042765201, "bank_response_code": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": null, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null, "timeend": "26.11.2024 14:00:01", "ipaddress_v4": "54.154.216.60", "payment_method": "card", "is_**********": true}|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********7280639849|approved|26.11.2024 13:59:58|832296220|card|success|0|111111111111|purchase'
+    }
+  ]
+  ```
+  </TabItem>    
+</Tabs>
+
+### Reverse
+
+The Reverse operation allows you to refund payments made by your clients, effectively reversing the funds from a previously completed transaction. This is useful in scenarios such as cancellations or refunds.
+
+To use the `Reverse` function, you have to inform the `currency`, `amount`, and `order_id` to process the refund. The response from the `Reverse` function provides a `reverse_status` indicating the success of the reversal.
+
+The following example displays the code to use the `Reverse` function. In addition, it also presents the response from the `Reverse`function, which informs the `reverse_status`.
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript 
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test',
+      contentType: 'form'
+    }
+  )
+  const data = {
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000',
+    card_number: '4444555511116666',
+    cvv2: '333',
+    expiry_date: '1232',
+    preauth: 'Y'
+  }
+  fondy.PciDssOne(data).then(data => {
+    const reverseData = {
+      currency: data.currency,
+      amount: data.amount,
+      order_id: data.order_id
+    }
+    fondy.Reverse(reverseData).then(data => {
+      console.log(data)
+    })
+  })
+  ```
+  </TabItem>
+  <TabItem value="reverseresponse" label="Reverse response">
+  ```json 
+  {
+    reverse_status: 'approved',
+    order_id: '1396424_tmAv1gEhwwjser7tdMDtJ8FX50nMLWfWTpbpUFjJ',
+    response_description: '',
+    response_code: '',
+    merchant_id: '1396424',
+    response_status: 'success',
+    signature: '10d647dfeacbc01c19d29595115bd7163ac12118',
+    reverse_id: '',
+    reversal_amount: '1000',
+    transaction_id: '2042819075',
+    response_signature_string: '**********|1396424|1396424_tmAv1gEhwwjser7tdMDtJ8FX50nMLWfWTpbpUFjJ|success|1000|approved|2042819075'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Status
+
+The Status function lets you retrieve detailed information about a specific order, including its current status. Using the Fondy Node.js SDK, you can quickly access this information by providing the `order_id` of the order you want to query.
+
+The following example demonstrates how to use the `Status` function to retrieve information about an order. In addition, it also presents the response from the Status function.
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript 
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test',
+      contentType: 'form'
+    }
+  )
+  const data = {
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000',
+    card_number: '4444555511116666',
+    cvv2: '333',
+    expiry_date: '1232',
+    preauth: 'Y'
+  }
+  fondy.PciDssOne(data).then(data => {
+    const statusData = {
+      order_id: data.order_id
+    }
+    fondy.Status(statusData).then(data => {
+      console.log(data)
+    })
+  })
+  ```
+  </TabItem>
+  <TabItem value="statusresponse" label="Status response">
+  ```json 
+  {
+    rrn: '413957824276',
+    masked_card: '444455XXXXXX6666',
+    sender_cell_phone: '',
+    sender_account: '',
+    currency: 'GBP',
+    fee: '',
+    reversal_amount: '0',
+    settlement_amount: '0',
+    actual_amount: '1000',
+    response_description: '',
+    sender_email: '',
+    order_status: 'approved',
+    response_status: 'success',
+    order_time: '26.11.2024 16:19:46',
+    actual_currency: 'GBP',
+    order_id: '1396424_8FJRe9gzM2gqOkLn0QNn64f1I612mxQyD0YQH9WG',
+    tran_type: 'purchase',
+    eci: '7',
+    settlement_date: '',
+    payment_system: 'card',
+    approval_code: '426504',
+    merchant_id: '1396424',
+    settlement_currency: '',
+    payment_id: '832325837',
+    card_bin: '444455',
+    response_code: '',
+    card_type: 'VISA',
+    amount: '1000',
+    signature: '9bc49ef45bc8d1e93c3efeb441f817c75ed1e823',
+    product_id: '',
+    merchant_data: '',
+    rectoken: '',
+    rectoken_lifetime: '',
+    verification_status: '',
+    parent_order_id: '',
+    fee_oplata: '0',
+    additional_info: '{"capture_status": "hold", "capture_amount": 0.0, "reservation_data": null, "transaction_id": 2042821662, "bank_response_code": null, "bank_response_desc
+  ription": null, "client_fee": 0.0, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_visa", "card_category": null, 
+  "timeend": "26.11.2024 16:19:49", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_test": true}',
+    response_signature_string: '**********|1000|GBP|{"capture_status": "hold", "capture_amount": 0.0, "reservation_data": null, "transaction_id": 2042821662, "bank_response_co
+  de": null, "bank_response_description": null, "client_fee": 0.0, "settlement_fee": 0.0, "bank_name": null, "bank_country": null, "card_type": "VISA", "card_product": "empty_
+  visa", "card_category": null, "timeend": "26.11.2024 16:19:49", "ipaddress_v4": "186.209.205.205", "payment_method": "card", "version_3ds": 2, "flow": "frictionless", "is_**
+  ********": true}|1000|426504|444455|VISA|GBP|7|0|444455XXXXXX6666|1396424|1396424_8FJRe9gzM2gqOkLn0QNn64f1I612mxQyD0YQH9WG|approved|26.11.2024 16:19:46|832325837|card|succes
+  s|0|413957824276|0|purchase'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Subscription
+
+The Subscription function enables you to create recurring payments with the Fondy Node.js SDK. Once a subscription is created, Fondy automatically charges the customer based on the specified settings, ensuring a seamless recurring payment process.
+
+To start a subscription, you must use the `Subscription` function and specify the `recurring_data` field, which includes key information such as payment interval, amount, and start/end dates. After creating the subscription, the SDK returns a `checkout_url`. Redirect your customer to this URL so they can provide their payment details. After this step, Fondy will handle the future charges using the payment method provided by the customer.
+
+The `recurring_data` field allows you to configure the subscription settings:
+
+| Parameter    | Type    | Description                                                                                                                  |
+| ------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `every`      | Integer | The interval between payments. Defaults to `1`. Example: `1` represents one period (e.g., one month if `period` is "month"). |
+| `period`     | String  | Unit of time for the payment interval. Defaults to `month`. Accepted values: `day`, `week`, `month`, `year`.                 |
+| `amount`     | Integer | Payment amount in minor currency units (e.g., cents). Example: `10000` represents $100.00.                                   |
+| `start_time` | String  | Start date for recurring payments in ISO 8601 format (e.g., `2024-04-26`). Defaults to the current date.                     |
+| `end_time`   | String  | End date for recurring payments in ISO 8601 format. Defaults to a system-defined end date.                                   |
+
+In case you need to stop or resume a subscription, you can use the `SubscriptionActions` function. To control the subscription, you have to specify the `action` parameter:
+
+| Action  | Description                                                      |
+| ------- | ---------------------------------------------------------------- |
+| `start` | Resumes the subscription, scheduling future payments.            |
+| `stop`  | Halts the subscription, canceling any future scheduled payments. |
+
+The following example demonstrates how to create a subscription and stop it using the `SubscriptionActions` function. It also presents the response after creating and stopping the subscription.
+
+<Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript 
+  'use strict';
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+  import * as util from 'cloudipsp-node-js-sdk/lib/util.js';
+
+  // Create a delay function
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const fondy = new CloudIpsp({
+      merchantId: 1396424,
+      secretKey: 'test'
+  });
+
+  const date = new Date().toISOString().slice(0, 10);
+  const OrderId = util.generateOrderId();
+
+  const data = {
+      order_desc: 'test order',
+      order_id: OrderId,
+      currency: 'GBP',
+      amount: 1000,
+      recurring_data: {
+          every: 5,
+          period: 'day',
+          amount: 1000,
+          start_time: date,
+          state: 'y',
+          Readonly: 'n'
+      }
+  };
+
+  (async () => {
+      try {
+          // Create a subscription
+          const subscriptionResponse = await fondy.Subscription(data);
+          console.log(subscriptionResponse);
+
+          // Wait for 30 seconds
+          console.log('Waiting for 30 seconds before executing SubscriptionActions...');
+          await delay(30000);
+
+          // Execute SubscriptionActions
+          const StopData = {
+              order_id: OrderId,
+              action: 'stop'
+          };
+          const stopResponse = await fondy.SubscriptionActions(StopData);
+          console.log(stopResponse);
+      } catch (error) {
+          console.error(error);
+      }
+  })();
+  ```
+  </TabItem>
+  <TabItem value="subscriptionresponse" label="Subscription response">
+  ```json 
+  {
+    checkout_url: 'https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=a6add77d64c6470809917b0be55d6f1329428ec7',    
+    payment_id: '832376082'
+  }
+  ```
+
+  ```json SubscriptionActions response
+  {
+    response_status: 'success',
+    merchant_id: 1396424,
+    order_id: 'xvAuCbdo30cm3NoQvncHArzd2jIM5O9doKQCdsXD',
+    status: 'disabled',
+    signature: '006da2955b23c45ff5cfbe82f13d0654fa734a17'
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Transaction List by Order
+
+The TransactionList function enables you to retrieve all transactions associated with a specific order using the Fondy Node.js SDK. This is particularly useful for tracking multiple transactions, such as payments and reversals related to a single order.
+
+To use the `TransactionList` function, you must specify the `order_id` of the order you want to query. The SDK returns a list of all transactions related to the specified order, including details such as transaction types, amounts, and statuses.
+
+The following example demonstrates how to retrieve the transaction list for an existing order. It also presents the response from the `TransactionList` function
+
+  <Tabs>
+  <TabItem value="javascript" label="Javascript" default>
+  ```javascript 
+  'use strict'
+
+  import CloudIpsp from 'cloudipsp-node-js-sdk';
+
+  const fondy = new CloudIpsp(
+    {
+      merchantId: 1396424,
+      secretKey: 'test',
+      contentType: 'json'
+    }
+  )
+  const data = {
+    order_desc: 'test order',
+    currency: 'GBP',
+    amount: '1000',
+    card_number: '4444555511116666',
+    cvv2: '333',
+    expiry_date: '1232',
+    preauth: 'Y'
+  }
+  fondy.PciDssOne(data).then(data => {
+    const listData = {
+      order_id: data.order_id
+    }
+    fondy.TransactionList(listData).then(data => {
+      console.log(data)
+    })
+  })
+  ```
+  </TabItem>  
+  <TabItem value="transactionlistresponse" label="TransactionList response">
+  ```json 
+  [
+    {
+      id: 2042916185,
+      payment_id: 832376881,
+      parent_tran_id: null,
+      timestart: '26.11.2024 20:08:39',
+      timeend: '26.11.2024 20:08:41',
+      duration: 2466,
+      merchant_id: 1396424,
+      tran_type: 'purchase',
+      sender_country: 'UK',
+      sender_email: null,
+      amount: 10,
+      currency: 'GBP',
+      actual_amount: 10,
+      actual_currency: 'GBP',
+      expire_month: '12',
+      expire_year: '2032',
+      cavv: null,
+      eci: '7',
+      md: null,
+      veres_status: null,
+      pares_status: null,
+      ipaddress_v4: '186.209.205.205',
+      payment_system: 'card',
+      card_last_digits: '6666',
+      card_bin: '444455',
+      reversal_amount: 0,
+      capture_amount: null,
+      sender_approval_code: '426504',
+      sender_rrn: '413957824276',
+      capture_status: 'hold',
+      transaction_status: 'approved',
+      response_code: null,
+      settlement_amount: 0,
+      settlement_currency: null,
+      settlement_date: null,
+      fee: null,
+      preauth: true,
+      settlement_status: null,
+      rectoken: null,
+      istest: true,
+      client_fee: 0,
+      ip_country: 'GB',
+      verification_code: null,
+      receiver_rrn: null,
+      receiver_approval_code: null,
+      receiver_country: null,
+      protocol: 'checkout_com',
+      rectoken_lifetime: null,
+      order_id: '1396424_mrpar7WpsT1vjCVYU0aSTowpZzRPuU0jfxy8OU6H',
+      binmanagement_enabled: 'True',
+      masked_card: '444455XXXXXX6666',
+      card_type: 'VISA'
+    }
+  ]
+  ```
+  </TabItem>
+</Tabs>
+

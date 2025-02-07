@@ -1,0 +1,76 @@
+---
+title: "One-Click Payments"
+description: "Integrate Fondy's payment processing capabilities into your website with the One-Click Payments."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+One-click payment eliminates the need for customers to re-enter credit card details for repeat purchases, providing a seamless and efficient checkout experience. After the first payment, the system generates a unique token linked to the customer's card, enabling merchants to securely process future transactions without storing sensitive card details.
+
+<Image src="/media/docs/gateway/one-click-payments2.png"/>
+
+## Key Benefits
+
+* **Enhanced Customer Experience**: Simplifies repeat purchases by securely saving customers' card details using tokenization.
+* **Increased Conversion Rates**: Reduces friction at checkout, minimizing cart abandonment.
+* **Secure Payment Processing**: Uses encryption and tokenization to protect sensitive card data.
+
+## Setting Up One-Click Payments
+
+To implement one-click payments, you can use the [Embedded Custom Checkout](/gateway/embedded/embedded-custom-checkout) or the [JavaScript SDK](/gateway/hosted-checkout/front-end/javascript). These tools allow you to design and host a customized payment form on your website.
+
+The one-click payment is composed of two flows:
+
+* **First-time Payment Process (Token Creation)**
+* **Subsequent One-click Payment Process (Tokenized Payment)**
+
+### First-time Payment Process (Token Creation)
+
+This process occurs when the customer pays with Fondy for the first time. The payment card details are tokenized during this step, allowing them to be used in future payments. The following diagrams describe the process.
+
+<Image src="/media/docs/gateway/one-click-payments-diagram-2.png"/>
+
+
+The following steps summarize the process to perform the first payment and generate a token:
+
+1. The Merchant sends the order details to Fondy to create a new order.
+
+2. Fondy receives the order data, stores it, and generates a hash (unique identifier for the transaction). The hash is returned to the Merchant, who saves it for future reference.
+
+3. The Merchant starts the first-time checkout process by loading the payment form on the Customer Browser.
+
+4. The customer enters their payment details on the checkout page, including the card number, CVV2, and expiry date.
+
+5. The Fondy JavaScript SDK is loaded on the Customer Browser to handle and submit payment data securely.
+
+6. The Customer Browser sends a payment request with the card details to Fondy using the JavaScript SDK.
+
+7. Fondy encrypts and stores the card details and then processes the payment. It generates a token (representing the card) and a masked PAN (partial card number) for secure storage if approved.
+
+8. If the payment was successful, a Fondy JavaScript SDK `onSuccess` callback with payment details, and the token is triggered on the customer browser. In addition, the Merchant also receives a server-to-server callback from Fondy with approved payment details and the token.
+
+9. The Customer Browser displays a thank you page confirming the successful completion of the payment.
+
+### Subsequent One-Click Payment Process (Tokenized Payment)
+
+For future purchases, the stored token allows the customer to complete a transaction with Fondy with minimal input, typically only requiring their CVV2. The following diagram describes the process:
+
+<Image src="/media/docs/gateway/one-click-payments-diagram-1.png" width="500px"/>
+
+The following steps summarize the process to perform payments using a token:
+
+1. The Merchant initiates a one-click payment using the previously saved token.
+
+2. The Customer Browser displays the masked card number and prompts the customer to enter only their CVV2 for verification.
+
+3. The Fondy JavaScript library is loaded on the Customer Browser to handle the payment submission.
+
+4. The Customer Browser submits a payment request using the saved token and CVV2 through the Fondy JavaScript SDK.
+
+5. Fondy receives the tokenized payment request and processes the payment.
+
+6. If the payment is approved, the Fondy JavaScript SDK triggers the `onSuccess` callback on the Customer Browser, confirming the successful payment. In addition, a successful server callback is also sent to the Merchant from Fondy with the approved payment details.
+
+7. The Customer Browser displays a thank you page to confirm the payment completion.

@@ -1,0 +1,119 @@
+---
+title: "PHP"
+description: "Integrate Fondy's payment processing capabilities into your PHP applications."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The PHP SDK for Fondy Gateway simplifies payment processing integration into your PHP applications. It provides an easy-to-use interface for managing payments, including checkout flows, supporting multiple currencies, and payment methods. The SDK allows developers to quickly set up and process transactions through Fondy Gateway's payment solution.
+
+## Requirements
+
+Before you start using the PHP SDK, ensure your environment meets the following requirements:
+
+* PHP version 7.2 or higher.
+* Composer (for easy dependency management). For more information on setting up Composer, visit [Composer's Installation Guide](https://getcomposer.org/doc/00-intro.md).
+* An active merchant account with Fondy Gateway.
+
+## Installation
+
+You can install the SDK into your project using Composer or manually.
+
+### Using Composer
+
+Composer is a dependency management tool for PHP. To install the Fondy Gateway PHP SDK via Composer, run the following command in your project's root directory:
+
+
+  ```bash bash
+  composer require cloudipsp/php-sdk-v2
+  ```
+
+
+### Manual Installation
+
+Alternatively, you can manually install the SDK by cloning the repository:
+
+
+  ```bash bash
+  git clone -b master https://github.com/cloudipsp/php-sdk-v2.git
+  ```
+
+
+Once cloned, include the SDK in your project by adding the following line to your PHP script:
+
+
+  ```php php
+  <?php
+  require '/<path-to-sdk>/autoload.php';
+  ```
+
+
+Replace the `path-to-sdk`, indicating where the SDK is available in your machine.
+
+## How to Use the SDK
+
+To start using the SDK, you need to configure it with your merchant ID and secret key. This will authenticate your requests to Fondy Gateway.
+
+
+  ```php php
+  require 'vendor/autoload.php';
+
+  // Set your merchant ID and secret key
+  \Cloudipsp\Configuration::setMerchantId(1396424);
+  \Cloudipsp\Configuration::setSecretKey('your-secret-key');
+  ```
+
+
+Once the SDK is set up, you can generate a checkout URL to process payments. The following example demonstrates how to create a simple checkout request:
+
+
+  ```php php
+  $checkoutData = [
+      'currency' => 'USD', // Set the currency for the transaction
+      'amount' => 1000,     // Amount in smallest units (e.g., cents)
+  ];
+
+  $data = \Cloudipsp\Checkout::url($checkoutData);
+  $url = $data->getUrl();  // Get the URL to redirect the user for payment
+
+  // To redirect the user to the payment page:
+  header('Location: ' . $url);
+  exit;
+  ```
+
+
+This code snippet creates a checkout URL that the user can visit to complete the payment.
+
+## Usage Examples
+
+Fondy provides a group of examples you can run on your machine to have a better understanding of how to use the PHP SDK. For testing purposes, you can run the SDK examples using PHP's built-in web server. Navigate to the directory where you installed the SDK and run:
+
+
+  ```bash bash
+  cd ~/php-sdk-v2
+  php -S localhost:8000
+  ```
+
+
+You can then open `http://localhost:8000` in your browser to test the examples.
+
+The following table lists and describes all examples available on the [GitHub repository](https://github.com/cloudipsp/php-sdk-v2/tree/master/examples):
+
+| Example                                                                                                           | Description                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [**form.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Checkout/form.php)                    | Uses the `Checkout::form()` method to generate an HTML payment form with minimal payment data. The response includes the generated form string and displays the request data. The form is rendered as HTML, which can be embedded into a webpage.                                                                              |
+| [**url.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Checkout/url.php)                      | Uses the `Checkout::url()` method to generate a payment URL for a transaction. The response includes the payment URL, which can be used to redirect the user to the payment page.                                                                                                                                              |
+| [**capture.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Order/capture.php)                 | Uses the `Order::capture()` method to capture a pre-authorized payment. The response includes the status of the capture request and confirms whether the payment was successfully captured. In addition, it also checks if the original order was approved before initiating the capture.                                      |
+| [**list.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Order/list.php)                       | Retrieves the transaction list using `Order::transactionList()`. It checks if the transaction is captured and provides a list of all transactions related to the order ID.                                                                                                                                                     |
+| [**reverse.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Order/reverse.php)                 | Uses the `Order::reverse()` method to reverse (refund) the payment. The response includes the status of the refund request and confirms whether the payment was successfully refunded.                                                                                                                                         |
+| [**status.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Order/status.php)                   | Retrieves the status of a previously created order using `Order::status()`. The response includes the status of the payment, with an indication of whether the order is valid or not.                                                                                                                                          |
+| [**non3ds.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Pcidss/non3ds.php)                  | Uses the `Pcidss::start()` method to create a payment order without 3D Secure. The response includes the payment data and checks whether the card used is 3D Secure-enabled.                                                                                                                                                   |
+| [**with3ds.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Pcidss/with3ds.php)                | Uses the `Pcidss::start()` method to create a payment order with a 3D Secure card. After the order is created, the example generates an HTML form to redirect the customer to the ACS (Access Control Server) for 3D Secure authentication. The response includes the generated form and URL for the 3D Secure authentication. |
+| [**3dsresult.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Pcidss/3dsresult.php)            | Submits the 3D Secure result using the `Pcidss::submit()` method. The response includes the result of the 3D Secure authentication (e.g., approval status) and checks if the card passed the 3D Secure verification.                                                                                                           |
+| [**form.php (verification)**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Verification/form.php) | Generates a payment verification form using the `Verification::form()` method. The example uses minimal payment data and returns the HTML form for verification with the specified `verification_type`.                                                                                                                        |
+| [**url.php (verification)**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Verification/url.php)   | Generates a payment verification URL using the `Verification::url()` method. Use the URL to redirect the user to a page where they can provide the card information to be validated.                                                                                                                                           |
+| [**url.php (subscription)**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Subscription/url.php)   | Generates a subscription payment URL using the `Subscription::url()` method. It allows for recurring payments with a specified subscription cycle. The response includes the generated subscription URL, which can be used to redirect users to provide the payment information and start the subscription.                    |
+| [**cancel.php**](https://github.com/cloudipsp/php-sdk-v2/blob/master/examples/Subscription/cancel.php)            | Stops a subscription using the `Subscription::stop()` method after creating a recurring payment. The example demonstrates how to cancel an active subscription. The response includes the status of the cancellation request and the subscription order ID.                                                                    |
+

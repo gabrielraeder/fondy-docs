@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_extend "http://ns.adobe.com/Extensibility/1.0/">
+	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
+	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
+	<!ENTITY ns_vars "http://ns.adobe.com/Variables/1.0/">
+	<!ENTITY ns_imrep "http://ns.adobe.com/ImageReplacement/1.0/">
+	<!ENTITY ns_sfw "http://ns.adobe.com/SaveForWeb/1.0/">
+	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
+	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
+]>
+<svg version="1.1" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#205FB2;}
+	.st1{fill:#FFFFFF;}
+</style>
+<metadata>
+	<sfw  xmlns="&ns_sfw;">
+		<slices></slices>
+		<sliceSourceBounds  bottomLeftOrigin="true" height="510" width="511.3" x="0.6" y="1.4"></sliceSourceBounds>
+	</sfw>
+</metadata>
+<rect x="0.6" y="0.6" class="st0" width="511.3" height="510"/>
+<g>
+	<g>
+		<polygon class="st1" points="275.5,207.8 205.5,133.9 66.5,133.9 143.3,207.8 		"/>
+		<polygon class="st1" points="143.3,305.5 66.5,379.5 205.5,379.5 275.5,305.5 		"/>
+	</g>
+	<polygon class="st1" points="108.1,250.4 84.2,250.4 84.2,221.7 67.9,221.7 67.9,291.7 84.2,291.7 84.2,265.2 108.1,265.2 
+		108.1,291.7 124.4,291.7 124.4,221.7 108.1,221.7 	"/>
+	<polygon class="st1" points="216.7,221.7 200.3,221.7 200.3,291.7 242,291.7 242,276.9 216.7,276.9 	"/>
+	<rect x="249.6" y="221.7" class="st1" width="16.6" height="70.1"/>
+	<polygon class="st1" points="291.9,236.4 322.7,236.4 322.7,221.7 275.5,221.7 275.5,291.7 291.9,291.7 291.9,265.2 317.4,265.2 
+		317.4,250.4 291.9,250.4 	"/>
+	<path class="st1" d="M153.4,221.7l-23.7,70.1h16.8l4-12.7h23.6l4,12.7H195l-23.7-70.1L153.4,221.7L153.4,221.7z M154.9,265.2
+		l7.5-23.7l7.5,23.7H154.9z"/>
+	<path class="st1" d="M443.9,221.7h-18.6l-13.2,21.2l-13.2-21.2h-18.6l22.9,35l-21.1,32.4l-22.8-67.4h-17.9l-23.7,70.1h16.8l4-12.7
+		h23.6l4,12.7h32.8l13.2-21.2l13.2,21.2h18.6l-22.9-35L443.9,221.7z M342.9,265.2l7.5-23.7l7.5,23.7H342.9z"/>
+	<polygon class="st1" points="308.1,133.9 264.7,178.9 292.1,207.8 370.3,207.8 447.1,133.9 	"/>
+	<polygon class="st1" points="370.3,305.5 292.1,305.5 264.7,334.5 308.1,379.5 447.1,379.5 	"/>
+</g>
+</svg>

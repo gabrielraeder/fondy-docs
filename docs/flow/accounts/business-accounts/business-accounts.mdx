@@ -1,0 +1,56 @@
+---
+title: "Business Accounts"
+description: "Explore Fondy's Virtual IBAN account types - Standard and Master and Wallet accounts - and learn how each solution supports different business needs."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The **Accounts API** provides a robust framework for managing Virtual IBAN accounts, empowering clients to send and receive funds seamlessly. This API enables users to control and monitor their financial transactions efficiently, enhancing the overall experience of managing digital finances.
+
+## Account Types
+
+The **Accounts API** offers two distinct account types, tailored to meet specific financial needs. Whether you're a small business looking for simplicity or an enterprise seeking advanced financial management, our account options are designed to support your requirements.
+
+<Image src="/media/docs/flow/business-accounts/account-types.png" alt="Account Types" />
+
+### Standard Account
+
+The **Standard Account** is a powerful solution for medium-sized enterprises, featuring a dedicated Virtual IBAN for seamless transactions. It is ideal for various financial management needs, including:
+
+<CardList cols={3}>
+  <Card title="Managing revenue and expenses" icon="money" />
+  <Card title="Paying suppliers" icon="hand-coins" />
+  <Card title="Settling accounts and transferring funds" icon="wallet" />
+</CardList>
+
+### Master & Wallet Account
+
+<Image src="/media/docs/flow/business-accounts/master-wallet-account.png" alt="Master & Wallet Account" />
+
+The **Master and Wallet Account** provides a sophisticated solution tailored for businesses, marketplaces, and platforms. It includes a **Master Account** with a unique Virtual IBAN that oversees multiple **Wallets**, each linked to a unique Business Reference. This setup ensures specific fund allocation to individual wallets.
+
+Key benefits include:
+
+<CardList cols={3}>
+  <Card title="Advanced fund segregation" icon="users-three" />
+  <Card title="Transaction reconciliation" icon="receipt" />
+  <Card title="Efficient fund distribution" icon="piggy-bank" />
+</CardList>
+
+## Comparing Account Types: Standard vs. Master & Wallet Accounts
+
+The following table highlights the key features and differences between the **Standard Account**, **Master Account**, and **Wallet Account**.
+
+| **Feature**                            | **Standard Account**          | **Master Account**               | **Wallet Account**                                                                    |
+| -------------------------------------- | ----------------------------- | -------------------------------- | ------------------------------------------------------------------------------------- |
+| **Send payments**                      | Yes                           | No                               | Yes                                                                                   |
+| **Receive payments**                   | Yes                           | No                               | Yes (requires wallet's Business Reference for third-party payments)                   |
+| **Balance**                            | Yes (unique IBAN per account) | Yes (unique IBAN per account)    | No (shared IBAN for wallets under the same Master Account)                            |
+| **Transaction visibility**             | Per-account balance           | The sum of all wallets' balances | Per-wallet balance                                                                    |
+| **Default wallet - exceptional flows** | N/A                           | N/A                              | Yes (payments without a wallet's Business Reference are routed to the Default Wallet) |
+
+## Open an Account
+
+Ready to open an account? Visit our [registration page](https://fondy.io/gb/registration/).

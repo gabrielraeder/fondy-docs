@@ -1,0 +1,196 @@
+---
+title: "How to Integrate Fondy API"
+description: "Learn how to securely integrate with Fondy's API using AES/RSA encryption, including step-by-step guides for request encryption, digital signing, and response decryption."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+All interactions with the Fondy API are done through the Encrypted Endpoint. With it, you can perform different operations, such as creating a profile or making a payout. This API mandates encrypting all requests and responses to ensure data security and integrity. This is achieved using a combination of AES and RSA encryption, along with digital signatures. The core workflow is as follows:
+
+1. **Encryption**: Payloads are encrypted using dynamically generated AES keys. These keys are further encrypted with Fondy's RSA public key, ensuring secure transmission.
+2. **Digital Signing**: Requests are digitally signed using the client's private key to prevent tampering and to authenticate the sender.
+3. **Send Request**: Create the encrypted request object and perform the request to the Encrypted endpoint
+4. **Decryption**: Encrypted responses are processed by decrypting the AES key with the client's private RSA key and decrypting the payload using the decrypted AES key.
+
+See more details in the following sections.
+
+## Step 1: Encryption
+
+Before sending the request to the Fondy API, you must encrypt it. Follow the steps below to do so:
+
+1. First, Generate an `AES` key using a cryptographic library that generates a 128-bit `AES` key. This key will later be used to encrypt the request payload.
+
+```java 
+  KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+  keyGen.init(128);
+  SecretKey aesKey = keyGen.generateKey();
+```
+
+2. Encrypt the `AES` key using Fondy's `RSA` public key.
+
+```java
+  Cipher rsaCipher = Cipher.getInstance("RSA");
+  rsaCipher.init(Cipher.ENCRYPT_MODE, fondyPublicKey);
+  byte[] encryptedAESKey = rsaCipher.doFinal(aesKey.getEncoded());
+  String base64EncryptedAESKey = Base64.getEncoder().encodeToString(encryptedAESKey);
+```
+
+   This ensures Fondy's private key can only be decrypted by the `AES` key.
+
+   <Callout type="info" title="Fondy's RSA Public Key"  >
+     The RSA Public Key is provided by Fondy during the onboading.
+   </Callout>
+
+3. Encrypt the JSON payload using the `AES` key in `AES cipher` mode.
+
+```java
+  Cipher aesCipher = Cipher.getInstance("AES");
+  aesCipher.init(Cipher.ENCRYPT_MODE, aesKey);
+  byte[] encryptedPayload = aesCipher.doFinal(payload.getBytes());
+  String base64EncryptedPayload = Base64.getEncoder().encodeToString(encryptedPayload);
+```
+
+4. Combine the Encrypted Components, concatenating the `Base64-encoded AES` key and payload with the delimiter `"-----"`, and `Base64` encode the resulting string.
+
+```java
+  String combined = base64EncryptedAESKey + "-----" + base64EncryptedPayload;
+  String finalEncryptedRequest = Base64.getEncoder().encodeToString(combined.getBytes());
+```
+
+## Step 2: Digital Signing
+
+Create a digital signature using your private RSA key to ensure data integrity and authenticity. Combine the following Base64-encoded components:
+
+* `encrypted_url`
+* `method` (not Base64-encoded)
+* `encrypted_payload`
+* `encrypted_user`
+
+Then, sign the combined string using your private `RSA` key and the `SHA256WithRSA` algorithm. See the code block below for an example:
+
+```java
+  String stringToSign = encObject.encrypted_url + encObject.method + encObject.encrypted_payload + encObject.encrypted_user;
+
+          Signature sig = Signature.getInstance("SHA256WithRSA");
+          sig.initSign(getPrivateKey());
+          sig.update(stringToSign.getBytes());
+          byte[] signature = sig.sign();
+
+          return Base64.getEncoder().encodeToString(signature);
+```
+
+## Step 3: Send Request
+
+First, build the encrypted request object to send the operation request to the Fondy API. See the code block below to see how it is formatted:
+
+```json
+{
+    "encrypted_payload": "BASE64_ENCRYPTED_PAYLOAD",
+    "encrypted_url": "BASE64_ENCRYPTED_URL",
+    "encrypted_user": "BASE64_ENCRYPTED_USER",
+    "method": "POST",
+      "signature": "BASE64_SIGNATURE"
+}
+```
+
+Once your encrypted object is created, the request is sent as a POST request to the Encrypted endpoint. The following code block provides an example of a request in a Java application.
+
+```java
+  WebClient webClient = WebClient.create("https://api.fondyflow.io");
+
+  EncryptedObject encryptedRequest = buildEncryptedRequest(payload, url, "POST", user);
+
+  EncryptedObject response = webClient.post()
+      .url("/clientapi/encrypted/v1/{clientRef}")
+      .contentType(MediaType.APPLICATION_JSON)
+      .body(Mono.just(encryptedRequest), EncryptedObject.class)
+      .retrieve()
+      .bodyToMono(EncryptedObject.class)
+      .block();
+```
+
+<Callout type="info" title="Path Parameters" >
+  Change `{clientRef}` with the actual client reference number.
+</Callout>
+
+## Step 4: Decryption
+
+Once you complete the request, the response will be encrypted. See an example in nthe code block below:
+
+```json
+  {
+      "encrypted_payload": encrypted_payload,
+      "encrypted_url": null,
+      "method": null,
+      "nonce": null
+  }
+```
+
+To decrypt a response, follow the steps below:
+
+1. `Base64` decode the encrypted\_payload.
+2. Split the string into `AES` key and payload.
+3. Decrypt the `AES` key using the private `RSA` key.
+4. Decrypt the payload using the `AES` key.
+5. Convert the decrypted payload to a readable string.
+
+The code block below exemplifies this process in a Java application.
+
+```java
+private static String decodeString(String encryptedPayload) throws Exception {
+    // Step 1: Base64 decode the encrypted_payload
+    String decoded = new String(Base64.getDecoder().decode(encryptedPayload));
+
+    // Step 2: Split the string into AES key and payload
+    String[] parts = decoded.split(DELIMITER);
+    byte[] rsaEncryptedAESKey = Base64.getDecoder().decode(parts[0]);
+    byte[] aesEncryptedPayload = Base64.getDecoder().decode(parts[1]);
+
+    // Step 3: Decrypt the AES key using the private RSA key
+    Cipher rsaCipher = Cipher.getInstance("RSA");
+    rsaCipher.init(Cipher.DECRYPT_MODE, getPrivateKey());
+    byte[] aesKeyBytes = rsaCipher.doFinal(rsaEncryptedAESKey);
+    SecretKeySpec aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+
+    // Step 4: Decrypt the payload using the AES key
+    Cipher aesCipher = Cipher.getInstance("AES");
+    aesCipher.init(Cipher.DECRYPT_MODE, aesKey);
+    byte[] decryptedBytes = aesCipher.doFinal(aesEncryptedPayload);
+
+    // Step 5: Convert the decrypted payload to a readable string
+    return new String(decryptedBytes);
+}
+```
+
+## What's next?
+
+The API operations are grouped into the following categories to help you easily locate and implement the functionality you need:
+
+<CardList cols={2}>
+  <Card
+    title="Core Operations"
+    link="/flow/fondy-flow-api/core-operations/core-operations"
+    icon="gear"
+    description="Core operations are the fundamental actions available in the API. These include account management and payment handling."
+  />
+  <Card
+    title="Split Accounts"
+    link="/flow/fondy-flow-api/split-accounts-operations/split-accounts-operations"
+    icon="arrows-out-line-horizontal"
+    description="The Split Accounts operations provide a powerful way to manage multiple wallets and their transactions within a single account structure"
+  />
+  <Card
+    title="Identity Operations"
+    link="/flow/fondy-flow-api/identity/identity"
+    icon="identification-card"
+    description="These operations allow you to create, retrieve, and manage client identity profiles."
+  />
+  <Card
+    title="Compliance"
+    link="/flow/fondy-flow-api/compliance/compliance"
+    icon="shield-check"
+    description="You can create and manage compliance-related identity profiles."
+  />
+</CardList>

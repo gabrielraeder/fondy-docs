@@ -1,0 +1,229 @@
+---
+title: "Card Verification"
+description: "Learn how to verify a card's validity and receive a token for future transactions without requiring the cardholder's presence."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Fondy Gateway API's card verification feature enables merchants to verify a card's validity and receive a token for future transactions without requiring the cardholder's presence. This feature ensures cards are valid and not blocked and can streamline recurring payments or one-click transactions. Verification is performed by temporarily debiting a small amount from the card and reversing it automatically.
+
+For recurring payments, you can use the card verification feature to verify a card before saving the token for future debits. In the case of one-click transactions, you can ensure card validity and improve the user experience.
+
+## Verifying a Card
+
+Card verification is an optional process that can be triggered when performing a regular payment, tokenizing a card, or creating a recurring payment. To trigger the card verification process, you must set `verification = Y` when using one of the following parameters:
+
+* [Card Verification](/reference/gateway/card-verification)
+* [Accept Purchase (Fondy Checkout)](/reference/gateway/accept-purchase-fondy-checkout)
+* [Accept Purchase (Payment Token)](/reference/gateway/accept-purchase-payment-token)
+* [Recurring Payment](/reference/gateway/recurring-payment)
+
+To verify a card, you must follow the steps:
+
+1. First, choose the endpoint to use depending on the operation you want to perform.
+2. Generate the signature with the process information. For more information on how to generate the signature, access the [Signatures](/gateway/signatures) page.
+3. Send the request to Fondy Gateway API. If you use the [Card Verification](/reference/gateway/card-verification) endpoint for a successful request, you will receive a `response.checkout_url` parameter. The following code block presents an example of a successful response.
+
+
+  ```json 
+  {
+    "response": {
+      "checkout_url": "https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=45e32baec75283b3d5100e2423a0ee71f0ac554d",
+      "payment_id": "832182211",
+      "response_status": "success"
+    }
+  }
+  ```
+
+
+<Callout type="info" title="Recurring Payments">
+  When setting up a recurring payment, you can validate the card and simultaneously obtain a `rectoken` to use for future payments, eliminating the need to ask the user for payment information again. To achieve this, in addition to sending `verification = Y`, you must also include `required_rectoken = Y` in your request. This will ensure that the card is validated, and the `rectoken` is returned for use in future transactions.
+</Callout>
+
+4. Redirect the user to the URL specified by the `checkout_url`, where your customer will inform the card data.
+5. After the user finishes the process and submits the card data, Fondy will validate the card and send the result to you using [callbacks](/gateway/direct-integration/callbacks). The following code block shows an example of a callback:
+
+  ```json 
+  {
+    "response": {
+      "rrn": "",
+      "masked_card": "",
+      "sender_cell_phone": "",
+      "response_signature_string": "**********1000USD1000530159USDTest1test7926651365approved13.01.2014 15:10:472100Visa/MC",
+      "response_status": "",
+      "currency": "USD",
+      "fee": "",
+      "reversal_amount": "",
+      "settlement_amount": "",
+      "actual_amount": "1000",
+      "order_status": "approved",
+      "response_description": "",
+      "order_time": "13.01.2014 15:10:47",
+      "actual_currency": "USD",
+      "order_id": "test7926651365",
+      "tran_type": "",
+      "eci": "",
+      "settlement_date": "",
+      "payment_system": "Visa/MC",
+      "approval_code": "530159",
+      "merchant_id": "1",
+      "settlement_currency": "",
+      "payment_id": "2100",
+      "card_bin": "",
+      "response_code": "",
+      "card_type": "",
+      "amount": "1000",
+      "sender_email": "",
+      "signature": "3a587a6908e1b4119729e6b00f9f055a927728fd",
+      "product_id": ""
+    }
+  }
+  ```
+
+### Example Requests and Responses
+
+You can use the following protocols to validate a card:
+
+* URL-encoded form
+* XML
+* JSON
+
+Fondy will respond using the same format you sent on the request. Below are examples of requests and final responses shared through callbacks for all formats.
+
+**JSON Example**
+
+<Tabs>
+  <TabItem value="request" label="Request" default>
+    ```json
+    {
+      "request":{
+        "order_id":"test8037875286",
+        "order_desc":"Test payment",
+        "currency":"USD",
+        "amount":"100",
+        "verification":"Y",
+        "signature":"07bc309047a56275f8d89ae222e2af0ceb94fe79",
+        "merchant_id":"1"
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem value="response" label="Callback Response">
+    ```json
+    {
+      "response": {
+        "rrn": "",
+        "masked_card": "",
+        "sender_cell_phone": "",
+        "response_signature_string": "**********1000USD1000530159USDTest1test7926651365approved13.01.2014 15:10:472100Visa/MC",
+        "response_status": "",
+        "currency": "USD",
+        "fee": "",
+        "reversal_amount": "",
+        "settlement_amount": "",
+        "actual_amount": "1000",
+        "order_status": "approved",
+        "response_description": "",
+        "order_time": "13.01.2014 15:10:47",
+        "actual_currency": "USD",
+        "order_id": "test7926651365",
+        "tran_type": "",
+        "eci": "",
+        "settlement_date": "",
+        "payment_system": "Visa/MC",
+        "approval_code": "530159",
+        "merchant_id": "1",
+        "settlement_currency": "",
+        "payment_id": "2100",
+        "card_bin": "",
+        "response_code": "",
+        "card_type": "",
+        "amount": "1000",
+        "sender_email": "",
+        "signature": "3a587a6908e1b4119729e6b00f9f055a927728fd",
+        "product_id": ""
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+**XML Example**
+
+<Tabs>
+  <TabItem value="request" label="Request" default>
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <request>
+      <response_url>https://pay.fondy.eu/responsepage/</response_url>
+      <order_id>test622138965</order_id>
+      <order_desc>Test payment</order_desc>
+      <currency>USD</currency>
+      <amount>100</amount>
+      <verification>Y</verification>
+      <signature>fad685643ed5375d6d08c27f4f600e848549b0c5</signature>
+      <merchant_id>1</merchant_id>
+    </request>
+    ```
+  </TabItem>
+  <TabItem value="response" label="Callback Response">
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <response>
+      <rrn>401311593803</rrn>
+      <masked_card>444455XXXXXX1111</masked_card>
+      <sender_cell_phone />
+      <response_status />
+      <currency>USD</currency>
+      <fee />
+      <reversal_amount />
+      <settlement_amount />
+      <actual_amount>1000</actual_amount>
+      <order_status>approved</order_status>
+      <response_description />
+      <order_time>13.01.2014 15:10:47</order_time>
+      <actual_currency>USD</actual_currency>
+      <order_id>test7926651365</order_id>
+      <tran_type />
+      <eci />
+      <settlement_date />
+      <payment_system>Visa/MC</payment_system>
+      <approval_code>530159</approval_code>
+      <merchant_id>1</merchant_id>
+      <settlement_currency />
+      <payment_id>2100</payment_id>
+      <card_bin>444455</card_bin>
+      <response_code />
+      <card_type>VISA</card_type>
+      <amount>1000</amount>
+      <sender_email />
+      <signature>1f894ec8c9b9c0a619e87f92ad7d347431f705c0</signature>
+      <product_id />
+    </response>
+    ```
+  </TabItem>
+</Tabs>
+
+**URL-encoded form example**
+
+<Tabs>
+  <TabItem value="request" label="Request" default>
+    ```bash
+    order_id=test3600040034&order_desc=Test payment&currency=USD&verification=Y
+    &amount=100&merchant_id=1&signature=ea326b841f9a1e2e90fb392392d3ed6255a6698d
+    ```
+  </TabItem>
+  <TabItem value="response" label="Callback Response">
+    ```bash
+    rrn=401311593803&masked_card=444455XXXXXX1111&sender_cell_phone=&response_status=
+    &currency=USD&fee=&reversal_amount=&settlement_amount=&actual_amount=1000
+    &order_status=approved&response_description=&order_time=13.01.2014+15%3A10%3A47
+    &actual_currency=USD&order_id=test7926651365&tran_type=&eci=
+    &settlement_date=&payment_system=Visa%2FMC&approval_code=530159&merchant_id=1
+    &settlement_currency=&payment_id=2100&card_bin=444455&response_code=&
+    card_type=VISA&amount=1000&sender_email=&signature=1f894ec8c9b9c0a619e87f92ad7d347431f705c0&product_id=
+    ```
+  </TabItem>
+</Tabs>

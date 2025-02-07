@@ -1,0 +1,58 @@
+---
+title: "Overview"
+description: "Learn how to integrate Google Pay payments using Fondy, enabling secure and convenient transactions across web and mobile platforms."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Google Pay guides provide detailed instructions for integrating Google Pay payments using Fondy, enabling secure and convenient transactions across web and mobile platforms. The following guides outline multiple integration options tailored to your technical needs and development framework.
+
+## Web Integration Options
+
+* [Embedded Google Pay Button Integration](/gateway/digital-wallets/google-pay/google-pay-web-integration#embedded-google-pay-button-integration): Simplify payment processes by embedding the Google Pay button directly into your website.
+* [Direct Integration with Google Pay API](/gateway/digital-wallets/google-pay/google-pay-web-integration#direct-integration-with-google-pay-api): Take full control over the payment flow with a direct integration using the Google Pay API.
+
+## Mobile Integration
+
+Google Pay can be integrated into your [mobile application](/gateway/digital-wallets/google-pay/google-pay-mobile-integration) using the Fondy SDK, supporting the following programming languages and frameworks:
+
+* Android
+* React Native
+* Flutter
+
+## Google Pay Requirements
+
+To ensure compliance with Google Pay branding standards, please follow [Google Pay Android Brand Guidelines](https://developers.google.com/pay/api/android/guides/brand-guidelines) or [Google Pay Web Brand Guidelines](https://developers.google.com/pay/api/web/guides/brand-guidelines) approved branding guidelines when implementing Google Pay.
+
+Apply approved branding when:
+
+* Creating a payment button on your website.
+* Designing a payment button within your application layout.
+* Referencing Google Pay on your website, mobile application, or in client communications.
+
+### Supported Parameter Values
+
+Fondy supports the following parameter values for all settlement regions:
+
+
+  ```javascript 
+  const allowedCardNetworks = ["MASTERCARD", "VISA"];
+  const allowedCardAuthMethods = ["PAN_ONLY", "CRYPTOGRAM_3DS"];
+  ```
+
+### Optional Parameters
+
+The [BillingAddressParameters](https://developers.google.com/pay/api/web/reference/object#BillingAddressParameters) parameter is optional and can be included based on your requirements.
+
+### Gateway Configuration
+
+If you are not using the Fondy SDK, ensure you define the following values explicitly in your implementation:
+
+  ```javascript 
+  gatewayMerchantId: <your FONDY merchant_id>
+  gatewayID: fondyeu
+  ```
+
+By adhering to these guidelines and configurations, you can ensure a smooth and compliant integration with Google Pay.

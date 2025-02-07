@@ -1,0 +1,74 @@
+---
+title: "Onboarding and Managing Profiles"
+description: "Learn how to onboard and manage profiles for your partners in Fondy Flow."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Profiles in the Fondy Flow system represent your partners, such as businesses or freelancers, who are associated with your marketplace or platform. Managing profiles ensures compliance, security, and efficient fund management for seamless platform operations.
+
+## What are Profiles?
+
+A profile serves as a unique identifier for a partner in the Fondy system. Each profile can include one or more identities representing the legal entities linked to a business or individual. This structure enables secure and accurate compliance checks, ensuring your platform operates smoothly.
+
+Profiles enable you to manage detailed partner information, including associated legal entities. The profile feature was designed to simplify adherence to KYC (Know Your Customer) and KYB (Know Your Business) regulations. In addition, you can choose between fully automated onboarding or manual compliance management.
+
+## Onboarding Options
+
+Fondy provides two onboarding methods to accommodate different platform needs:
+
+### Option 1: Fully Integrated Onboarding
+
+This option streamlines the onboarding process using Fondy's hosted pages, handling everything from data collection to compliance checks. With the integrated onboarding, you will have:
+
+* An automated KYC/KYB process.
+* Hosted pages guiding partners through onboarding.
+* Reduced workload with built-in compliance checks.
+
+To use the integrated onboarding, follow the steps:
+
+1. Use the API to submit the partner's basic details, such as name, email, phone number, and business information. Access the [Create Compliance Profile](/flow/fondy-flow-api/compliance/create-compliance-profile) operation guide for detailed information.
+2. Fondy will generate a link to the hosted onboarding page shared with your platform.
+3. Redirect your partners so they can upload their business details and compliance documents directly through the hosted page.
+4. Fondy performs automated KYC/KYB checks and ensures your partners' regulatory compliance.
+5. Once compliance checks are complete, the profile status is updated (e.g., "Active" or "Pending").
+6. Any associated legal entities are automatically linked to the profile.
+
+<Image src="media/docs/flow/split-accounts/managing-profiles/fully-integrated-onboarding.png" alt="Fully Integrated Onboarding" />
+
+### Option 2: Platform-Managed Onboarding
+
+In this approach, you must handle the onboarding process, including compliance checks, and submit the data to Fondy for profile creation. With this option, you should manage the entire onboarding and compliance process. Despite the additional work, you can customize onboarding workflows to suit your business needs.
+
+To use the platform-managed onboarding, follow the steps:
+
+1. Complete KYC/KYB checks for new partners using your platform's internal processes.
+2. Submit the partner's information, including compliance results. Check the [Create Identity](/flow/fondy-flow-api/identity/create-identity) page to see all the details for executing this operation.
+3. Fondy will generate a corresponding profile for each identity provided.
+4. Fondy reviews the platform's compliance procedures to ensure regulatory requirements are met.
+
+<Image src="media/docs/flow/split-accounts/managing-profiles/platform-managed-onboarding.png" alt="Platform Managed Onboarding" />
+
+To check the created identities, you can follow the [Get Identities](/flow/fondy-flow-api/identity/get-identities) guide.
+
+## Profile Statuses
+
+Depending on the profile creation stage, it can have a different status. The complete list of possible statuses and their descriptions are listed below:
+
+| **Status**   | **Description**                                                                                                            |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| **Active**   | The profile is approved and can be part of a transaction.                                                                  |
+| **Pending**  | The profile is under review or awaiting client information. Transactions, including payouts, are restricted.               |
+| **Inactive** | The profile has been deactivated and cannot transact. This status is final.                                                |
+| **Rejected** | The profile has been rejected due to non-compliance or other issues. This status is final, and the profile cannot be used. |
+
+<Callout type="info" title="Platform-Managed Onboarding">
+  When an identity is created, its corresponding profile is automatically set to Active.
+</Callout>
+
+To check the information from profiles and identities, use the following documentation pages:
+
+* [Get Compliance Profiles](/flow/fondy-flow-api/compliance/get-compliance-profiles)
+* [Get Identities](/flow/fondy-flow-api/identity/get-identities)

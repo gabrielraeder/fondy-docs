@@ -1,0 +1,115 @@
+---
+title: "Create Compliance Profile"
+description: "Learn how to create compliance profiles for individuals or organizations using Fondy's API, including steps for handling personal information, addresses, and compliance details."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This operation allows you to create a compliance profile for a client in the system. This page will guide you through this process; see the following sections for more details.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Request
+
+The request process of this operation consists of the following two steps:
+
+1. [Create the payload](#step-1-create-the-payload)
+2. [Make the encrypted request](#step-2-make-the-encrypted-request)
+
+See the sections below for more details on each step.
+
+### Step 1: Create the Payload
+
+The identity information must be sent to the payload. See the code block below for an example:
+
+```json
+{
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "profile_type": "SOLETRADER",
+  "full_name": "string",
+  "email": "string",
+  "telephone": "string"
+}
+```
+
+Where:
+
+| **Field**      | **Description**                                |
+| -------------- | ---------------------------------------------- |
+| `external_id`  | Unique reference ID for the profile.           |
+| `profile_type` | Type of profile.                               |
+| `full_name`    | Full name of the individual or company.        |
+| `email`        | Email address of the individual or company.    |
+| `telephone`    | Telephone number of the individual or company. |
+
+Once you create the payload it has to be encrypted, see the following section for more details.
+
+### Step 2: Make the encrypted request
+
+To create a wallet under a split account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": ENCRYPTED(profileObject),
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/onboarding/compliance/profile"),
+       "method": "POST"
+   }
+   ```
+
+In the request `ENCRYPTED(identityObject)` is the payload previously created, which is now encrypted.
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(profileObject)
+    "encrypted_url": null
+    "method": null
+    "nonce": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once it is decrypted, the unencrypted payload is as follows:
+
+```json
+{
+  "id": "43971e26-61b1-420b-9add-c510d44a354f",
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "external_url_validation": "string",
+  "client_ref": "43971e26-61b1-420b-9add-c510d44a354f",
+  "profile_type": "SOLETRADER",
+  "full_name": "string",
+  "email": "string",
+  "telephone": "string",
+  "status": "PENDING",
+  "created_date": "2020-01-22T13:15:30Z",
+  "linked_identities": [
+    "43971e26-61b1-420b-9add-c510d44a354f"
+  ]
+}
+```
+
+Where:
+
+| **Field**                 | **Description**                                                        |
+| ------------------------- | ---------------------------------------------------------------------- |
+| `id`                      | Unique identifier for the created profile.                             |
+| `external_id`             | Reference ID for the profile, matches the one provided in the request. |
+| `external_url_validation` | URL used to validate the external ID (if applicable).                  |
+| `client_ref`              | Client reference ID associated with the profile.                       |
+| `profile_type`            | Type of profile.                                                       |
+| `full_name`               | Full name of the individual or company associated with the profile.    |
+| `email`                   | Email address associated with the profile.                             |
+| `telephone`               | Telephone number associated with the profile.                          |
+| `status`                  | Current status of the profile.                                         |
+| `created_date`            | Timestamp when the profile was created.                                |
+| `linked_identities`       | List of linked identity IDs associated with the profile.               |

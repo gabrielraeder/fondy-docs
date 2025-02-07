@@ -1,0 +1,82 @@
+---
+title: "Get Default Wallet in Split Account"
+description: "Learn how to retrieve the default wallet associated with a specific Split Account using Fondy's API, including wallet details and transaction history."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This operation lets you retrieve the default wallet associated with a specific Split Account. The default wallet is the primary wallet used for transactions in the Split Account.
+
+This page will guide you through the process of using this operation.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Request
+
+To retrieve the information of a split account's default wallet, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/splitaccount/{splitaccount_id}/defaultwallet"),
+       "method": "GET"
+   }
+   ```
+
+<Callout type="warning" title="Path Parameters">
+  Change the following in the `encrypted_url`
+
+  * Change `{splitaccount_id}` with the ID of the split account containing the wallet.
+</Callout>
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(walletObject)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once decrypted, the payload is as follows:
+
+```json
+{
+  "additional_information": "Example123",
+  "balances": {
+    "current": {
+      "currency": "GBP",
+      "amount": 4500
+    }
+  },
+  "default_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "payee_identity_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "payee_details": {
+    "name": "string",
+    "iban": "FR7630006000011234567890189",
+    "sort_code": "012345",
+    "bic": "string",
+    "account_number": "01234567",
+    "id": "string"
+  },
+  "payee_compliance_profile_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "alias": "Example123",
+  "default_payment_reference": "Payment to X",
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "created_date": "2020-01-22T13:15:30.000Z",
+  "status": "ACTIVE"
+}
+```
+
+The payload information is the same as that in the response of the [Get Wallets in Split Account](/flow/fondy-flow-api/split-accounts-operations/get-wallets-in-split-account) operation.

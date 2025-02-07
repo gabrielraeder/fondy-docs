@@ -1,0 +1,125 @@
+---
+title: "PCIDSS Compliance"
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The **Payment Card Industry Data Security Standard (PCI DSS)** is a security standard designed to protect cardholder data and secure payment transactions. It applies to businesses that process, store, or transmit payment card information. Compliance with PCI DSS helps protect customer data, reduces the risk of breaches, and promotes secure handling of payment information.
+
+Businesses that handle payment card data must comply with PCI DSS, with specific compliance requirements based on transaction volume and data handling methods.
+
+## Fondy solutions
+
+When you use Fondy solutions, your PCI DSS scope is reduced while ensuring data protection. The following Fondy integration options support SAQ A, SAQ A-EP, and SAQ D.
+
+<CardList cols={4}>
+  <Card 
+    title="Hosted Payment Page"
+    icon="browser"
+    link=""
+  />
+  <Card 
+    title="Payment buttons"
+    icon="radio-button"
+    link=""
+  />
+  <Card 
+    title="Embedded Checkout Page"
+    icon="code"
+    link=""
+  />
+  <Card 
+    title="JavaScript SDK"
+    icon="file-js"
+    link=""
+  />
+  <Card 
+    title="Apple Pay"
+    icon="apple-logo"
+    link=""
+  />
+  <Card 
+    title="Google Pay"
+    icon="google-logo"
+    link=""
+  />
+</CardList>
+
+If you use the Fondy Direct method, you must store card data on your server and have a PCI DSS RoC. Alternatively, if you need to host a credit card form on your site but do not have a RoC, you can use the Embedded Checkout Page, which supports compliance with either SAQ D or SAQ A-EP.
+
+## Who needs PCI DSS compliance?
+
+PCI DSS applies to all merchants handling payment card data, categorized into four levels based on transaction volume:
+
+* **Level 1**: Over 6 million annual transactions.
+* **Level 2**: 1 to 6 million transactions annually.
+* **Level 3**: 20,000 to 1 million transactions annually.
+* **Level 4**: Fewer than 20,000 transactions annually.
+
+Each level has distinct compliance requirements, with higher levels requiring stricter assessments.
+
+PCI DSS certification must be renewed annually by an independent agency and requires a dedicated technical team. This complex certification process may not be necessary for many businesses, but we offer PCI DSS compliance as an option for those who do.
+
+Fondy is certified annually to the latest PCI DSS standards. By choosing Fondy's services, your business won't need to handle PCI DSS certification independently.
+
+Fondy manages all payment operations and assumes full responsibility for PCI DSS compliance, allowing you to focus on your core operations without additional compliance burdens.
+
+## PCI DSS compliance documentation
+
+The [PCI DSS compliance documentation](https://www.pcisecuritystandards.org/document_library/) guides merchants through the required documentation process to verify compliance with the PCI DSS. Depending on the volume of transactions and the way payment data is processed or stored, you may need to provide either a Report on Compliance (RoC) or a Self-Assessment Questionnaire (SAQ). These documents ensure that your business meets PCI DSS standards, protecting cardholder data and securing transactions.
+
+The following list describes the conditions that define if you have to provide the RoC or SAQ documents:
+
+1. **RoC**: Required for Level 1 merchants, those processing over 6 million annual transactions. The RoC assessment is conducted by a Qualified Security Assessor (QSA) that confirms compliance with PCI DSS requirements.
+
+2. **SAQ**: Suitable for lower levels of transaction volume and businesses with less complex payment processing environments. Merchants must choose the SAQ type that best fits their processing method:
+
+   * **SAQ A**: For fully outsourced cardholder data functions, such as using hosted payment pages or iFrames.
+
+   * **SAQ A-EP**: For e-commerce merchants who host a payment form on their site but send card data directly to a third-party processor.
+
+   * **SAQ D**: For environments with on-site storage or complex processing of cardholder data. This includes:
+
+     * E-commerce merchants who accept cardholder data directly on their website.
+     * Merchants who electronically store cardholder data.
+     * Merchants who do not store cardholder data electronically but do not meet the criteria for any other SAQ type.
+
+<Callout type="info" title="Important Data Storage Restriction">
+  Neither SAQ A nor SAQ A-EP permits merchants to store or transmit credit card data on their own servers or networks. All cardholder data processing must be fully outsourced to Fondy, a PCI DSS-validated third-party payment processor.
+</Callout>
+
+Identifying your compliance level and payment setup can help you determine the correct documentation needed.
+
+## PCI DSS SAQ A, A-EP, D compliance
+
+The new PCI DSS 3.0 standard offers three types of Self-Assessment Questionnaires (SAQ) for e-commerce websites: A, A-EP (electronic processing), and D.
+
+| Merchant level | No of transactions annually | Redirect | Iframe | Direct POST | JavaScript | XML   | Other |
+| -------------- | --------------------------- | -------- | ------ | ----------- | ---------- | ----- | ----- |
+| 1              | Over 6 million              | RoCA     | RoCA   | RoCA-EP     | RoCA-EP    | RoC   | RoC   |
+| 2              | 1 – 6 million               | SAQ A    | SAQ A  | SAQ A-EP    | SAQ A-EP   | SAQ D | SAQ D |
+| 3              | 20 000 – 1 million          | SAQ A    | SAQ A  | SAQ A-EP    | SAQ A-EP   | SAQ D | SAQ D |
+| 4              | Under 20 000                | SAQ A    | SAQ A  | SAQ A-EP    | SAQ A-EP   | SAQ D | SAQ D |
+
+RoCA – Partial Report on Compliance validating the scope, eligibility, and requirements listed in SAQ A
+
+RoCA-EP – Partial Report on Compliance validating the scope, eligibility, and requirements listed in SAQ A-EP
+
+To identify which type is required, the merchant should analyze several factors.
+
+|                        | SAQ A All Cardholder Data Functions Completely Outsourced                                                                                                                                  | SAQ A-EP Partially Outsourced E-commerce Payment Channel                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Applies to:            | Card-not-present merchants (e-commerce or mail/telephone-order)\*.                                                                                                                         | E-commerce merchants.                                                                                                                                             |
+| Functions Outsourced   | All processing of cardholder data is entirely outsourced to PCI DSS validated third-party service providers.                                                                               | All processing of cardholder data, except the payment page, is entirely outsourced to a PCI DSS validated third-party payment processor.                          |
+| Payment Pages          | All elements of all payment pages delivered to the consumer's browser originate only and directly from a PCI DSS validated third-party service provider(s).                                | Each element of the payment page(s) delivered to the consumer's browser originates from either the merchant's website or a PCI DSS compliant service provider(s). |
+| Third-Party Compliance | Merchant  confirmed that all third party(s) handling storage, processing, and/or  transmission of cardholder data are PCI DSS compliant                                                    |                                                                                                                                                                   |
+| Merchant Systems       | The  merchant does not electronically store, process, or transmit any  cardholder data on their systems or premises but relies entirely on a  third party(s) to handle all these functions |                                                                                                                                                                   |
+| Data Retention         | Merchant retains only paper reports or receipts with cardholder data, and these documents are not received electronically                                                                  |                                                                                                                                                                   |
+
+<Callout type="info" title="Table Scope and Limitations">
+  Criteria for SAQ A mail/telephone order (MOTO) channels are not included in this comparison
+
+  This table is intended to provide a comparison between SAQ A and SAQ A-EP and does not supersede or replace the eligibility criteria for either SAQ.
+</Callout>

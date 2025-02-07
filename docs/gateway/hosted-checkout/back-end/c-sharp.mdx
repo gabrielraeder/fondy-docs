@@ -1,0 +1,101 @@
+---
+title: "C#"
+description: "Integrate Fondy's payment processing capabilities into your C# applications."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Fondy Gateway C# SDK enables developers to easily integrate Fondy's payment services into their C# applications. It allows users to create payments, retrieve transaction details, and manage payment workflows securely and efficiently.
+
+## Requirements
+
+Before using the SDK, ensure your environment meets the following prerequisites:
+
+* **.NET Compatibility:** The SDK is compatible with projects supporting `.NET Standard`.
+* **Dependency:** Newtonsoft.Json (JSON.NET)
+
+To install the required dependency, run the following command:
+
+
+  ```shell shell
+  dotnet add package Newtonsoft.Json --version 13.0.3
+  ```
+
+
+## Installation
+
+Install the Fondy Gateway C# SDK from NuGet using the following command:
+
+
+  ```shell shell
+  dotnet add package CloudIpspSDK --version 1.0.5
+  ```
+
+
+## How to Use the SDK
+
+Start by adding `CloudIpspSDK` to your project. Depending on the operation you need to perform, you may need to add additional classes to the project. For example, to create a checkout, you need to add `CloudIpspSDK.Checkout` from `CloudIpspSDK`. For this example, the `Checkout` class will be used to generate a payment. Set up the merchant credentials in your application:
+
+
+  ```csharp csharp
+  using CloudIpspSDK;
+  using CloudIpspSDK.Checkout;
+  ```
+
+
+After, initialize the merchant configuration:
+
+
+  ```csharp csharp
+  Config.MerchantId = 1396424; // Replace with your Merchant ID
+  Config.SecretKey = "test";   // Replace with your Secret Key
+  ```
+
+
+Define the necessary details for the operation. In this case, the payment details such as `order_id`, `amount`, and `currency`, then retrieve the checkout URL:
+
+
+  ```csharp csharp
+  var req = new CheckoutRequest {
+      order_id = Guid.NewGuid().ToString("N"), // Generate a unique order ID
+      amount = 100000,                         // Amount in minor units (e.g., 100000 = €1000.00)
+      order_desc = "Test payment",             // Description of the order
+      currency = "EUR"                         // Transaction currency
+  };
+  var resp = new Url().Post(req);
+
+  // Handle the response and retrieve the checkout URL
+  if (resp.Error == null) {
+      string url = resp.checkout_url;
+      Console.WriteLine($"Redirect the customer to: {url}");
+  } else {
+      Console.WriteLine($"Error: {resp.Error.message}");
+  }
+  ```
+
+
+You will receive a `checkout_url` which you can use to redirect your customer. After your customer finishes providing the payment method and the payment is processed, you will receive a [callbacks](/gateway/direct-integration/callbacks) with the payment information.
+
+## Usage Examples
+
+In addition to integrating the SDK into your project, you can also run the examples provided in the [GitHub repository](https://github.com/cloudipsp/csharp-sdk). These examples help you understand how to use the features of the C# SDK.
+
+To run the examples, you have to execute the following steps:
+
+1. Set up an IIS server. The examples require an IIS server to simulate the interaction with Fondy Gateway.
+
+2. Clone the GitHub repository containing the SDK and example files.
+
+   
+     ```shell shell
+     git clone https://github.com/cloudipsp/csharp-sdk
+     ```
+   
+
+3. Inside the cloned repository, navigate to the `CloudIpspSamples` directory. This folder contains all example files, including the necessary `index.html`.
+
+4. Build and configure the IIS server to serve the files in the `CloudIpspSamples` directory. Ensure the IIS server is set up to handle requests from the examples correctly.
+
+5. To run the examples, open the `index.html` file in a browser, which will provide interactive examples of how to use the SDK.

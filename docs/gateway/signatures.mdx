@@ -1,0 +1,133 @@
+---
+title: "Signatures"
+description: "Create and validate signatures when using Fondy Gateway."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+When using Fondy Gateway to create payments, each request and response must include a signature for validation. This ensures data integrity and prevents unauthorized modification of transaction details. The signature is generated using [SHA1 encryption](https://en.wikipedia.org/wiki/SHA-1) and a specific set of parameters. This page explains how you can create and validate signatures when using Fondy Gateway.
+
+## When to Use Signatures
+
+Signatures are used in two primary cases:
+
+1. **Request Signatures**: When sending a request to Fondy, the signature ensures the data is correct and authentic. For example, in a payment request, you must include a signature to verify that your information hasn't been tampered with.
+2. **Response Validation**: Fondy returns a response with a signature after processing your request. You can validate this signature to confirm that the response data has not been altered in transit.
+
+<Callout type="info" title="Signatures in Fondy SDKs">
+  Fondy SDKs automatically handle signature generation. If you are using an SDK, you do not need to manually create the signature and validate the responses from Fondy. The SDKs automaticaly to these tasks for you.
+</Callout>
+
+## Creating a Signature
+
+To create a signature, you must follow the steps:
+
+1. List and order all parameters you will use to create the payment, for example.
+2. Create a string combining all parameter values in alphabetic order and separated by the **|** symbol. You should add your **Payment Key** as the first parameter.
+
+<Callout type="info" title="Payment Key">
+  You find your Payment Key by accessing the [Fondy portal](https://portal.fondy.eu/mportal/#/) with your account and selecting **Merchant Settings**.
+</Callout>
+
+3. Use a SHA1 function to generate the signature.
+
+### Example of Creating a Signature
+
+Consider the following parameters that define the information to be used to create a payment:
+
+
+  ```json 
+  {
+    "order_id":"test12345612122121221",
+    "order_desc":"test12121order",
+    "currency":"USD",
+    "amount": 125,
+    "merchant_id":1396424,
+    "sender_email" : "email@email.com"
+  }
+  ```
+
+
+Since you have the parameters and respective values, you can list the parameters in alphabetic order, separated by **|** symbol, always starting with the Payment Key:
+
+```
+Payment Key|amount|currency|merchant_id|order_desc|order_id|sender_email
+```
+
+Replacing the parameters with the respective values, you would have the following string:
+
+```
+PnguSqqcdmFH5p5UlLxXi5zm2SOdm6zW|125|USD|1396424|test12121order|test12345612122121221|email@email.com
+```
+
+By using a SHA1 function, the resulting signature is:
+
+```
+caf43947bfa47356214925099304a6b6f7afcc24
+```
+
+Thus, you can use the signature to create a payment using the [Accept Purchase (Fondy Checkout)](/reference/gateway/accept-purchase-fondy-checkout) endpoint, for example, with the following request body:
+
+
+  ```json 
+  {
+    "request":{
+      "order_id":"test12345612122121221",
+      "order_desc":"test12121order",
+      "currency":"USD",
+      "amount": 125,
+      "signature":"caf43947bfa47356214925099304a6b6f7afcc24",
+      "merchant_id":1396424,
+      "sender_email" : "email@email.com"
+    }
+  }
+  ```
+
+
+## Validating Signatures in Fondy Responses
+
+Fondy responses include a `signature` parameter that ensures the integrity of the data. When validating a response, you must recreate the signature using the response parameters and compare it with the provided `signature`.
+
+Below is a step-by-step guide to validate a response signature:
+
+1. Remove the following parameters from the response before generating the signature:
+
+   * `signature`
+   * `response_signature_string` (only appears in test mode and provides a hint about signature formation).
+
+2. Combine the remaining parameters in the specified order using the `|` separator. Be sure that:
+
+   * Empty parameters are excluded, and no `|` is added for these.
+   * The string adheres to UTF-8 encoding if non-Latin characters are present.
+
+3. Use the SHA1 function to generate the signature and ensure the result is in lowercase.
+
+4. Compare the generated signature with the one provided in the `signature` parameter of the response. If they match, the response is valid.
+
+## Common Issues and Troubleshooting
+
+If the validation fails, here are common reasons and solutions:
+
+1. **Invalid Signature Error in API Response**
+
+   * Verify that you are using the correct Payment Key from your Merchant Portal.
+   * Ensure the request parameters follow UTF-8 encoding for non-Latin characters.
+   * Check that parameter with a value of `0` are not treated as `null` or empty by your programming language.
+   * Log and review the concatenated string used for the signature. Compare it to the `response_signature_string` (if available in test mode) to identify discrepancies.
+   * Ensure empty parameters are not included in the signature string or followed by the `|` separator.
+
+2. **Mismatched Signature in Server Callbacks**
+
+   * Ensure the `response_signature_string` and `signature` parameters are excluded from the signature calculation.
+   * Validate that all non-empty parameters are included in the correct order.
+   * Log the concatenated string used in the SHA1 function and compare it with the `response_signature_string` for discrepancies.
+
+### Additional Notes
+
+* Always use lowercase for the SHA1 output: **Correct:** `6bd069be8a6e2f2bbe176df00ba63cc681ca38aa` **Incorrect:** `6BD069BE8A6E2F2BBE176DF00BA63CC681CA38AA`
+* Include only the necessary parameters for the specific API endpoint you are using. For example, `/api/recurring` requires different parameters compared to `/api/redirect`.
+
+Following these steps and guidelines, you can confidently validate Fondy API responses and troubleshoot signature-related errors effectively.
+

@@ -1,0 +1,75 @@
+---
+title: "Web Integration"
+description: "Learn how to integrate Google Pay payments using Fondy, enabling secure and convenient transactions across web and mobile platforms."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Google Pay integration on a website can be achieved through two primary methods:
+
+* [Embedded Google Pay Button Integration](#embedded-google-pay-button-integration): Place the Google Pay button directly on your website for a seamless and branded checkout experience.
+* [Direct Integration with Google Pay API](#direct-integration-with-google-pay-api): Implement the Google Pay API to gain complete control over the payment flow and processing logic.
+
+<Callout type="info" title="Available with Other Integrations">
+  The Google Pay button is also available through the [JavaScript SDK](/gateway/front-end/javascript) and [Embedded Custom Checkout](/gateway/embedded/embedded-custom-checkout) integrations.
+</Callout>
+
+## Embedded Google Pay Button Integration
+
+The embedded Google Pay button ensures customers can complete transactions directly on the merchant's website. This approach enhances the user experience by keeping the payment flow within your website and aligning the button's design with your brand.
+
+### Domain Verification for Google Pay Integration
+
+To integrate the embedded Google Pay button with Fondy, you must verify all web domains where the button will be displayed. This includes top-level domains (e.g., site.com) and subdomains (e.g., shop.site.com, www\.site.com) for production and development environments.
+
+1. Log in to your Google Pay developer account and add all domains where the Google Pay button will be displayed.
+2. Once registered, inform Fondy support to complete the domain activation process with Google.
+
+Once your domain is verified and activated, the embedded Google Pay button will be ready for integration, enabling secure and efficient payment processing directly on your website.
+
+## Direct Integration with Google Pay API
+
+The Direct Integration with Google Pay API provides greater control over the payment flow and allows you to process encrypted payment data directly using Fondy. This guide outlines the steps required to configure and use the Google Pay API for payments.
+
+1. Follow the instructions on the [Google Pay API Documentation](https://developers.google.com/pay/api/web/guides/tutorial).
+2. Once the Google Pay API returns the encrypted payment data, send it securely to your server for further processing. The information will come in the following configuration:
+   ```
+   {
+     "apiVersion": 2,
+     "apiVersionMinor": 0,
+     "allowedPaymentMethods": [
+       {
+         "type": "CARD",
+         "parameters": {
+           "allowedAuthMethods": [
+             "PAN_ONLY",
+             "CRYPTOGRAM_3DS"
+           ],
+           "allowedCardNetworks": [
+             "VISA",
+             "MASTERCARD"
+           ]
+         },
+         "tokenizationSpecification": {
+           "type": "PAYMENT_GATEWAY",
+           "parameters": {
+             "gateway": "fondyeu",
+             "gatewayMerchantId": ""
+           }
+         }
+       }
+     ],
+     "transactionInfo": {
+       "totalPrice": "",
+       "totalPriceStatus": "FINAL",
+       "currencyCode": ""
+     }
+   }
+   ```
+3. Send the encrypted payment data from your server to Fondy's [Enroll Card in 3DSecure Service endpoint](/reference/gateway/enroll-card-3-ds). Include the encrypted data in the container parameter as specified in the documentation.
+4. Fondy's server will return a [final response](/gateway/direct-integration/manage-payments/create-payment#final-response-example) containing order details and payment status. Use this response to process and finalize the transaction on your server.
+5. Inform the payer of the payment result based on Fondy's response.
+
+Following these steps, you can directly integrate with the Google Pay API, enabling secure and efficient payment processing through Fondy.

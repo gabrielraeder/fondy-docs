@@ -1,0 +1,36 @@
+---
+title: "Test Gateway Payments"
+description: "Test your integrations with real data before executing operations with real bank transactions."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy enables you to test your integrations before executing operations with real data, which results in real bank transactions.
+
+To test payments with Fondy Gateway solutions, you have to use the following merchant data:
+
+| Parameter                                          | Value                                                                                                                                 |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `merchant_id`                                      | `1396424`                                                                                                                             |
+| transaction password for purchase and verification | `test`                                                                                                                                |
+| transaction password for p2pcredit operations      | `testcredit`                                                                                                                          |
+| `currency`                                         | GBP, EUR, USD, PLN, CZK. Access the [Currencies](/getting-started/reference-pages/supported-currencies) page to check the complete list of supported currencies. |
+
+In addition to the above merchant data, you can use different credit cards to test different transaction results. The following table lists all the cards available and the result of the resulting transaction.
+
+| Card number      | Expiry date | CVV2 | 3DSecure          | Response type |
+| ---------------- | ----------- | ---- | ----------------- | ------------- |
+| 4444555566661111 | any         | any  | yes               | approve       |
+| 4444111166665555 | any         | any  | yes               | decline       |
+| 4444555511116666 | any         | any  | no                | approve       |
+| 4444111155556666 | any         | any  | no                | decline       |
+| 5555666644441111 | any         | any  | yes               | approve       |
+| 6666444455551111 | any         | any  | yes               | approve       |
+| 4444555566669999 | any         | any  | yes, frictionless | approve       |
+| 4444666655559999 | any         | any  | yes, challenge    | approve       |
+| 4444999966665555 | any         | any  | yes, frictionless | decline       |
+| 4444666699995555 | any         | any  | yes, challenge    | decline       |
+
+You can explore different types of integrations and see how they work in our test DemoShop. Visit [https://demoshop.fondy.eu/en/](https://demoshop.fondy.eu/en/).

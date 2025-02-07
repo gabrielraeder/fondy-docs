@@ -1,0 +1,86 @@
+---
+title: "Get Payment from Wallet in Split Account"
+description: "Learn how to retrieve detailed payment information from a Split Account wallet using Fondy's API, including payment status, amount, and transaction details."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This operation lets you retrieve the details of a specific payment made from a wallet under a Split Account. You can obtain the payment status, amount, and related information for a transaction identified by its payment ID. This is useful for tracking individual payments, verifying transaction details, or performing reconciliation tasks. This page will guide you through the process of using this operation.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Request
+
+To retrieve a payment from a wallet under a split account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/splitaccount/{splitaccount_id}/wallet/{id}/payment/{paymentId}"),
+       "method": "GET"
+   }
+   ```
+   
+<Callout type="warning" title="Path Parameters">
+  Change the following in the `encrypted_url`
+
+  * Change `{splitaccount_id}` with the ID of the split account containing the wallet.
+  * Change `{id}`with the ID of the wallet containing the payment.
+  * Change `{paymentId}` with the ID of the payment to retrieve.
+</Callout>
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(paymentObject)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once decrypted, the payload is as follows:
+
+```json
+{
+  "target_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "additional_information": "Example123",
+  "payment_direction": "INBOUND",
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "source_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "payment_reference": "Payment to X",
+  "type": "PAYOUT",
+  "requested_amount": {
+    "currency": "GBP",
+    "amount": 4500
+  },
+  "status": "PROCESSING"
+}
+```
+
+Where:
+
+| **Parameter**            | **Description**                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| `target_wallet_id`       | The unique identifier of the target wallet for the payment.                           |
+| `additional_information` | Additional information related to the payment, provided by the user.                  |
+| `payment_direction`      | The direction of the payment. It can be `INBOUND` or `OUTBOUND`.                      |
+| `external_id`            | Custom reference provided by the user or system for external tracking or integration. |
+| `id`                     | Unique identifier for the payment.                                                    |
+| `source_wallet_id`       | The unique identifier of the source wallet initiating the payment.                    |
+| `payment_reference`      | A reference or description of the payment provided by the user.                       |
+| `type`                   | Type of the payment.                                                                  |
+| `requested_amount`       | The amount requested for the payment.                                                 |
+| `currency`               | Currency type of the requested payment amount.                                        |
+| `amount`                 | The requested amount in pence.                                                        |
+| `status`                 | Current status of the payment.                                                        |

@@ -1,0 +1,51 @@
+---
+title: "Mobile Integration"
+description: "Learn how to integrate Google Pay payments using Fondy, enabling secure and convenient transactions across web and mobile platforms."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Integrating Google Pay into your mobile application provides users with a seamless and secure payment experience. This section covers the steps to integrate Google Pay with your mobile app, whether you're developing in Java (Android) or React Native.
+
+## Google Pay Mobile Application Approval
+
+Follow these steps to integrate Google Pay into your mobile application using the Fondy SDK and ensure your application meets the requirements for production approval.
+
+1. Log in to the **[Fondy Merchant Portal](https://portal.fondy.eu/mportal/?_gl=1*1drpmkv*_gcl_au*MTgwOTQzNjU3Ny4xNzMyMTEwNTI3LjE1MTM2NTAzMDAuMTczMjEzNDg3MC4xNzMyMTM1Mzc5*_ga*MTM3Mjg4OTIxMS4xNzMyMTEwNTI3*_ga_Z2KY5VSWGZ*MTczMjczOTMxMi4xMC4wLjE3MzI3MzkzMTIuNjAuMC4w#/)**.
+2. Register your merchant account and contact **Fondy Support** to enable Google Pay for your account.
+3. Fondy will provide you with a **merchant ID** in test mode.
+4. Use the Fondy SDK to build your app with the test mode merchant ID.
+5. Using the ENVIRONMENT\_TEST mode, configure the Fondy SDK with the following settings:
+   
+     ```javascript
+     gatewayMerchantId: <your FONDY merchant_id>
+     gatewayID: fondyeu
+     ```
+6. Follow Google's [instructions for requesting production access](https://developers.google.com/pay/api/web/guides/test-and-deploy/request-prod-access).
+7. Google will review your integration based on its checklist and may provide recommendations if changes are required.
+8. Once all requirements are met, Google will grant production access for your application.
+9. Request **Fondy Support** to switch your merchant ID to **LIVE** with ENVIRONMENT\_PRODUCTION mode.
+10. Submit your production APK to Google, ensuring it points to the **LIVE** merchant ID.
+11. Google will review your application for final approval.
+
+By completing these steps, your mobile application will be ready to process Google Pay transactions in the live environment.
+
+## For Java
+
+To integrate Google Pay with your mobile application using Java, you can follow these resources:
+
+* **[Java SDK Documentation](/gateway/hosted-checkout/mobile/android)**: Comprehensive documentation for integrating Google Pay with Fondy's mobile SDK for Android, including setup and usage instructions.
+* **[Fondy's Android SDK on GitHub](https://github.com/cloudipsp/android-sdk)**: Access the official Android SDK on GitHub, which includes all the necessary code and resources for integrating Google Pay.
+* **[Google Pay Setup Guide for Android](https://developers.google.com/pay/api/android/guides/setup)**: Google's official guide to help you set up Google Pay in your Android app, including prerequisites, configurations, and implementation steps.
+
+## For React Native
+
+To integrate Google Pay with your mobile application using React Native, refer to the following resources:
+
+* **[React Native SDK Documentation](/gateway/hosted-checkout/mobile/react-native)**: Provides detailed instructions for integrating Google Pay with Fondy's React Native SDK.
+* **[React Native SDK on GitHub](https://github.com/cloudipsp/react-native-cloudipsp)**: Contains the official SDK code and implementation files.
+
+These resources will guide you through the process of setting up Google Pay in your React Native application.
+

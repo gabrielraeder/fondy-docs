@@ -1,0 +1,55 @@
+---
+title: "Create Wallets"
+description: "Learn how to create wallets for your partners in Fondy Flow."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Wallets are components of the Fondy Flow solution that enable platforms to manage funds for their partners, such as merchants, sellers, or freelancers. After onboarding your partner, you can create a wallet for them to handle transactions.
+
+<Callout type="info" title="Onboarding Process">
+  Access the [Create Split Account](/flow/accounts/split-accounts/creating-a-split-account) and [Onboarding and Managing Profiles](/flow/accounts/split-accounts/managing-profiles) pages to learn more about the onboarding process.
+</Callout>
+
+With this solution, you can assign wallets to partners to streamline payment splitting and payouts. The created wallets are directly tied to a partner's profile and bank account, ensuring accurate fund allocation. In addition, you can monitor and manage the wallets using the API.
+
+## Prerequisites
+
+Before creating a wallet, ensure the following data is available:
+
+* **Platform Wallet ID**: The default wallet ID associated with your platform.
+* **Partner's Profile ID**: The unique identifier for the partner you create the wallet for.
+* **Partner's Payee Bank Account**: The bank account where funds from the wallet will be transferred.
+* **Default Payment Reference**: A description to be included with all wallet payments (if not otherwise specified during transactions).
+
+<Image src="/media/docs/flow/wallets/creating-wallets/prerequisites.png" alt="Prerequisites" />
+
+<Callout type="warning" title="Wallet Creation Requirements">
+  A wallet cannot be created without an associated Profile ID and Payee Bank Account.
+</Callout>
+
+## Creating a Wallet
+
+To create a new wallet, submit the required details as outlined in the **Requirements** section. Access the [Create Wallet Under the Split Account](link) guide for complete API specifications, including detailed request and response examples.
+
+Upon successful creation, the wallet will be assigned the status:
+
+* **Active**: The wallet is ready for transactions.
+
+Wallets have only two possible statuses:
+
+* **Active**: The wallet is open, operational, and ready for transactions.
+* **Closed**: The wallet has been deactivated and cannot be used for any transactions.
+
+<Callout type="warning" title="Closing a Wallet">
+  Wallets can only be closed by submitting a request to the Fondy support team.
+</Callout>
+
+## Next Steps
+
+After creating a wallet, you can begin performing transactions. Refer to the following guides for more details:
+
+* [Make Payouts](/flow/accounts/split-accounts/make-payouts): Learn how to transfer funds from a partner's wallet to their bank account.
+* [Transfer Wallet Funds](/flow/accounts/wallets/receive-funds-in-wallets): Discover how to transfer funds between wallets. with best practices.

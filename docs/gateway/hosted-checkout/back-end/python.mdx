@@ -1,0 +1,2168 @@
+---
+title: "Python"
+description: "Integrate Fondy's payment processing capabilities into your Python applications."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Fondy Gateway Python SDK allows developers to integrate Fondy's payment processing services into Python applications. This SDK lets you quickly manage payment requests, verify transactions, and build customized payment workflows. This documentation provides a step-by-step guide to help you get started and use the SDK effectively.
+
+## Requirements
+
+To use the Fondy Gateway Python SDK, ensure your environment meets the following prerequisites:
+
+* **Supported Python Versions:** 2.4, 2.7, 3.3, 3.4, 3.5, 3.6, 3.7
+
+* **Dependencies:**
+
+  * `requests`
+  * `six`
+
+## Installation
+
+To install the Fondy Gateway Python SDK, use the following pip command:
+
+
+  ```shell 
+  pip install cloudipsp
+  ```
+
+
+## How to Use the SDK
+
+Start by importing `API` to your project from `cloudipsp` and initialize the SDK with your merchant credentials. For this example, the `Checkout` class will be used to generate a payment. It needs to be initialized with the merchant details from the `Api`.
+
+
+  ```python 
+  from cloudipsp import Api, Checkout
+
+  api = Api(merchant_id=1396424,  # Replace with your Merchant ID
+            secret_key='test')    # Replace with your Secret Key
+  checkout = Checkout(api=api)
+  ```
+
+
+Next, you can configure the settings for the desired operation. In the example below, the payment details are defined in the `data` variable. Using this information, you can generate a checkout URL using the `url` function to redirect your customer to a secure payment page where they can complete their transaction.
+
+  ```python 
+  data = {
+      "currency": "USD",    # Transaction currency (e.g., USD, EUR)
+      "amount": 10000       # Amount in minor units (e.g., 10000 = $100.00)
+  }
+  url = checkout.url(data).get('checkout_url')  # Retrieve the checkout URL
+  print(f"Redirect your customer to: {url}")
+  ```
+
+After your customer finishes the payment, you'll receive the payment information through a [callbacks](/gateway/direct-integration/callbacks).
+
+## Testing the SDK
+
+The Fondy Gateway Python SDK includes tests to verify its functionality. The available tests use a predetermined data set presented below to test all features available in the SDK:
+
+  ```json 
+  {
+    "merchant": {
+      "id": 1396424,
+      "secret": "test"
+    },
+    "checkout_data": {
+      "amount": "100",
+      "currency": "USD"
+    },
+    "order_data": {
+      "order_id": 14290
+    },
+    "order_full_data": {
+      "amount": "100",
+      "currency": "GBP"
+    },
+    "payment_p2p": {
+      "receiver_card_number": "4444555566661111",
+      "currency": "GBP",
+      "amount": "100"
+    },
+    "payment_pcidss_non3ds": {
+      "currency": "GBP",
+      "amount": "100",
+      "card_number": "4444555511116666",
+      "cvv2": "123",
+      "expiry_date": "1224"
+    },
+    "payment_pcidss_3ds": {
+      "currency": "GBP",
+      "amount": "100",
+      "card_number": "4444555566661111",
+      "cvv2": "123",
+      "expiry_date": "1224"
+    }
+  }
+  ```
+
+To execute all tests, you have to install `tox` and run the tests. To install `tox`, run the following command:
+
+  ```shell 
+  pip install tox
+  ```
+
+After installing, you can run all tests running the following command:
+
+  ```shell 
+  tox
+  ```
+
+This will execute tests across all supported Python versions to ensure compatibility. You should see an output in your terminal similar to the one displayed below:
+
+  ```shell 
+    py: OK (4.62 seconds)
+    congratulations :) (5.14 seconds)
+  ```
+
+## Usage Examples
+
+This section provides practical examples to help you understand and utilize the features of the Fondy Node.js SDK. Use the links below to navigate to specific examples:
+
+* [Checkout](#checkout)
+* [PCI DSS One Step](#pci-dss-one-step)
+* [PCI DSS Two Step](#pci-dss-two-step)
+* [Capture](#capture)
+* [Verification](#verification)
+* [Reports](#reports)
+* [Reverse](#reverse)
+* [Status](#status)
+* [Subscription](#subscription)
+* [Transaction List by Order](#transaction-list-by-order)
+
+### Checkout
+
+The Checkout feature allows you to generate a URL that redirects your customers to a secure payment page where they can complete their transactions. The Fondy SDK simplifies this process by returning a `checkout_url` in the response. Use this URL to redirect your customers. The `url`function is available through the `Checkout` class. The following code block presents an example of how to use the `url` function and the response you can expect from the function:
+
+<Tabs>
+  <TabItem value="python1" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Checkout
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test',    # Replace with your secret key
+  )
+
+  # Step 2: Instantiate the Checkout class
+  checkout = Checkout(api=api)
+
+  # Step 3: Prepare the order data
+  order_data = {
+      'order_desc': 'Purchase of subscription',  # Description of the order
+      'currency': 'USD',                         # Currency (e.g., USD)
+      'amount': '5000',                          # Amount in cents (e.g., 5000 = $50.00)
+      'order_id': 'order_1234567899',             # Optional: Unique order ID, generated if not provided
+      'response_url': 'https://example.com/response',  # URL for redirect after payment
+      'server_callback_url': 'https://example.com/callback'  # URL for server callbacks
+  }
+
+  # Step 4: Execute the `url` method
+  try:
+      response = checkout.url(order_data)
+      print("Checkout URL Response:")
+      print(response)  # Print the response
+  except Exception as e:
+      print(f"An error occurred while generating the checkout URL: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response1" label="Checkout response">  
+  ```json 
+  {
+    "checkout_url": "https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=daa216840c65a1973944d783b082b20bc55e6f98",
+    "payment_id": "832477391",
+    "response_status": "success"
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### PCI DSS One Step
+
+The PCI DSS One Step feature is designed for PCI-compliant merchants that can handle sensitive card data directly. This feature allows you to create payments using the Fondy Python SDK when you have access to the customer's card details, such as the `card_number`, `cvv2`, and `expiry_date`.
+
+This feature is suitable for scenarios where cardholder data is securely collected and stored within your system, ensuring compliance with PCI DSS standards.
+
+To create a payment, you will use the `step_one` function available from the `Pcidss` class. This function processes the payment and returns a detailed response, which includes information about the transaction status, masked card details, and other relevant metadata.
+
+The following code demonstrates how to use the `step_one` function to create a payment and validate the response. In addition, it also presents the response from the SDK, which contains detailed information about the processed payment.
+
+<Tabs>
+  <TabItem value="python2" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Pcidss
+
+  api = Api(merchant_id=1396424,
+            secret_key='test')
+
+  pcidss = Pcidss(api=api)
+
+  # Prepare the order data
+  order_data = {
+      'order_desc': 'test order',     # Description of the order
+      'currency': 'USD',              # Currency (e.g., USD)
+      'amount': '1000',               # Amount in cents (1000 = $10.00)
+      'card_number': '4444555511116666',  # Test card number
+      'cvv2': '333',                  # CVV of the card
+      'expiry_date': '1232',          # Expiry date (MMYY format)
+      'client_ip': '127.2.2.1'        # Client's IP address
+  }
+
+  # Create a payment using step_one
+  try:
+      response = pcidss.step_one(order_data)
+      print("Payment Step One Response:")
+      print(response)  # This will display the API's response
+  except Exception as e:
+      print(f"An error occurred: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response2" label="SDK response">   
+  ```json 
+  {
+    "rrn": "413957824276",
+    "masked_card": "444455XXXXXX6666",
+    "sender_cell_phone": "",
+    "sender_account": "",
+    "currency": "USD",
+    "fee": "",
+    "reversal_amount": "0",
+    "settlement_amount": "0",
+    "actual_amount": "1000",
+    "response_description": "",
+    "sender_email": "",
+    "order_status": "approved",
+    "response_status": "success",
+    "order_time": "27.11.2024 13:27:41",
+    "actual_currency": "USD",
+    "order_id": "f0e1c68c-57b7-485c-aa28-bc5d3b997b38",
+    "tran_type": "purchase",
+    "eci": "7",
+    "settlement_date": "",
+    "payment_system": "card",
+    "approval_code": "426504",
+    "merchant_id": 1396424,
+    "settlement_currency": "",
+    "payment_id": 832478607,
+    "card_bin": 444455,
+    "response_code": "",
+    "card_type": "VISA",
+    "amount": "1000",
+    "signature": "ff43a763dfd407bfdd2fddaff3531fa49db609f9",
+    "product_id": "",
+    "merchant_data": "",
+    "rectoken": "",
+    "rectoken_lifetime": "",
+    "verification_status": "",
+    "parent_order_id": "",
+    "additional_info": {
+      "capture_status": null,
+      "capture_amount": null,
+      "reservation_data": null,
+      "transaction_id": 2043104101,
+      "bank_response_code": null,
+      "bank_response_description": null,
+      "client_fee": 0.0,
+      "settlement_fee": 0.0,
+      "bank_name": null,
+      "bank_country": null,
+      "card_type": "VISA",
+      "card_product": "empty_visa",
+      "card_category": null,
+      "timeend": "27.11.2024 13:27:44",
+      "ipaddress_v4": "127.2.2.1",
+      "payment_method": "card",
+      "version_3ds": 2,
+      "flow": "frictionless",
+      "is_test": true
+    },
+    "response_signature_string": "**********|1000|USD|{\"capture_status\": null, \"capture_amount\": null, \"reservation_data\": null, \"transaction_id\": 2043104101, \"bank_response_code\": null, \"bank_response_description\": null, \"client_fee\": 0.0, \"settlement_fee\": 0.0, \"bank_name\": null, \"bank_country\": null, \"card_type\": \"VISA\", \"card_product\": \"empty_visa\", \"card_category\": null, \"timeend\": \"27.11.2024 13:27:44\", \"ipaddress_v4\": \"127.2.2.1\", \"payment_method\": \"card\", \"version_3ds\": 2, \"flow\": \"frictionless\", \"is_**********\": true}|1000|426504|444455|VISA|USD|7|444455XXXXXX6666|1396424|f0e1c68c-57b7-485c-aa28-bc5d3b997b38|approved|27.11.2024 13:27:41|832478607|card|success|0|413957824276|0|purchase"
+  }
+  ```
+  </TabItem>
+</Tabs> 
+
+### PCI DSS Two Step
+
+The PCI DSS Two Step process is designed for PCI-compliant systems that need to validate cardholder data using 3DS authentication before completing a transaction. This method involves two steps:
+
+1. **Validation (Step One):** Use the `step_one` function to verify cardholder information. The response provides the data needed for 3D Secure authentication, including `order_id`, `md`, and `pares`.
+2. **Payment (Step Two):** After validating the cardholder's information using the data from the first step, use the `step_two` function to complete the payment.
+
+Both functions, `step_one` and `step_two`, are available through the `Pcidss` class.
+
+The following code block presents an example of how to create the payment using the `step_one` and `step_two`. The code block also displays the responses from each function:
+
+<Tabs>
+  <TabItem value="python3" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Pcidss
+  import time
+
+  # Initialize the CloudIPSP API
+  # Replace 'your_merchant_id' and 'your_secret_key' with your actual credentials
+  api = Api(merchant_id=1396424, secret_key='test')
+
+  # Initialize the Pcidss instance
+  pcidss = Pcidss(api=api)
+
+  # Step One: Create a Payment
+  data_s1 = {
+      'order_id': str(int(time.time())),  # Use a timestamp as order ID
+      'order_desc': 'test order',        # Description of the order
+      'currency': 'USD',                 # Currency (e.g., USD)
+      'amount': '1000',                  # Amount in cents (1000 = $10.00)
+      'card_number': '4444555566661111', # Test card number
+      'cvv2': '222',                     # CVV of the card
+      'expiry_date': '1232'              # Expiry date (MMYY format)
+  }
+
+  try:
+      # Call step_one
+      response_step_one = pcidss.step_one(data_s1)
+      print("Step One Response:")
+      print(response_step_one)
+
+      # Extract data for Step Two
+      data_s2 = {
+          'order_id': data_s1['order_id'],     # Use the same order_id
+          'md': response_step_one['md'],      # Extract 'md' from step_one response
+          'pares': response_step_one['pareq'] # Extract 'pareq' from step_one response
+      }
+
+      # Call step_two
+      response_step_two = pcidss.step_two(data_s2)
+      print("\nStep Two Response:")
+      print(response_step_two)
+
+  except Exception as e:
+      print(f"An error occurred: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response3" label="Step one response">     
+  ```json 
+  {
+    "response_status": "success",
+    "acs_url": "https://pay.fondy.eu/acs/2043104826/2f4c716471ade61f6225f8b49532fd314cb83a5d",
+    "pareq": "eJxtU21vgjAQ/u6vIP4A+gJRNKVJHUvUiRpwS/aRYYNsgljA6b8fLTpFuISE5+5pe/fcHdnsBOeOz8NScNrTKiMuz/Mg4lq8tfuDyqxRv46o6Jp5/HjHynfiIo8PKUU61DEBN9gkuVyEuyAtmm4VCsLjZLakpjUyDUTAFbZ5CRczhxpDDCsjoIZtWhoknC7Y5mM2Z762Zv6GaRO2fGMEqFD7RHgo00JcqIktAm6gTSvFnu6KIsvHQD6uysn1ffal708EyGizZNBdM1mX0p13ZXKOt9R12O/Th5ffn3jl/NgESEb73DYoOMUQmdDCloaGY4jGaECA8nconsgiKdYh1F7fvUrz2tFmZjJXdqVL1R8dHUqWQvA0vNDRUEp5Q20iP2eHlMtLCfj/f5KvWyfyMu2cobCopsFNVsZ8yhdHL1rNkedH0Ev8yLblVClCZyZx1W4DozqV+Ln3BDy+WKV1XwHZYrUttEdAY5f+AHcC0ak=",
+    "md": "2043104826"
+  }
+  ```
+  </TabItem>
+  <TabItem value="response4" label="Step two response">      
+  ```json  
+  {
+    "rrn": "",
+    "masked_card": "444455XXXXXX1111",
+    "sender_cell_phone": "",
+    "sender_account": "",
+    "currency": "USD",
+    "fee": "",
+    "reversal_amount": "0",
+    "settlement_amount": "0",
+    "actual_amount": "",
+    "response_description": "3DSecure authentication failed",
+    "sender_email": "",
+    "order_status": "declined",
+    "response_status": "success",
+    "order_time": "27.11.2024 13:29:29",
+    "actual_currency": "GBP",
+    "order_id": "1732706968",
+    "tran_type": "purchase",
+    "eci": "",
+    "settlement_date": "",
+    "payment_system": "card",
+    "approval_code": "",
+    "merchant_id": 1396424,
+    "settlement_currency": "",
+    "payment_id": 832479019,
+    "card_bin": 444455,
+    "response_code": 1024,
+    "card_type": "VISA",
+    "amount": "1000",
+    "signature": "dfe4acbcb6c8dc9b4ad94587da956ddc238d167d",
+    "product_id": "",
+    "merchant_data": "",
+    "rectoken": "",
+    "rectoken_lifetime": "",
+    "verification_status": "",
+    "parent_order_id": "",
+    "additional_info": {
+      "capture_status": null,
+      "capture_amount": null,
+      "reservation_data": null,
+      "transaction_id": null,
+      "bank_response_code": null,
+      "bank_response_description": null,
+      "client_fee": null,
+      "settlement_fee": 0.0,
+      "bank_name": null,
+      "bank_country": null,
+      "card_type": "VISA",
+      "card_product": "empty_visa",
+      "card_category": null,
+      "timeend": "27.11.2024 13:29:31",
+      "ipaddress_v4": "186.209.205.205",
+      "payment_method": "card"
+    },
+    "response_signature_string": "**********|GBP|{\"capture_status\": null, \"capture_amount\": null, \"reservation_data\": null, \"transaction_id\": null, \"bank_response_code\": null, \"bank_response_description\": null, \"client_fee\": null, \"settlement_fee\": 0.0, \"bank_name\": null, \"bank_country\": null, \"card_type\": \"VISA\", \"card_product\": \"empty_visa\", \"card_category\": null, \"timeend\": \"27.11.2024 13:29:31\", \"ipaddress_v4\": \"186.209.205.205\", \"payment_method\": \"card\"}|1000|444455|VISA|USD|444455XXXXXX1111|1396424|1732706968|declined|27.11.2024 13:29:29|832479019|card|1024|3DSecure authentication failed|success|0|0|purchase"
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Capture
+
+The Capture function allows you to finalize a previously pre-authorized payment by capturing the held amount on a card. This process is the second stage in a two-stage payment flow, where the initial authorization (`preauth = Y`) reserves the specified amount. The capture can be a full or partial amount of the pre-authorized funds.
+
+The process to use the capture function is composed of two steps:
+
+1. **Pre-authorization (Step One):** Initiate a payment with `preauth: 'Y'`, reserving the amount on the card. You can use the `step_one` or `url` functions to create the payment.
+2. **Capture (Step Two):** Use the `capture` function, available from the `Order`class, to confirm and capture the reserved funds and complete the transaction.
+
+The following example demonstrates creating a pre-authorized payment and capturing the total amount. In addition, the code block also presents the response from the pre-authorization (`step_one`) which provides details of the transaction and the response from the `capture` operation.
+
+<Tabs>
+  <TabItem value="python4" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Pcidss, Order
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test'     # Replace with your secret key
+  )
+
+  # Step 2: Instantiate the Pcidss and Order classes
+  pcidss = Pcidss(api=api)
+  order = Order(api=api)
+
+  # Step 3: Prepare order data for the preauthorization
+  preauth_data = {
+      'order_desc': 'test order',        # Description of the order
+      'currency': 'USD',                 # Currency (e.g., USD)
+      'amount': '1000',                  # Amount in cents (e.g., 1000 = $10.00)
+      'card_number': '4444555511116666', # Test card number
+      'cvv2': '333',                     # CVV code
+      'expiry_date': '1232',             # Expiry date (MMYY format)
+      'preauth': 'Y'                     # Indicate this is a preauthorized payment
+  }
+
+  # Step 4: Execute the preauthorization (PciDssOne)
+  try:
+      preauth_response = pcidss.step_one(preauth_data)
+      print("Preauthorization Response:")
+      print(preauth_response)  # Print the response from the preauthorization step
+
+      # Extract necessary data for the capture
+      capture_data = {
+          'currency': preauth_response['currency'],   # Currency from preauthorization
+          'amount': preauth_response['amount'],       # Amount from preauthorization
+          'order_id': preauth_response['order_id']    # Order ID from preauthorization
+      }
+      print("--------------------------")
+      
+      # Step 5: Execute the capture method using the Order class
+      try:
+          capture_response = order.capture(capture_data)
+          print("\nCapture Response:")
+          print(capture_response)  # Print the response from the capture step
+      except Exception as e:
+          print(f"An error occurred during the capture step: {e}")
+
+  except Exception as e:
+      print(f"An error occurred during the preauthorization step: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response5" label="Step one response">    
+  ```json  
+  {
+    "rrn": "413957824276",
+    "masked_card": "444455XXXXXX6666",
+    "sender_cell_phone": "",
+    "sender_account": "",
+    "currency": "USD",
+    "fee": "",
+    "reversal_amount": "0",
+    "settlement_amount": "0",
+    "actual_amount": "1000",
+    "response_description": "",
+    "sender_email": "",
+    "order_status": "approved",
+    "response_status": "success",
+    "order_time": "27.11.2024 13:35:10",
+    "actual_currency": "USD",
+    "order_id": "92273d6d-636c-4b45-8853-5216ec0c213d",
+    "tran_type": "purchase",
+    "eci": "7",
+    "settlement_date": "",
+    "payment_system": "card",
+    "approval_code": "426504",
+    "merchant_id": 1396424,
+    "settlement_currency": "",
+    "payment_id": 832480387,
+    "card_bin": 444455,
+    "response_code": "",
+    "card_type": "VISA",
+    "amount": "1000",
+    "signature": "ef5a31bfdcf874657349384cb1c6ddd41947069c",
+    "product_id": "",
+    "merchant_data": "",
+    "rectoken": "",
+    "rectoken_lifetime": "",
+    "verification_status": "",
+    "parent_order_id": "",
+    "additional_info": {
+      "capture_status": "hold",
+      "capture_amount": 0.0,
+      "reservation_data": null,
+      "transaction_id": 2043107202,
+      "bank_response_code": null,
+      "bank_response_description": null,
+      "client_fee": 0.0,
+      "settlement_fee": 0.0,
+      "bank_name": null,
+      "bank_country": null,
+      "card_type": "VISA",
+      "card_product": "empty_visa",
+      "card_category": null,
+      "timeend": "27.11.2024 13:35:13",
+      "ipaddress_v4": "186.209.205.205",
+      "payment_method": "card",
+      "version_3ds": 2,
+      "flow": "frictionless",
+      "is_test": true
+    },
+    "response_signature_string": "**********|1000|USD|{\"capture_status\": \"hold\", \"capture_amount\": 0.0, \"reservation_data\": null, \"transaction_id\": 2043107202, \"bank_response_code\": null, \"bank_response_description\": null, \"client_fee\": 0.0, \"settlement_fee\": 0.0, \"bank_name\": null, \"bank_country\": null, \"card_type\": \"VISA\", \"card_product\": \"empty_visa\", \"card_category\": null, \"timeend\": \"27.11.2024 13:35:13\", \"ipaddress_v4\": \"186.209.205.205\", \"payment_method\": \"card\", \"version_3ds\": 2, \"flow\": \"frictionless\", \"is_**********\": true}|1000|426504|444455|VISA|USD|7|444455XXXXXX6666|1396424|92273d6d-636c-4b45-8853-5216ec0c213d|approved|27.11.2024 13:35:10|832480387|card|success|0|413957824276|0|purchase"
+  }
+  ```
+  </TabItem>
+  <TabItem value="response6" label="Capture response">      
+  ```json  
+  {
+    "capture_status": "captured",
+    "order_id": "92273d6d-636c-4b45-8853-5216ec0c213d",
+    "response_description": "",
+    "response_code": "",
+    "merchant_id": 1396424,
+    "response_status": "success"
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Verification
+
+The Verification feature allows you to validate customer cards by generating a secure checkout URL. This URL redirects the customer to a page where they can input their card details for validation. Fondy validates the card details and returns the results via a callback. The following steps summarize the process:
+
+1. Use the `verification` function, available through the `Checkout` class, to receive the `checkout_url`.
+2. Redirect the customer to the `checkout_url` returned in the response.
+3. The customer provides card details, and Fondy validates the information.
+4. The verification results are sent to your system via a [callback](/gateway/direct-integration/callbacks).
+
+The following example shows how to use the `verification` function and handle its response. It also presents the response from the `verification` function.
+
+<Tabs>
+  <TabItem value="python5" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Checkout
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test'     # Replace with your secret key
+  )
+
+  # Step 2: Instantiate the Checkout class
+  checkout = Checkout(api=api)
+
+  # Step 3: Prepare the order data for verification
+  verification_data = {
+      'order_desc': 'test order',   # Description of the order
+      'currency': 'USD',            # Currency (e.g., USD)
+      'amount': '1000',             # Amount in cents (e.g., 1000 = $10.00)
+      #'verification_type': 'code'   # Verification type (default is 'code')
+  }
+
+  # Step 4: Execute the verification method
+  try:
+      response = checkout.verification(verification_data)
+      print("Verification Response:")
+      print(response)  # Print the API's response
+  except Exception as e:
+      print(f"An error occurred: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response7" label="Verification response">      
+  ```json 
+  {
+    "checkout_url": "https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=5b9a0a685a3ceae642562c622a3df780bbd649a2",
+    "payment_id": "832481559",
+    "response_status": "success"
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Reports
+
+The Reports feature lets you retrieve detailed data about your operations within a specified date range using the Fondy Python SDK. Reports provide valuable insights into your transactions and can help you monitor and analyze your payment activities.
+
+To use the `reports` function, available through the `Payment` class, you have to provide the `date_from` and `date_to` parameters to define the interval for the report. The SDK fetches the data and returns it in JSON format.
+
+<Tabs>
+  <TabItem value="python6" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Payment
+  from datetime import datetime, timedelta
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test'     # Replace with your secret key
+  )
+
+  # Step 2: Instantiate the Payment class
+  payment = Payment(api=api)
+
+  # Step 3: Prepare the date range for the reports
+  now = datetime.now()
+  one_hour_ago = now - timedelta(hours=1)
+
+  # Format the dates as 'dd.mm.yyyy hh:mm:ss'
+  date_from = one_hour_ago.strftime('%d.%m.%Y %H:%M:%S')
+  date_to = now.strftime('%d.%m.%Y %H:%M:%S')
+
+  # Step 4: Prepare the data for the reports method
+  report_data = {
+      'date_from': date_from,  # Start date of the report range
+      'date_to': date_to       # End date of the report range
+  }
+
+  # Step 5: Execute the reports method
+  try:
+      reports_response = payment.reports(report_data)
+      print("Reports Response:")
+      print(reports_response)  # Print the response from the reports method
+  except Exception as e:
+      print(f"An error occurred while fetching the reports: {e}")
+  ```
+  </TabItem>
+  <TabItem value="javascript1" label="Javascript">       
+  ```javascript 
+  [
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 43: 52', 'actual_currency': 'GBP', 'order_id': 'test2379808186', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832419058, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '9b93009581bbf1e024a9516a8c0455634d8451a9', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042998544,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:43:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042998544,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:43:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********2379808186|approved|27.11.2024 07: 43: 52|832419058|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 44: 58', 'actual_currency': 'GBP', 'order_id': 'test8188425934', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832419201, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '002bb2f8c06df93c236ce24e679205a336d5f960', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042998760,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:45:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042998760,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:45:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********8188425934|approved|27.11.2024 07: 44: 58|832419201|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 48: 52', 'actual_currency': 'GBP', 'order_id': 'test5386079147', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832419734, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '7fbeedd2c3671540438e495c122f94bba8554b04', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042999563,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:48:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042999563,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:48:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********5386079147|approved|27.11.2024 07: 48: 52|832419734|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 49: 58', 'actual_currency': 'GBP', 'order_id': 'test8956992948', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832419834, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '5c709775a453d95d52748dc15c85b3bbbc661eba', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042999723,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:50:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2042999723,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:50:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********8956992948|approved|27.11.2024 07: 49: 58|832419834|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 53: 52', 'actual_currency': 'GBP', 'order_id': 'test916003968', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832420270, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '5aed89d259d17b260153ab307b9a089eaa5821c9', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043000464,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:53:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043000464,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:53:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********916003968|approved|27.11.2024 07: 53: 52|832420270|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 54: 59', 'actual_currency': 'GBP', 'order_id': 'test4756229574', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832420369, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': 'c4939840f0858e2eb455a9f12b629e4d4e04c955', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043000646,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:55:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043000646,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:55:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********4756229574|approved|27.11.2024 07: 54: 59|832420369|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 58: 52', 'actual_currency': 'GBP', 'order_id': 'test1469916640', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832420650, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': 'bf272c38a81f1f0a75eee1e08dd7445ff38cd781', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001190,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:58:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001190,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 07:58:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********1469916640|approved|27.11.2024 07: 58: 52|832420650|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 07: 59: 58', 'actual_currency': 'GBP', 'order_id': 'test5841275364', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832420741, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '72198173d6a813eca148ca1676f001e00718afbf', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001360,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:00:01",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001360,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:00:01",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********5841275364|approved|27.11.2024 07: 59: 58|832420741|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX1111', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '30000', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 02: 04', 'actual_currency': 'GBP', 'order_id': '1396424_372d788d014e982d6012880562f59f5b', 'tran_type': 'purchase', 'eci': '5', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832420924, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '30000', 'signature': 'af8e257832c69573c2901cb9b1458454de6d1730', 'product_id': '', 'merchant_data': '', 'rectoken': 'a41087ed7ce6d8a3e659549d0e1978393ddc266', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001724,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:02:05",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|30000|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001724,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:02:05",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_**********": true
+      }|30000|123456|444455|VISA|GBP|5|444455XXXXXX1111|1396424|1396424_372d788d014e982d6012880562f59f5b|approved|27.11.2024 08: 02: 04|832420924|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX1111', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '8000', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 03: 03', 'actual_currency': 'GBP', 'order_id': '1396424_12abd7ed7f2ca687a8b486009515e57e', 'tran_type': 'purchase', 'eci': '5', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832421011, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '8000', 'signature': 'f4afc4dec84b6b2772ee9972f19d6cbfdee27c57', 'product_id': '', 'merchant_data': '', 'rectoken': 'a41087ed7ce6d8a3e659549d0e1978393ddc266', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001869,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:03:03",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|8000|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043001869,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:03:03",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_**********": true
+      }|8000|123456|444455|VISA|GBP|5|444455XXXXXX1111|1396424|1396424_12abd7ed7f2ca687a8b486009515e57e|approved|27.11.2024 08: 03: 03|832421011|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 03: 52', 'actual_currency': 'GBP', 'order_id': 'test9910918671', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832421086, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '35bb8c42839fba87e5d2cbddeb883cab096b8d5a', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043002004,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:03:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043002004,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:03:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********9910918671|approved|27.11.2024 08: 03: 52|832421086|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 04: 58', 'actual_currency': 'GBP', 'order_id': 'test2161489449', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832421208, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '3a6b1dd3ac2b24ebee2b8bad24711899839121b8', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043002213,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:05:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043002213,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:05:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********2161489449|approved|27.11.2024 08: 04: 58|832421208|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 08: 52', 'actual_currency': 'GBP', 'order_id': 'test9820548133', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832421602, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '97c89d76d7d8d0886f004fc85be706693e7bad7e', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043002911,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:08:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043002911,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:08:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********9820548133|approved|27.11.2024 08: 08: 52|832421602|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 09: 58', 'actual_currency': 'GBP', 'order_id': 'test7391215809', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832421702, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': 'e0a46ef5c447fe45e1b733847d160f54469460bd', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043003074,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:10:01",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043003074,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:10:01",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********7391215809|approved|27.11.2024 08: 09: 58|832421702|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 13: 52', 'actual_currency': 'GBP', 'order_id': 'test7731763782', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832422109, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '6970883692f94c78e18d7df8ad109a2fc96b4137', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043003814,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:13:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043003814,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:13:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********7731763782|approved|27.11.2024 08: 13: 52|832422109|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 14: 58', 'actual_currency': 'GBP', 'order_id': 'test7686935019', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832422225, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '862cededa39abc552264f0a247e7088376723aa2', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043004012,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:15:01",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043004012,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:15:01",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********7686935019|approved|27.11.2024 08: 14: 58|832422225|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 18: 53', 'actual_currency': 'GBP', 'order_id': 'test2706372384', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832422667, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '965b846b82f7580788276590d0697731815ee4a9', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043004785,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:18:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043004785,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:18:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********2706372384|approved|27.11.2024 08: 18: 53|832422667|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 19: 58', 'actual_currency': 'GBP', 'order_id': 'test147610199', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832422782, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '4bd896cb9a6845350cc30037e18fc0b438dd024b', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043004979,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:20:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043004979,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:20:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********147610199|approved|27.11.2024 08: 19: 58|832422782|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX1111', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '30000', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 22: 03', 'actual_currency': 'GBP', 'order_id': '1396424_1045ef759cd87b15ec4338618db369fb', 'tran_type': 'purchase', 'eci': '5', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832422984, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '30000', 'signature': 'b19ec48aa4dd063c45b85e6697324b0159271488', 'product_id': '', 'merchant_data': '', 'rectoken': 'a41087ed7ce6d8a3e659549d0e1978393ddc266', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005394,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:22:04",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|30000|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005394,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:22:04",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_**********": true
+      }|30000|123456|444455|VISA|GBP|5|444455XXXXXX1111|1396424|1396424_1045ef759cd87b15ec4338618db369fb|approved|27.11.2024 08: 22: 03|832422984|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX1111', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '8000', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 23: 03', 'actual_currency': 'GBP', 'order_id': '1396424_6fd8434d5ace8d2496dc4d174eb0a226', 'tran_type': 'purchase', 'eci': '5', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832423080, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '8000', 'signature': '24d90f24e4b0121c140ba53db7fab0cc9e68fbc3', 'product_id': '', 'merchant_data': '', 'rectoken': 'a41087ed7ce6d8a3e659549d0e1978393ddc266', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005553,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:23:03",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|8000|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005553,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:23:03",
+        "ipaddress_v4": "193.0.61.237",
+        "payment_method": "card",
+        "is_**********": true
+      }|8000|123456|444455|VISA|GBP|5|444455XXXXXX1111|1396424|1396424_6fd8434d5ace8d2496dc4d174eb0a226|approved|27.11.2024 08: 23: 03|832423080|card|a41087ed7ce6d8a3e659549d0e1978393ddc266|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 23: 52', 'actual_currency': 'GBP', 'order_id': 'test5578406203', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832423163, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '6e694c79baabc6986b17fa1e43425679c9e673d3', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005692,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:23:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005692,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:23:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********5578406203|approved|27.11.2024 08: 23: 52|832423163|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 24: 58', 'actual_currency': 'GBP', 'order_id': 'test4814983921', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832423285, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': 'be32ae527da3f89258d18d7e0a06da3c1c2f134d', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005899,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:25:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043005899,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:25:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********4814983921|approved|27.11.2024 08: 24: 58|832423285|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 28: 52', 'actual_currency': 'GBP', 'order_id': 'test2570206830', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832423719, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '2f394bac3c7549b288706668166b4502fcbf8e04', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043006647,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:28:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043006647,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:28:56",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********2570206830|approved|27.11.2024 08: 28: 52|832423719|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 29: 58', 'actual_currency': 'GBP', 'order_id': 'test1719994304', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832423822, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': 'a7359519b2e8abde4bda7f89b81e75858fa57672', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043006816,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:30:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043006816,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:30:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********1719994304|approved|27.11.2024 08: 29: 58|832423822|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 33: 52', 'actual_currency': 'GBP', 'order_id': 'test7145314388', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832424220, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': 'b1d03f69645309796531711e1c41654b02d159ad', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043007526,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:33:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043007526,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:33:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********7145314388|approved|27.11.2024 08: 33: 52|832424220|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 34: 58', 'actual_currency': 'GBP', 'order_id': 'test8123657922', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832424337, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '4c7a497383ad2c184036ceefa9cf474e149ddfce', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043007732,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:35:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043007732,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:35:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********8123657922|approved|27.11.2024 08: 34: 58|832424337|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 38: 52', 'actual_currency': 'GBP', 'order_id': 'test5605209367', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832424788, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '07e6bc2c9f889ab5dc11d933b7b42da78e533f5d', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043008506,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:38:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043008506,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:38:55",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********5605209367|approved|27.11.2024 08: 38: 52|832424788|card|success|0|111111111111|purchase'
+    },
+    {'rrn': '111111111111', 'masked_card': '444455XXXXXX6666', 'sender_cell_phone': '', 'sender_account': '', 'currency': 'GBP', 'fee': '', 'reversal_amount': '0', 'settlement_amount': '', 'actual_amount': '100', 'response_description': '', 'sender_email': '', 'order_status': 'approved', 'response_status': 'success', 'order_time': '27.11.2024 08: 39: 58', 'actual_currency': 'GBP', 'order_id': 'test9235202861', 'tran_type': 'purchase', 'eci': '7', 'settlement_date': '', 'payment_system': 'card', 'approval_code': '123456', 'merchant_id': 1396424, 'settlement_currency': '', 'payment_id': 832424910, 'card_bin': 444455, 'response_code': '', 'card_type': 'VISA', 'amount': '100', 'signature': '0eea0040b808368c764d521b24f70f795afdf977', 'product_id': '', 'merchant_data': '', 'rectoken': '', 'rectoken_lifetime': '', 'verification_status': '', 'parent_order_id': '', 'fee_oplata': '', 'additional_info': '{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043008708,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:40:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_test": true
+      }', 'response_signature_string': '**********|100|GBP|{
+        "capture_status": null,
+        "capture_amount": null,
+        "reservation_data": null,
+        "transaction_id": 2043008708,
+        "bank_response_code": null,
+        "bank_response_description": null,
+        "client_fee": 0.0,
+        "settlement_fee": null,
+        "bank_name": null,
+        "bank_country": null,
+        "card_type": "VISA",
+        "card_product": "empty_visa",
+        "card_category": null,
+        "timeend": "27.11.2024 08:40:02",
+        "ipaddress_v4": "54.154.216.60",
+        "payment_method": "card",
+        "is_**********": true
+      }|100|123456|444455|VISA|GBP|7|444455XXXXXX6666|1396424|**********9235202861|approved|27.11.2024 08: 39: 58|832424910|card|success|0|111111111111|purchase'
+    }
+  ]
+  ```
+  </TabItem>
+</Tabs> 
+
+### Reverse
+
+The Reverse operation allows you to refund payments made by your clients, effectively reversing the funds from a previously completed transaction. This is useful in scenarios such as cancellations or refunds.
+
+To use the `reverse` function, available through the `Order`class, you have to inform the `currency`, `amount`, and `order_id` to process the refund. The response from the `reverse` function provides a `reverse_status` indicating the success of the reversal.
+
+The following example displays the code to use the `Reverse` function. In addition, it also presents the response from the `Reverse`function, which informs the `reverse_status`.
+
+<Tabs>
+  <TabItem value="python-reverse" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Pcidss, Order
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test',    # Replace with your secret key
+      content_type='form'   # Set content type as 'form'
+  )
+
+  # Step 2: Instantiate the Pcidss and Order classes
+  pcidss = Pcidss(api=api)
+  order = Order(api=api)
+
+  # Step 3: Prepare order data for the preauthorization
+  preauth_data = {
+      'order_desc': 'test order',        # Description of the order
+      'currency': 'USD',                 # Currency (e.g., USD)
+      'amount': '1000',                  # Amount in cents (e.g., 1000 = $10.00)
+      'card_number': '4444555511116666', # Test card number
+      'cvv2': '333',                     # CVV code
+      'expiry_date': '1232',             # Expiry date (MMYY format)
+      'preauth': 'Y'                     # Indicate this is a preauthorized payment
+  }
+
+  # Step 4: Execute the preauthorization
+  try:
+      preauth_response = pcidss.step_one(preauth_data)
+      print("Preauthorization Response:")
+      print(preauth_response)  # Print the response from the preauthorization step
+
+      # Step 5: Prepare data for the reverse method
+      reverse_data = {
+          'currency': preauth_response['currency'],   # Currency from preauthorization
+          'amount': preauth_response['amount'],       # Amount from preauthorization
+          'order_id': preauth_response['order_id']    # Order ID from preauthorization
+      }
+
+      # Step 6: Execute the reverse method
+      try:
+          reverse_response = order.reverse(reverse_data)
+          print("\nReverse Response:")
+          print(reverse_response)  # Print the response from the reverse step
+      except Exception as e:
+          print(f"An error occurred during the reverse step: {e}")
+
+  except Exception as e:
+      print(f"An error occurred during the preauthorization step: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response-reverse" label="Reverse response">    
+  ```json 
+  {
+    "reverse_status": "approved",
+    "order_id": "a4622d66-099b-42c4-9372-986867ba8291",
+    "response_description": "",
+    "response_code": "",
+    "merchant_id": 1396424,
+    "response_status": "success",
+    "signature": "c451ddf9316f7622e469dccaeb90deafdd0400c7",
+    "reverse_id": "",
+    "reversal_amount": "1000",
+    "transaction_id": "2043111208",
+    "response_signature_string": "**********|1396424|a4622d66-099b-42c4-9372-986867ba8291|success|1000|approved|2043111208"
+  }
+  ```
+  </TabItem>
+</Tabs> 
+
+### Status
+
+The Status function lets you retrieve detailed information about a specific order, including its current status. Using the Fondy Python SDK, you can quickly access this information by providing the `order_id` of the order you want to query.
+
+The following example demonstrates how to use the `status` function, available through the `Order`class, to retrieve information about an order. In addition, it also presents the response from the Status function.
+
+<Tabs>
+  <TabItem value="python-status" label="Python" default>
+  ``` python
+  from cloudipsp.api import Api
+  from cloudipsp import Pcidss, Order
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test',    # Replace with your secret key
+      content_type='form'   # Set content type as 'form'
+  )
+
+  # Step 2: Instantiate the Pcidss and Order classes
+  pcidss = Pcidss(api=api)
+  order = Order(api=api)
+
+  # Step 3: Prepare order data for the preauthorization
+  preauth_data = {
+      'order_desc': 'test order',        # Description of the order
+      'currency': 'USD',                 # Currency (e.g., USD)
+      'amount': '1000',                  # Amount in cents (e.g., 1000 = $10.00)
+      'card_number': '4444555511116666', # Test card number
+      'cvv2': '333',                     # CVV code
+      'expiry_date': '1232',             # Expiry date (MMYY format)
+      'preauth': 'Y'                     # Indicate this is a preauthorized payment
+  }
+
+  # Step 4: Execute the preauthorization (PciDssOne)
+  try:
+      preauth_response = pcidss.step_one(preauth_data)
+      print("Preauthorization Response:")
+      print(preauth_response)  # Print the response from the preauthorization step
+
+      # Extract necessary data for the status check
+      status_data = {
+          'order_id': preauth_response['order_id']  # Order ID from preauthorization
+      }
+
+      # Step 5: Execute the status method
+      try:
+          status_response = order.status(status_data)
+          print("\nStatus Response:")
+          print(status_response)  # Print the response from the status check
+      except Exception as e:
+          print(f"An error occurred during the status check: {e}")
+
+  except Exception as e:
+      print(f"An error occurred during the preauthorization step: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response-status" label="Status response">      
+  ```json 
+  {
+    "rrn": "413957824276",
+    "masked_card": "444455XXXXXX6666",
+    "sender_cell_phone": "",
+    "sender_account": "",
+    "currency": "USD",
+    "fee": "",
+    "reversal_amount": "0",
+    "settlement_amount": "0",
+    "actual_amount": "1000",
+    "response_description": "",
+    "sender_email": "",
+    "order_status": "approved",
+    "response_status": "success",
+    "order_time": "27.11.2024 13:45:42",
+    "actual_currency": "USD",
+    "order_id": "1c90cc6f-c523-4f1e-a28b-2918b725758d",
+    "tran_type": "purchase",
+    "eci": "7",
+    "settlement_date": "",
+    "payment_system": "card",
+    "approval_code": "426504",
+    "merchant_id": 1396424,
+    "settlement_currency": "",
+    "payment_id": 832483202,
+    "card_bin": 444455,
+    "response_code": "",
+    "card_type": "VISA",
+    "amount": "1000",
+    "signature": "7d979ddab840eafcf678ab8ad3e404919ad21dbc",
+    "product_id": "",
+    "merchant_data": "",
+    "rectoken": "",
+    "rectoken_lifetime": "",
+    "verification_status": "",
+    "parent_order_id": "",
+    "fee_oplata": "0",
+    "additional_info": {
+      "capture_status": "hold",
+      "capture_amount": 0.0,
+      "reservation_data": null,
+      "transaction_id": 2043111872,
+      "bank_response_code": null,
+      "bank_response_description": null,
+      "client_fee": 0.0,
+      "settlement_fee": 0.0,
+      "bank_name": null,
+      "bank_country": null,
+      "card_type": "VISA",
+      "card_product": "empty_visa",
+      "card_category": null,
+      "timeend": "27.11.2024 13:45:44",
+      "ipaddress_v4": "186.209.205.205",
+      "payment_method": "card",
+      "version_3ds": 2,
+      "flow": "frictionless",
+      "is_test": true
+    },
+    "response_signature_string": "**********|1000|USD|{\"capture_status\": \"hold\", \"capture_amount\": 0.0, \"reservation_data\": null, \"transaction_id\": 2043111872, \"bank_response_code\": null, \"bank_response_description\": null, \"client_fee\": 0.0, \"settlement_fee\": 0.0, \"bank_name\": null, \"bank_country\": null, \"card_type\": \"VISA\", \"card_product\": \"empty_visa\", \"card_category\": null, \"timeend\": \"27.11.2024 13:45:44\", \"ipaddress_v4\": \"186.209.205.205\", \"payment_method\": \"card\", \"version_3ds\": 2, \"flow\": \"frictionless\", \"is_**********\": true}|1000|426504|444455|VISA|USD|7|0|444455XXXXXX6666|1396424|1c90cc6f-c523-4f1e-a28b-2918b725758d|approved|27.11.2024 13:45:42|832483202|card|success|0|413957824276|0|purchase"
+  }
+  ```
+  </TabItem>
+</Tabs> 
+
+### Subscription
+
+The Subscription function enables you to create recurring payments with the Fondy Python SDK. Once a subscription is created, Fondy automatically charges the customer based on the specified settings, ensuring a seamless recurring payment process.
+
+To start a subscription, you must use the `subscription` function, available through the `Checkout` class, and specify the `recurring_data` field, which includes key information such as payment interval, amount, and start/end dates. After creating the subscription, the SDK returns a `checkout_url`. Redirect your customer to this URL so they can provide their payment details. After this step, Fondy will handle the future charges using the payment method provided by the customer.
+
+The `recurring_data` field allows you to configure the subscription settings:
+
+| Parameter    | Type    | Description                                                                                                                  |
+| ------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `every`      | Integer | The interval between payments. Defaults to `1`. Example: `1` represents one period (e.g., one month if `period` is "month"). |
+| `period`     | String  | Unit of time for the payment interval. Defaults to `month`. Accepted values: `day`, `week`, `month`, `year`.                 |
+| `amount`     | Integer | Payment amount in minor currency units (e.g., cents). Example: `10000` represents $100.00.                                   |
+| `start_time` | String  | Start date for recurring payments in ISO 8601 format (e.g., `2024-04-26`). Defaults to the current date.                     |
+| `end_time`   | String  | End date for recurring payments in ISO 8601 format. Defaults to a system-defined end date.                                   |
+
+In case you need to stop a subscription, you can use the `subscription_stop` function. To control the subscription, you have to specify the `action` parameter:
+
+| Action | Description                                                      |
+| ------ | ---------------------------------------------------------------- |
+| `stop` | Halts the subscription, canceling any future scheduled payments. |
+
+The following example demonstrates how to create a subscription and stop it using the `subscription` function. It also presents the response after creating and stopping the subscription.
+
+<Callout type="info">
+  To use the `subscription` feature, you have to set the `api_protocol = 2.0` when initiating the `Api`.
+</Callout>
+
+<Tabs>
+  <TabItem value="python-subscription" label="Python" default>
+  ```python 
+  import time
+  from cloudipsp.api import Api
+  from cloudipsp import Checkout
+  from datetime import datetime
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test',     # Replace with your secret key
+       api_protocol='2.0'      # Explicitly set API version to 2.0
+  )
+
+  # Step 2: Instantiate the Checkout class
+  checkout = Checkout(api=api)
+
+  # Step 3: Generate order data for subscription
+  order_id = f"order_{int(time.time())}"  # Unique order ID
+  start_time = datetime.now().strftime('%Y-%m-%d')  # Start time in YYYY-MM-DD format
+
+  subscription_data = {
+      'order_desc': 'test order',  # Description of the order
+      'order_id': order_id,        # Unique order ID
+      'currency': 'USD',           # Currency (e.g., USD)
+      'amount': 1000,              # Total amount in cents (e.g., 1000 = $10.00)
+      'recurring_data': {
+          'every': 5,              # Frequency of recurring payments (e.g., every 5 days)
+          'period': 'day',         # Period of recurring payments ('day', 'month', 'year')
+          'amount': 1000,          # Recurring amount in cents
+          'start_time': start_time,  # Start date of the recurring payments
+          'state': 'y',            # Default state of the recurring payment ('y' = active)
+          'readonly': 'n'          # Allow user to modify recurring details ('n' = no)
+      }
+  }
+
+  # Step 4: Execute the subscription method
+  try:
+      response = checkout.subscription(subscription_data)
+      print("Subscription Response:")
+      print(response)  # Print the subscription response
+  except Exception as e:
+      print(f"An error occurred while creating the subscription: {e}")
+
+  # Step 5: Stop the subscription
+  stop_data = {
+      'order_id': order_id,  # The same order ID used for the subscription
+      'action': 'stop'       # Action to stop the subscription
+  }
+
+  # Delay to simulate time before stopping the subscription
+  print("Waiting for 30 seconds before stopping the subscription...")
+  time.sleep(30)
+
+  try:
+      stop_response = checkout.subscription_stop(stop_data['order_id'])
+      print("Subscription Stop Response:")
+      print(stop_response)  # Print the response for stopping the subscription
+  except Exception as e:
+      print(f"An error occurred while stopping the subscription: {e}")
+  ```
+  </TabItem>
+  <TabItem value="response" label="Subscription response">        
+  ```json 
+  {
+    checkout_url: 'https://pay.fondy.eu/merchants/5ad6b888f4becb0c33d543d54e57d86c/default/index.html?token=a6add77d64c6470809917b0be55d6f1329428ec7',    
+    payment_id: '832376082'
+  }
+  ```
+  </TabItem>
+  <TabItem value="response-subscription-stop" label="Subscription stop response">        
+  ```json 
+  {
+    "response_status": "success",
+    "merchant_id": 1396424,
+    "order_id": "order_1732708213",
+    "status": "disabled",
+    "signature": "2df1d3e01c2e6359bfda1e7179f3338026313ff4"
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+### Transaction List by Order
+
+The TransactionList function enables you to retrieve all transactions associated with a specific order using the Fondy Python SDK. This is particularly useful for tracking multiple transactions, such as payments and reversals related to a single order.
+
+To use the `transaction_list` function, available through the `Order` class, you must specify the `order_id` of the order you want to query. The SDK returns a list of all transactions related to the specified order, including details such as transaction types, amounts, and statuses.
+
+The following example demonstrates how to retrieve the transaction list for an existing order. It also presents the response from the `transaction_list` function.
+
+<Tabs>
+  <TabItem value="python-transaction-list" label="Python" default>
+  ```python 
+  from cloudipsp.api import Api
+  from cloudipsp import Pcidss, Order
+
+  # Step 1: Initialize the API with credentials
+  api = Api(
+      merchant_id=1396424,  # Replace with your merchant ID
+      secret_key='test',    # Replace with your secret key
+      content_type='json'   # Set content type as 'json'
+  )
+
+  # Step 2: Instantiate the Pcidss and Order classes
+  pcidss = Pcidss(api=api)
+  order = Order(api=api)
+
+  # Step 3: Prepare order data for the preauthorization
+  preauth_data = {
+      'order_desc': 'test order',        # Description of the order
+      'currency': 'USD',                 # Currency (e.g., USD)
+      'amount': '1000',                  # Amount in cents (e.g., 1000 = $10.00)
+      'card_number': '4444555511116666', # Test card number
+      'cvv2': '333',                     # CVV code
+      'expiry_date': '1232',             # Expiry date (MMYY format)
+      'preauth': 'Y'                     # Indicate this is a preauthorized payment
+  }
+
+  # Step 4: Execute the preauthorization (PciDssOne)
+  try:
+      preauth_response = pcidss.step_one(preauth_data)
+      print("Preauthorization Response:")
+      print(preauth_response)  # Print the response from the preauthorization step
+
+      # Extract necessary data for the transaction list
+      list_data = {
+          'order_id': preauth_response['order_id']  # Order ID from preauthorization
+      }
+
+      # Step 5: Execute the transaction_list method
+      try:
+          transaction_list_response = order.transaction_list(list_data)
+          print("\nTransaction List Response:")
+          print(transaction_list_response)  # Print the response from the transaction list
+      except Exception as e:
+          print(f"An error occurred during the transaction list retrieval: {e}")
+
+  except Exception as e:
+      print(f"An error occurred during the preauthorization step: {e}")
+  ```
+  </TabItem>  
+  <TabItem value="response-transaction-list" label="Transaction list response">        
+  ```json 
+  [
+    {
+      "id": 2043115620,
+      "payment_id": 832485366,
+      "parent_tran_id": null,
+      "timestart": "27.11.2024 13:54:34",
+      "timeend": "27.11.2024 13:54:38",
+      "duration": 3901,
+      "merchant_id": 1396424,
+      "tran_type": "purchase",
+      "sender_country": "US",
+      "sender_email": null,
+      "amount": 10.0,
+      "currency": "USD",
+      "actual_amount": 10.0,
+      "actual_currency": "USD",
+      "expire_month": "12",
+      "expire_year": "2032",
+      "cavv": null,
+      "eci": "7",
+      "md": null,
+      "veres_status": null,
+      "pares_status": null,
+      "ipaddress_v4": "186.209.205.205",
+      "payment_system": "card",
+      "card_last_digits": "6666",
+      "card_bin": "444455",
+      "reversal_amount": 0.0,
+      "capture_amount": null,
+      "sender_approval_code": "426504",
+      "sender_rrn": "413957824276",
+      "capture_status": "hold",
+      "transaction_status": "approved",
+      "response_code": null,
+      "settlement_amount": 0.0,
+      "settlement_currency": null,
+      "settlement_date": null,
+      "fee": null,
+      "preauth": true,
+      "settlement_status": null,
+      "rectoken": null,
+      "istest": true,
+      "client_fee": 0.0,
+      "ip_country": "BR",
+      "verification_code": null,
+      "receiver_rrn": null,
+      "receiver_approval_code": null,
+      "receiver_country": null,
+      "protocol": "checkout_com",
+      "rectoken_lifetime": null,
+      "order_id": "177ec5f3-bc74-425c-8759-c5ff9f46fd84",
+      "binmanagement_enabled": "True",
+      "masked_card": "444455XXXXXX6666",
+      "card_type": "VISA"
+    }
+  ]
+  ```
+  </TabItem>
+</Tabs>

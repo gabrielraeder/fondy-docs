@@ -1,0 +1,122 @@
+---
+title: "Get Transaction List of Wallet"
+description: "Learn how to retrieve a list of all transactions associated with a specific wallet under a Split Account using Fondy's API."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This operation allows you to retrieve a list of all transactions associated with a specific wallet under a Split Account. By providing the wallet's ID, you can access detailed information on all the transactions in that wallet. It is particularly useful for scenarios where you need to track the transaction history of a specific wallet. For instance, if you manage multiple wallets under a single Split Account and need to audit or report on the wallet's transaction activity, this operation provides an easy way to pull all transaction records.
+
+This page will guide you trough the process of using this operation.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Request
+
+To retrieve a list of all transactions associated with a specific wallet, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/splitaccount/splitaccount/{splitaccount_id}/wallet/{id}/transactions"),
+       "method": "GET"
+   }
+   ```
+
+<Callout type="warning" title="Path Parameters">
+  Change the following in the `encrypted_url`
+
+  * Change `{splitaccount_id}` with the ID of the split account containing the wallet.
+  * Change `{id}`with the ID of the wallet containing the transactions.
+</Callout>
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(transaactionsObject)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once decrypted, the payload is as follows:
+
+```json
+[
+  {
+    "record_created_date": "2020-01-22T13:15:30.000Z",
+    "payment_scheme": "FASTERPAYMENTS",
+    "account_closing_balance": {
+      "currency": "GBP",
+      "amount": 4500
+    },
+    "account_type": "string",
+    "booking_date": "2020-01-22T13:15:30.000Z",
+    "transaction_amount": {
+      "currency": "GBP",
+      "amount": 4500
+    },
+    "account_opening_balance": {
+      "currency": "GBP",
+      "amount": 4500
+    },
+    "debit_credit_code": "string",
+    "account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "payment_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "counterparty": {
+      "name": "string",
+      "iban": "FR7630006000011234567890189",
+      "sort_code": "012345",
+      "bic": "string",
+      "account_number": "01234567",
+      "id": "string"
+    },
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "transaction_reference": "string",
+    "is_fee": true,
+    "value_date": "2020-01-22T13:15:30.000Z"
+  }
+]
+```
+
+Where:
+
+| **Parameter**             | **Description**                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------- |
+| `record_created_date`     | Date and time when the transaction record was created (ISO 8601 format).            |
+| `payment_scheme`          | The payment scheme used for the transaction (e.g., FASTERPAYMENTS).                 |
+| `account_closing_balance` | The balance in the account after the transaction.                                   |
+| `currency`                | The currency code of the account balance (e.g., GBP).                               |
+| `amount`                  | The amount in the account at the time of closing the balance.                       |
+| `account_type`            | Type of the account (string value).                                                 |
+| `booking_date`            | Date and time when the transaction was booked (ISO 8601 format).                    |
+| `transaction_amount`      | The amount of the transaction being processed.                                      |
+| `currency`                | The currency of the transaction amount (e.g., GBP).                                 |
+| `amount`                  | The transaction amount.                                                             |
+| `account_opening_balance` | The balance in the account before the transaction took place.                       |
+| `currency`                | The currency code of the opening balance (e.g., GBP).                               |
+| `amount`                  | The amount in the account at the time of opening the balance.                       |
+| `debit_credit_code`       | Code indicating whether the transaction is a debit or credit (string value).        |
+| `account_id`              | Unique identifier for the account associated with the transaction.                  |
+| `payment_id`              | Unique identifier for the payment associated with the transaction.                  |
+| `counterparty`            | Information about the counterparty involved in the transaction.                     |
+| `name`                    | Name of the counterparty.                                                           |
+| `iban`                    | IBAN (International Bank Account Number) of the counterparty.                       |
+| `sort_code`               | Sort code of the counterparty's bank account.                                       |
+| `bic`                     | BIC (Bank Identifier Code) of the counterparty's bank.                              |
+| `account_number`          | Account number of the counterparty.                                                 |
+| `id`                      | Unique identifier for the counterparty.                                             |
+| `id`                      | Unique identifier for the transaction record.                                       |
+| `transaction_reference`   | Reference string for the transaction.                                               |
+| `is_fee`                  | Boolean value indicating whether the transaction is a fee (`true `or `false`).      |
+| `value_date`              | Date and time when the transaction value is considered effective (ISO 8601 format). |

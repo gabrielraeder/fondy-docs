@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_extend "http://ns.adobe.com/Extensibility/1.0/">
+	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
+	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
+	<!ENTITY ns_vars "http://ns.adobe.com/Variables/1.0/">
+	<!ENTITY ns_imrep "http://ns.adobe.com/ImageReplacement/1.0/">
+	<!ENTITY ns_sfw "http://ns.adobe.com/SaveForWeb/1.0/">
+	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
+	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
+]>
+<svg version="1.1" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#2F5168;}
+	.st1{fill:#FFFFFF;}
+</style>
+<metadata>
+	<sfw  xmlns="&ns_sfw;">
+		<slices></slices>
+		<sliceSourceBounds  bottomLeftOrigin="true" height="512" width="512.8" x="0" y="-0.1"></sliceSourceBounds>
+	</sfw>
+</metadata>
+<rect y="0.1" class="st0" width="512.8" height="512"/>
+<g>
+	<path class="st1" d="M200,246.4c5.1,3.1,10.7,5.7,15.6,9.4c17.9,13.7,26.9,32.3,28.9,54.6c1.4,15.2,0.8,30.1-5.1,44.3
+		c-11.8,28.8-34,43.9-64.3,46.2c-21.2,1.6-42.5,0.7-63.8,1.1c-5.2,0.1-5.8-2.6-5.7-6.7c0.1-19.4,0-38.7,0-58.1c0-72,0-143.9,0-215.9
+		c0-3.3,0-6.6,0-10.8c27.5,0.3,54.3-3.6,80.6,3.9c32.5,9.2,52.1,41.1,47.6,77.1c-2.7,22-12.4,39.9-31.6,51.9
+		c-0.8,0.5-1.5,1.2-2.1,1.9C199.9,245.6,200,245.9,200,246.4z M134.4,260.6c0,39.1,0,78.3,0,117.3c12.6,0,25.1,1,37.3-0.2
+		c24-2.4,38.4-16.1,43.4-38.9c3.3-14.9,1.9-29.5-2.9-43.7c-6.4-18.8-19.4-31.5-39.3-34.2C160.4,259.2,147.6,260.6,134.4,260.6z
+		 M134,238.2c33,3.1,55-5.1,65.1-24.2c10.1-18.9,8.3-49.2-3.7-64.1c-11.8-14.6-40.4-22-61.4-15.9C134,168.6,134,203.2,134,238.2z"/>
+	<path class="st1" d="M406.4,111.3c0,8-0.1,15.4,0.1,22.8c0.1,4.9-3.1,4.5-6.2,4.5c-15.1,0-30.1,0-45.2,0c-2.6,0-5.2,0-9,0
+		c0,3.4,0,6.4,0,9.4c0,81.2,0,162.5,0,243.7c0,9.9,0,9.9-9.6,9.9c-6.7,0-13.4-0.4-20.1,0.1c-5.9,0.4-7.7-2.1-7.1-7.5
+		c0.2-2.1,0-4.3,0-6.4c0-80.3,0-160.6,0-240.9c0-2.6,0-5.1,0-8.3c-22.6,0-44.5,0-67,0c0-9.3,0-18,0-27.3
+		C296.8,111.3,351.1,111.3,406.4,111.3z"/>
+</g>
+</svg>

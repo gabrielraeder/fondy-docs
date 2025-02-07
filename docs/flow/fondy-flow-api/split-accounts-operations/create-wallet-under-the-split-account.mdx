@@ -1,0 +1,136 @@
+---
+title: "Create Wallet Under the Split Account"
+description: "Learn how to create and configure new wallets under a Split Account using Fondy's API, including setting up payment references and compliance details."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This operation allows you to create a new wallet under a specific Split Account. For example, if you're managing multiple wallets for different purposes within the same Split Account, you can create a new wallet with its own unique properties, such as payment references, compliance details, and balance tracking.
+
+This page will guide you through the process of using this operation. See the following sections for more details.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Request
+
+The request process of this operation consists of the following two steps:
+
+1. [Create the payload](#step-1-create-the-payload)
+2. [Make the encrypted request](#step-2-make-the-encrypted-request)
+
+See the sections below for more details on each step.
+
+### Step 1: Create the payload
+
+The information on the wallet must be sent to the payload. See the code block below for an example:
+
+```json
+{
+  "default_wallet_id": "Provided by Fondy",
+  "identity_id": "a526165d-3f68-45fa-a3bd-87c6ecd5584b",
+  "payee_compliance_profile_id": "From the call to onboarding",
+  "default_payment_reference": "202408091128",
+  "alias": "name/reference for this wallet for yourselves to set",
+  "additional_information": "202408091129",
+  "payee_details": {
+    "name": "name",
+    "iban": "iban",
+    "currency": "EUR",
+    "address": {
+      "country_code": "LT",
+      "city": "Vilnius",
+      "street": "Street",
+      "building_name": "Building",
+      "building_number": "16B",
+      "postal_code": "LT-12345"
+    },
+    "externalId": "6566c461-957d-4937-b7d5-744c63c8fa66"
+  }
+}
+```
+
+Where:
+
+| **Parameter**                 | **Description**                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `additional_information`      | Field for your reference or additional information. It must be 1-125 characters and match a regex pattern. |
+| `balances`                    | An object representing the balance details of the wallet.                                                  |
+| `default_wallet_id`           | Unique identifier for the default wallet.                                                                  |
+| `payee_details`               | Details about the account, such as IBAN/BIC or sort code/account number.                                   |
+| `payee_identity_id`           | Unique identifier for the payee's identity. This is a legacy field.                                        |
+| `payee_compliance_profile_id` | Unique identifier for the payee's compliance profile.                                                      |
+| `alias`                       | Alias for the Split Account Wallet. It must be 1-35 characters and match a regex pattern.                  |
+| `default_payment_reference`   | Reference for payments provided by the payee.                                                              |
+| `external_id`                 | Client-supplied external reference for the wallet.                                                         |
+| `id`                          | Unique identifier for the account.                                                                         |
+| `created_date`                | ISO 8601 formatted DateTime indicating when the wallet was created                                         |
+
+Once you create the payload, it has to be encrypted. See the following section for more details.
+
+### Step 2: Make the encrypted request
+
+To create the wallet, follow the steps below:
+
+1. To encrypt your request in the stack, follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) .
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json Request
+    {
+        "encrypted_payload": ENCRYPTED(accountObject),
+        "encrypted_user": ENCRYPTED(<username>),    
+        "encrypted_url": ENCRYPTED("/accounts"),
+        "method": "POST"
+    }
+   ```
+   
+In the request `ENCRYPTED(accountObject)` is the payload previously created, which is now encrypted.
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(accountObject)
+    "encrypted_url": null
+    "method": null
+    "nonce": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once it is decrypted, the unencrypted payload is as follows:
+
+```json
+{
+  "account_currency": "GBP",
+  "account_type": "STANDARD",
+  "account_balance": {
+    "currency": "GBP",
+    "amount": 4500
+  },
+  "account_details": {
+    "name": "string",
+    "iban": "FR7630006000011234567890189",
+    "sort_code": "012345",
+    "bic": "string",
+    "account_number": "01234567",
+    "id": "string"
+  },
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "classification": "BUSINESS_OTHER",
+  "created_date_time": "2020-01-22T13:15:30.000Z",
+  "default_wallet": true,
+  "updated_date_time": "2020-01-22T13:15:30.000Z",
+  "master_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "wallet_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "wallet_business_reference": "string",
+  "account_alias": "Example123",
+  "status": "ACTIVE"
+}
+```
+
+Where `id` is the newly created wallet's ID.

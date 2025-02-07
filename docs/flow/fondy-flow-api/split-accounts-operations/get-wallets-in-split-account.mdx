@@ -1,0 +1,168 @@
+---
+title: "Get Wallets in Split Account"
+description: "Retrieve details of all wallets within a specific Split Account."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+By calling this operation, you can get a list of all wallets under a Split Account or focus on retrieving details of a specific wallet by its unique ID. This provides valuable information such as the wallet's unique identifier, compliance profile, balance details, and current status, making it easier for you to integrate wallet management into your existing system and track payments effectively.
+
+This page will guide you through the process of using these operations:
+
+* [Retrieve All Wallets](#retrieve-all-wallets)
+* [Retrieve Specific Wallet](#retrieve-specific-wallet)
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the Fondy API are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Retrieve All Wallets
+
+To retrieve a list of all wallets under a split account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your request into the stack.
+
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+    {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/splitaccount/{splitaccount_id}/wallet\"),
+       "method": "GET"
+    }
+   ```
+
+   <Callout type="warning" title="`splitaccount_id`">
+     Change `{splitaccount_id}` with the actual ID of the split account to retrieve the wallets from.
+   </Callout>
+
+### Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(wallets)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload is as follows:
+
+```json
+{
+    "id  ": " WALLET-61b1-420b-9add-c510d44a354f
+    "payee_compliance_profile_id  ": " 43971e26-61b1-420b-9add-c510d44a354f
+    "default_wallet_id  ": " 43971e26-61b1-420b-9add-c510d44a354f
+    "payee_details  ": " {
+    "  id  ": " 43971e26-61b1-420b-9add-c510d44a354f   
+    "},
+    "default_payment_reference  ": " Def_ref_123
+    "external_id  ": " My reference here    
+}
+...
+```
+
+See the table below for a description of the parameters:
+
+| **Parameter**                 | **Description**                                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------- |
+| `id`                          | Unique identifier for the wallet.                                                     |
+| `payee_compliance_profile_id` | Identifier for the compliance profile associated with the payee.                      |
+| `default_wallet_id`           | Identifier of the default wallet linked to the payee for transactions.                |
+| `payee_details`               | A nested object containing detailed information about the payee.                      |
+| `default_payment_reference`   | Default reference string included with payments made from this wallet.                |
+| `external_id`                 | Custom reference provided by the user or system for external tracking or integration. |
+
+This operation retrieves a limited amount of data rather than all the deep information held in the system. For specific information, such as balance or status, use the Retrieve Specific Wallet operation explained in the next section.
+
+## Retrieve Specific Wallet
+
+To retrieve information about a specific wallet under a split account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+     {
+         "encrypted_payload": null,
+         "encrypted_user": ENCRYPTED(<username>),    
+         "encrypted_url": ENCRYPTED("/splitaccount/{splitaccount_id}/wallet/{id}"),
+         "method": "GET"
+     }
+   ```
+
+<Callout type="warning" title="Path Parameters">
+  In the `encrypted_url`:
+
+  * Change `{splitaccount_id}` with the ID of the split account containing the wallet.
+  * Change `{id}`with the ID of the wallet to retrieve.
+</Callout>
+
+### Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(wallets)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload is as follows:
+
+```json
+{
+  "additional_information": "Example123",
+  "balances": {
+    "current": {
+      "currency": "GBP",
+      "amount": 4500
+    }
+  },
+  "default_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "payee_identity_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "payee_details": {
+    "name": "string",
+    "iban": "FR7630006000011234567890189",
+    "sort_code": "012345",
+    "bic": "string",
+    "account_number": "01234567",
+    "id": "string"
+  },
+  "payee_compliance_profile_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "alias": "Example123",
+  "default_payment_reference": "Payment to X",
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "created_date": "2020-01-22T13:15:30.000Z",
+  "status": "ACTIVE"
+}
+```
+
+See the table below for a description of the parameters:
+
+| **Parameter**                 | **Description**                                                                              |
+| ----------------------------- | -------------------------------------------------------------------------------------------- |
+| `id`                          | Unique identifier for the wallet.                                                            |
+| `payee_compliance_profile_id` | Identifier for the compliance profile associated with the payee.                             |
+| `default_wallet_id`           | Identifier of the default wallet linked to the payee for transactions.                       |
+| `payee_details`               | A nested object containing detailed information about the payee.                             |
+| `id`                          | Unique identifier for the payee within the system.                                           |
+| `name`                        | Name of the payee, which may represent a company or an individual.                           |
+| `account_number`              | Bank account number associated with the payee for payments.                                  |
+| `sort_code`                   | Sort code for the payee's bank account, used for routing payments in some financial systems. |
+| `default_payment_reference`   | Default reference string included with payments made from this wallet.                       |
+| `external_id`                 | Custom reference provided by the user or system for external tracking or integration.        |
+| `status`                      | The wallet's current status indicates whether it is active or successful in its operations.  |
+| `balances`                    | A nested object showing the financial balances associated with the wallet.                   |
+| `current`                     | Represents the current balance available in the wallet.                                      |
+| `currency`                    | Currency type of the current balance.                                                        |
+| `amount`                      | The amount available as the current balance.                                                 |
+| `available`                   | Represents the amount available for spending or withdrawal from the wallet.                  |
+| `currency`                    | Currency type of the available balance.                                                      |
+| `amount`                      | The amount available for spending or withdrawal.                                             |

@@ -1,0 +1,224 @@
+---
+title: "Withdrawal Operation (P2P Card Credit)"
+description: "Transfer funds back to the customer's card after an initial purchase."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The withdrawal operation allows you to transfer funds back to the customer's card after an initial purchase. It is essential for refunding or crediting customers for returned products or services. This operation is also known as P2P Card Credit Operation.
+
+The withdrawal feature is not available immediately after you create a Fondy account. You must contact Fondy support via [email](mailto:support@fondy.eu) to enable this feature.
+
+After enabling the withdrawal feature, you can create withdrawals for payments from any Fondy Gateway solution.
+
+## Requirements
+
+To initiate a withdrawal operation, the following conditions must be met:
+
+* The initial payment must have been created with the `rectoken`. This is done by sending `required_rectoken = Y` when creating the payment. The use of the `rectoken` ensures that a reference token is generated for the transaction, enabling you to link the withdrawal to the original purchase.
+
+## How to Perform a Withdrawal
+
+To execute a withdrawal, follow these steps:
+
+1. Get the `rectoken` from the payment you are trying to withdraw funds from.
+2. Create the withdrawal using the [P2P Card Credit](/reference/gateway/p-2-p-card-credit) endpoint. You must inform the `receiver_rectoken` at this step. Use the `rectoken`from Step 1. In addition, when generating the [signature](/gateway/signatures), use your credit private key. You can find this private key in the **Merchant Settings** section of the [Fondy Dashboard](https://portal.fondy.eu/mportal/#/). The following code block presents an example of a request.
+
+
+  ```curl 
+  curl --request POST \
+       --url https://pay.fondy.eu/api/p2pcredit \
+       --header 'Content-Type: application/json' \
+       --header 'accept: application/json' \
+       --data '
+  {
+    "request": {
+      "order_id": "test_1234312142",
+      "merchant_id": "1549901",
+      "order_desc": "Test order",
+      "amount": 1000,
+      "currency": "GBP",
+      "receiver_rectoken": "I0wh7fBmFIdcY6K3Px2QugVrVR65sPafeZkPmRanOiRnXG",
+      "server_callback_url": "https://myserver.com/callback",
+      "signature": "51e59ffd263d071da8e1a1fc10b981f459dbe6f1"
+    }
+  }
+  '
+  ```
+
+
+After creating the withdrawal, Fondy will transfer the funds to your client.
+
+### Example Requests and Responses
+
+Below, you find examples of requests and responses for each supported protocol.
+
+**JSON Example**
+
+<Tabs>
+  <TabItem value="request" label="Request" default>
+  ```json 
+  {
+    "request":{
+      "order_id":"test8037875286",
+      "order_desc":"Test payment",
+      "currency":"USD",
+      "amount":"100",
+      "receiver_card_number":"4444555566661111",
+      "signature":"07bc309047a56275f8d89ae222e2af0ceb94fe79",
+      "merchant_id":"1"
+    }
+  }
+  ```
+  </TabItem>
+
+  <TabItem value="response" label="Response">
+  ```json 
+  {
+    "response": {
+      "rrn": "",
+      "masked_card": "",
+      "sender_cell_phone": "",
+      "response_signature_string": "**********1000USD1000530159USDTest1test7926651365approved13.01.2014 15:10:472100Visa/MC",
+      "response_status": "",
+      "currency": "USD",
+      "fee": "",
+      "reversal_amount": "",
+      "settlement_amount": "",
+      "actual_amount": "1000",
+      "order_status": "approved",
+      "response_description": "",
+      "order_time": "13.01.2014 15:10:47",
+      "actual_currency": "USD",
+      "order_id": "test7926651365",
+      "tran_type": "",
+      "eci": "",
+      "settlement_date": "",
+      "payment_system": "Visa/MC",
+      "approval_code": "530159",
+      "merchant_id": "1",
+      "settlement_currency": "",
+      "payment_id": "2100",
+      "card_bin": "",
+      "response_code": "",
+      "card_type": "",
+      "amount": "1000",
+      "sender_email": "",
+      "signature": "3a587a6908e1b4119729e6b00f9f055a927728fd",
+      "product_id": ""
+    }
+  }
+  ```
+  </TabItem>
+
+  <TabItem value="error-response" label="Error Response">
+  ```json 
+  {
+    "response":{
+    "response_status":"failure",
+    "error_message":"Parameter `amount` is mandatory",
+    "error_code":"1008"
+    }
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+**XML Example**
+
+<Tabs>
+  <TabItem value="request1" label="Request">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <request>
+    <response_url>https://pay.fondy.eu/responsepage/</response_url>
+    <order_id>test622138965</order_id>
+    <order_desc>Test payment</order_desc>
+    <currency>USD</currency>
+    <amount>100</amount>
+    <receiver_card_number>4444555566661111</receiver_card_number>
+    <signature>fad685643ed5375d6d08c27f4f600e848549b0c5</signature>
+    <merchant_id>1</merchant_id>
+  </request>
+  ```
+  </TabItem>
+
+  <TabItem value="response1" label="Response">  
+  ```xml Normal Response
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+    <rrn>401311593803</rrn>
+    <masked_card>444455XXXXXX1111</masked_card>
+    <sender_cell_phone />
+    <response_status />
+    <currency>USD</currency>
+    <fee />
+    <reversal_amount />
+    <settlement_amount />
+    <actual_amount>1000</actual_amount>
+    <order_status>approved</order_status>
+    <response_description />
+    <order_time>13.01.2014 15:10:47</order_time>
+    <actual_currency>USD</actual_currency>
+    <order_id>test7926651365</order_id>
+    <tran_type />
+    <eci />
+    <settlement_date />
+    <payment_system>Visa/MC</payment_system>
+    <approval_code>530159</approval_code>
+    <merchant_id>1</merchant_id>
+    <settlement_currency />
+    <payment_id>2100</payment_id>
+    <card_bin>444455</card_bin>
+    <response_code />
+    <card_type>VISA</card_type>
+    <amount>1000</amount>
+    <sender_email />
+    <signature>1f894ec8c9b9c0a619e87f92ad7d347431f705c0</signature>
+    <product_id />
+  </response>
+  ```
+  </TabItem>
+
+  <TabItem value="error-response1" label="Error Response">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+    <response_status>failure</response_status>
+    <error_message>Parameter `amount` is mandatory</error_message>
+    <error_code>1008</error_code>
+  </response>
+  ```
+  </TabItem>
+</Tabs>
+
+**HTML form example**
+
+<Tabs>
+  <TabItem value="request2" label="Request">
+  ```curl Request
+  order_id=test3600040034&order_desc=Test payment&currency=USD&receiver_card_number=4444555566661111
+  &amount=100&merchant_id=1&signature=ea326b841f9a1e2e90fb392392d3ed6255a6698d
+  ```
+  </TabItem>
+
+  <TabItem value="response2" label="Response">
+  ```curl Normal Response
+  rrn=401311593803&masked_card=444455XXXXXX1111&sender_cell_phone=&response_status=
+  &currency=USD&fee=&reversal_amount=&settlement_amount=&actual_amount=1000
+  &order_status=approved&response_description=&order_time=13.01.2014+15%3A10%3A47
+  &actual_currency=USD&order_id=test7926651365&tran_type=&eci=
+  &settlement_date=&payment_system=Visa%2FMC&approval_code=530159&merchant_id=1
+  &settlement_currency=&payment_id=2100&card_bin=444455&response_code=&
+  card_type=VISA&amount=1000&sender_email=&signature=1f894ec8c9b9c0a619e87f92ad7d347431f705c0&product_id=
+  ```
+  </TabItem>
+
+  <TabItem value="error-response2" label="Error Response">
+  ```curl Error Response
+  response_status=failure&error_message=Parameter%20%60amount%60%20is%20mandatory&error_code=1008
+  ```
+  </TabItem>
+</Tabs>

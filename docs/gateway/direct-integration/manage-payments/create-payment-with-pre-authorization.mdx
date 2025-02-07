@@ -1,0 +1,190 @@
+---
+title: "Create Payment with Pre-Authorization"
+description: "Learn how to manage pre-authorization and capture operations with Fondy, allowing for flexible two-stage payments."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This guide provides step-by-step instructions for managing pre-authorization and capture operations, helping you efficiently handle two-stage payments with Fondy. This method involves two distinct steps:
+
+* A **pre-authorization operation** to temporarily hold the transaction amount on the payer's card.
+* A **capture operation** to charge the held amount, either whole or partially.
+
+<Callout type="warning" title="Only Supported for Card Payments">
+  Pre-authorization and capture are only supported for card payment methods. Other payment methods automatically process payments in a single-stage scheme, where the full amount is immediately charged.
+</Callout>
+
+This approach provides additional flexibility for merchants, allowing them to modify the transaction amount before capture or cancel the hold without incurring fees. Pre-authorization ensures that no financial movement occurs until the capture stage, offering an efficient way to manage transactions that require adjustments.
+
+### Key Points
+
+* Only one capture (full or partial) can be performed for each pre-authorization.
+* If a partial capture is completed, the remaining amount is automatically refunded to the payer's card—no additional reversal is required.
+* For transactions that have not been captured, the blocked amount can be instantly canceled without incurring fees.
+* If you perform a partial capture, ensure the remaining amount does not also undergo reversal, as it may result in duplicate refunds.
+* After a full capture, multiple partial reversals can be performed if needed.
+
+Before proceeding to the step-by-step guide, make sure you know how to use your [Signature](/gateway/signatures) and that you have your Merchant ID (`merchant_id`). To get your Merchant ID, go to the [Fondy Dashboard](https://portal.fondy.eu/mportal/#/) and log in. In the left sidebar, select **Merchant Settings** and then **Technical**. You can copy the **Merchant ID** by clicking the green button to the right of the number.
+
+<Image src="/media/docs/gateway/pre-auth-1.png"/>
+
+## Creating a Pre-Authorization
+
+To create the pre-authorization, follow the steps below. For more details, such as example request and responses, go to the [Create Payment](/gateway/direct-integration/manage-payments/create-payment) guide.
+
+1. Prepare the request data with the required fields:
+
+   * `server_callback_url`: Callback URL for payment updates.
+   * `order_id`: Unique order identifier.
+   * `currency`: Payment currency.
+   * `order_desc`: Order description.
+   * `amount`: Pre-authorization amount.
+   * `merchant_id`: Your merchant ID.
+   * `signature`: The request signature.
+   * `preauth`: When creating a pre-authorization operation, this parameter should be informed as `Y`.
+
+2. Use your preferred protocol to send a `POST` request to the [Accept Purchase endpoint](/reference/gateway/accept-purchase-fondy-checkout).
+
+<Callout type="info">
+  The supported protocols for this request are:
+
+  * **URL-encoded form**
+  * **XML**
+  * **JSON**
+</Callout>
+
+3. Handle the response to retrieve the `checkout_url` and use it to redirect the customer to complete the payment.
+4. After finishing, Fondy will send a `POST` request with the final payment information to the `server_callback_url` containing all the information from the processed payment. For more details, access the [Callbacks](/gateway/direct-integration/callbacks) guide.
+
+## Creating a Capture
+
+After the pre-authorization was created, you can create a capture operation, by following the steps below:
+
+1. Prepare the request data with the required fields:
+
+   * `order_id`: Unique order identifier.
+   * `merchant_id`: Your merchant ID.
+   * `signature`: The request signature.
+   * `amount`: Capture amount. This amount can be different from the pre-authorized amount.
+   * `currency`: Payment currency.
+
+2. Use your preferred protocol to send a `POST` request to the [Capture Pre-Authorized Payment endpoint](/reference/gateway/capture-pre-auth-payment).
+
+3. Check the response to make sure the capture has successful.
+
+### Example Requests and Responses
+
+Below, you find examples of requests and responses for each supported protocol.
+
+**JSON Example**
+
+<Tabs>
+  <TabItem value="request" label="Request">
+  ```json 
+  {
+     "request":{
+        "order_id":"test7926651365",
+        "currency":"USD",
+        "amount":"1",
+        "merchant_id":"1",
+        "signature":"b1ed592ff76ddca287503b11c1aad70bb1c67f37"
+     }
+  }
+  ```
+  </TabItem>
+
+  <TabItem value="response" label="Response">
+  ```json 
+  {
+     "response":{
+        "order_id":"test309906285",
+        "response_status":"success",
+        "response_code":"",
+        "capture_status":"captured",
+        "response_description":"",
+        "merchant_id":"1"
+     }
+  }
+  ```
+  </TabItem>
+
+  <TabItem value="error-response" label="Error Response">
+  ```json 
+  {
+     "response":{
+        "response_status":"failure",
+        "error_message":"Order Not Found",
+        "error_code":"1018"
+     }
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+**XML Example**
+
+<Tabs>
+  <TabItem value="request2" label="Request">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <reqest>
+     <order_id>test7926651365</order_id>
+     <currency>USD</currency>
+     <amount>1</amount>
+     <merchant_id>1</merchant_id>
+     <signature>b1ed592ff76ddca287503b11c1aad70bb1c67f37</signature>
+  </request>
+  ```
+  </TabItem>
+
+  <TabItem value="response2" label="Response">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+     <order_id>test6622534987</order_id>
+     <response_status>success</response_status>
+     <response_code />
+     <capture_status>captured</capture_status>
+     <response_description />
+     <merchant_id>1</merchant_id>
+  </response>
+  ```
+  </TabItem>
+
+  <TabItem value="error-response3" label="Error Response">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+     <response_status>failure</response_status>
+     <error_message>Order Not Found</error_message>
+     <error_code>1018</error_code>
+  </response>
+  ```
+  </TabItem>
+</Tabs>
+
+**HTML-form Example**
+
+<Tabs>
+  <TabItem value="request4" label="Request">
+  ```html Request
+  order_id=test6622534987&currency=USD&amount=1&merchant_id=1
+  &signature=6ccbfeb82894b5c51855e032da1e7a3bee65f3a3
+  ```
+  </TabItem>
+
+  <TabItem value="response4" label="Response">
+  ```html 
+  order_id=test7101250216&response_status=success&response_code=
+  &capture_status=captured&response_description=&merchant_id=1
+  ```
+  </TabItem>
+
+  <TabItem value="error-response4" label="Error Response">
+  ```html 
+  response_status=failure&error_message=Order+Not+Found&error_code=1018
+  ```
+  </TabItem>
+</Tabs>

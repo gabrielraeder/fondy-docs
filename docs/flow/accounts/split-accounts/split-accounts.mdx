@@ -1,0 +1,67 @@
+---
+title: "Split Accounts"
+description: "Learn how Fondy's Split Account API enables automated fund distribution between platforms and partners, with features for payment processing, commission management, and secure payouts."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Fondy Split Account API enables platforms and marketplaces to manage payments efficiently by automating the splitting of funds. This end-to-end solution covers everything from onboarding merchants, sellers, or partners to securely manage transactions and payouts. With seamless integration, Fondy Split Account simplifies fund management, ensuring that payments are distributed accurately and effortlessly between your platform and its stakeholders.
+
+## Key Features and Benefits
+
+* **Effortless Payment Automation**: Automatically split payments between your platform and partners with customizable rules, saving time and reducing manual effort.
+* **Efficient Payment Processing**: Enjoy fast, reliable payment processing, real-time transaction monitoring, and easy-to-use management tools.
+* **Transparent Fund Management**: Track and manage platform commissions separately from partner funds, ensuring clarity and control.
+* **Reliable Payouts**: Configure and trigger partner bank account payouts based on business-specific criteria.
+* **Enhanced Security**: Protect your platform and users with advanced security measures and fraud prevention tools for a secure payment environment.
+* **Streamlined Onboarding**: Simplify and automate partner and seller onboarding using the onboarding APIs and hosted pages, delivering a smooth user experience.
+* **Commission Management**: Track and manage platform commissions separately from merchants' or sellers' funds, ensuring transparency and control.
+
+<Callout type="success" title="Supporting Materials">
+  If you are new to Split Accounts, explore the following resources on the Fondy website to get started:
+
+  * [What are Split Payments](https://fondy.io/gb/resources/what-is-split-payment/)
+  * [What is a Payout](https://fondy.io/gb/resources/what-are-payouts/)
+  * [A Deep Dive into Instant Payouts](https://fondy.io/gb/blog/instant-payouts/)
+  * [The Crucial Role of Payments in Empowering Gig Platforms](https://fondy.io/gb/resources/gig-economy-global-payments/)
+
+  Need additional help? Contact us at [support@fondy.eu](mailto:support@fondy.eu), and our team will be happy to assist you.
+</Callout>
+
+## Core Components of a Split Account
+
+A Split Account is a collection of wallets, each serving specific purposes within a platform. Below are the main account types:
+
+* **Split Account**: The primary account includes all wallets linked to the platform and its associated profiles. it's identified by the `splitaccount_id`.
+* **Platform/Marketplace Wallet Account**: It's also called **default wallet**. This wallet collects funds from all successful transactions. It is uniquely identified by the `default_wallet_id`.
+* **Partner Wallet Account**: These wallets hold and distribute funds to merchants, partners, or sellers. Each wallet has a unique `wallet_id`.
+
+<Image src="media/docs/flow/split-accounts/split-account.png" alt="Split Account" />
+
+## How Split Accounts Works
+
+The basic steps to use the Split Accounts functionalities are the following:
+
+1. **Create Split Rules**: Define the percentage or fixed amount each recipient should receive from a transaction.
+
+2. **Assign Recipients**: Specify the accounts to which the funds will be distributed.
+
+3. **Process Payment**: When a payment is received, the funds are automatically split according to the predefined rules and transferred to the appropriate wallets.
+
+After setting up the Split Account configurations, the funds flow after receiving the payment from a provider will follow these steps:
+
+1. The payments are received from a payment provider and deposited into the Platform/Marketplace Wallet (Default Wallet).
+2. A portion of the funds can be designated as the platform's commission, which is transferred from the Default Wallet to an IBAN operational account for further business operations or costs.
+   1. Platform or marketplace costs can also be deducted from the IBAN operational account and allocated to a designated costs account.
+3. The remaining funds are distributed to Partner Wallets based on predefined split rules.
+4. Funds in the Partner Wallets are transferred to the respective partners' bank accounts based on the payout schedule or business criteria.
+
+The following diagram summarizes the process.
+
+<Image src="media/docs/flow/split-accounts/how-split-accounts-work.png" alt="How Split Accounts Work" />
+
+<Callout type="warning" title="Limitations">
+  Transfers between Partner Wallets and reversals from Platform/Marketplace Wallets are not permitted.
+</Callout>

@@ -1,0 +1,352 @@
+---
+title: "Create Reports"
+description: "Generate customized reports tailored to your specific business needs."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy's reporting feature allows merchants to generate customized reports tailored to their specific business needs. These reports enable merchants to analyze transactions, settlements, and chargebacks, providing valuable insights into their operations. Using Fondy's reporting API, merchants can filter data to retrieve only the most relevant information, making decision-making faster and more efficient.
+
+## How to Generate Reports
+
+Generating a report involves two primary steps:
+
+1. **Get an Access Token:** To ensure secure access, you must first request an access token. This token is required for authentication and must be included in subsequent API requests.
+
+2. **Request the Report:** After obtaining the token, use it to request a specific report. The request must include the token in the `Authorization` HTTP header, along with required parameters such as `report_id`, `merchant_id`, and filters for data customization.
+
+### Get an Access Token
+
+Follow these steps to obtain an access token for Fondy's Reports API:
+
+1. Create the signature using your company's Private Key, `application_id`, and the `date` string. For more information on how to generate the signature, access the [Signatures](/gateway/signatures) page. Below, you find an example of how to generate the `signature`in Python.
+
+     ```python 
+     from datetime import datetime
+     import hashlib
+
+     private_key = "your_private_key"
+     application_id = "your_application_id"
+     date = str(datetime.now())
+
+     signature = hashlib.sha512(f"{private_key}|{application_id}|{date}".encode('utf-8')).hexdigest()
+     print(signature)
+     ```
+
+2. Send a request to the [Generate Access Token](/reference/auth/generate-access-token) endpoint, informing the `application_id`, `date`, and `signature`.
+
+3. If the request is successful, the response will include the `token `and its expiration time:
+
+     ```json 
+     {
+       "request_id": "SuVhZRMS7JDD2iGS",
+       "token": "Yq0GXWeOZ1m8BsiCa4iQPDB84Wjw346",
+       "expires_in": 3602
+     }
+     ```
+
+
+   Use this `token`when requesting the report.
+
+<Callout type="info" title="Token Expiration">
+  Tokens expire after one hour. Repeat this process to obtain a new token when necessary.
+</Callout>
+
+### Request the Report
+
+Follow these steps to request a report from Fondy's API:
+
+1. Choose the report type (`report_id`) for the report you need. Check all options on the [List of Available Reports](#list-of-available-reports).
+
+2. Gather the following parameters to include in the request:
+
+   * **`merchant_id`**: Your unique merchant ID.
+
+   * **`report_id`**: The ID of the desired report.
+
+   * **Filters**: JSON objects for filtering data (optional but recommended).
+
+   * **Pagination**:
+
+     * `on_page`: Number of records per page (10–500 recommended).
+     * `page`: Page number to fetch.
+
+3. Send a request to [Retrieve Report Data](/reference/gateway/get-report-data). Below, you find an example of a request:
+
+
+     ```bash 
+     curl 'https://portal.fondy.eu/api/extend/company/report/' \
+     -H "Authorization: Token your_access_token" \
+     -H "Content-Type: application/json" \
+     -X POST --data-binary @- <<EOF
+     {
+         "on_page": 10,
+         "page": 1,
+         "filters": [
+             { "s": "settlement_date", "m": "from", "v": "2024-01-01" },
+             { "s": "settlement_date", "m": "to", "v": "2024-01-31" }
+         ],
+         "merchant_id": 123456,
+         "report_id": "403"
+     }
+     EOF
+     ```
+
+
+4. If the request is successful, the response will include the report data and metadata, as presented in the following code block:
+
+     ```json 
+     {
+       "data": [
+         [1234567890, "2024-01-01", "approved", 500.00, "USD", ...],
+         [1234567891, "2024-01-02", "completed", 1000.00, "USD", ...]
+       ],
+       "fields": ["payment_id", "order_time", "order_status", "actual_amount", "currency"],
+       "rows_count": 2,
+       "rows_on_page": 2,
+       "rows_page": 1
+     }
+     ```
+
+The response will have the following elements:
+
+* **`data`**: The report's dataset.
+* **`fields`**: Column headers describing the data fields.
+* **`rows_count`**: Total records in the report.
+* **`rows_on_page`**: Number of records returned in this request.
+* **`rows_page`**: Page number of the current data.
+
+If the report contains more records than the `on_page` limit, increase the `page` parameter to fetch subsequent data. Example:
+
+  ```json 
+  {
+      "on_page": 10,
+      "page": 2,
+      ...
+  }
+  ```
+
+
+## Using Filters
+
+Filters are a powerful feature that helps narrow down data for more specific results. Filters are defined as JSON objects and include the following attributes:
+
+* `s` (field): The name of the field to filter.
+* `m` (mode): The operand or condition for filtering (e.g., `=`, `>`, `<`, `like`).
+* `v` (value): The value for filtering.
+
+Example filter:
+
+  ```json 
+  {
+      "s": "settlement_date",
+      "m": "dateis",
+      "v": "2024-11-20"
+  }
+  ```
+
+Below, you find the complete list of operands by filter type you can use to filter the results to generate a report.
+
+* **Float (`decimal`):** `=`, `>`, `<`, `!=`, `isnull`, `notnull`, `between` .
+
+* **Integer (`int`):** `=`, `>`, `<`, `!=`, `any`, `isnull`, `notnull`, `between` .
+
+* **Date (`date`):** `dateis`, `from`, `to`, `isnull`, `notnull`, `notdate`, `daterange`, `between` .
+
+* **Text (`string`):** `=`, `!=`, `like`, `!like`, `start`, `empty`, `any`, `notnull`, `contains`, `!contains` .
+
+* **Boolean (`bool`):** `istrue`, `isfalse` .
+
+* **Select (`enum`):** `=`, `!=`, `any`, `none` .
+
+* **Array (`array`):** `in_array`, `not_in_array`, `contains_all` .
+
+* **Daterange (`daterange`):** `daterange`, `notdaterange` .
+
+### Advanced Filter Modes
+
+Below, you find examples of how to use some of the operands to perform more advanced filtering operations:
+
+1. **`any`:** Matches any of the specified values.
+
+
+     ```json 
+     {
+       "s": "id",
+       "m": "any",
+       "v": "10,20,30"
+     }
+     ```
+
+
+2. **`from`:** Matches values greater than or equal to the specified value.
+
+
+     ```json 
+     { 
+       "s": "timestart", 
+       "m": "from", 
+       "v": "2024-01-01" 
+     }
+     ```
+
+
+3. **`to`:** Matches values less than the specified value.
+
+
+     ```json 
+     { 
+       "s": "timestart", 
+       "m": "to", 
+       "v": "2024-01-01" 
+     }
+     ```
+
+
+   **`dateis`:** Matches data from the start of the specified day (00:00) to the start of the next day (00:00, exclusive).
+
+4. 
+     ```json 
+     { 
+       "s": "settlement_date", 
+       "m": "dateis", 
+       "v": "2024-01-01" 
+     }
+     ```
+ 
+
+5. **`like`:**&#x4D;atches values containing the specified substring.
+
+     ```json 
+     { 
+       "s": "order_desc", 
+       "m": "like", 
+       "v": "Test" 
+     }
+     ```
+
+
+6. **`!like`:** Excludes values containing the specified substring.
+
+
+     ```json 
+     { 
+       "s": "order_desc", 
+       "m": "!like", 
+       "v": "Test" 
+     }
+     ```
+
+
+7. **`start`:** Matches values starting with the specified substring.
+
+     ```json 
+     { 
+       "s": "order_id", 
+       "m": "start", 
+       "v": "test-" 
+     }
+     ```
+
+8. **`between`:** Matches values within a specified range (inclusive).
+
+     ```json 
+     { 
+       "s": "amount", 
+       "m": "between", 
+       "v": "100,500" 
+     }
+     ```
+
+9. **`contains`:** Matches arrays that contain the specified value.
+
+     ```json 
+     { 
+       "s": "merchant_data", 
+       "m": "contains", 
+       "v": "key123" 
+     }
+     ```
+
+10. **`daterange`:** Matches values within a specified date range.
+
+      ```json 
+      {
+        "s": "tran_timestart",
+        "m": "daterange",
+        "v": "2024-01-01,2024-01-31"
+      }
+      ```
+
+11. **`isnull` / `notnull`:** Matches null or non-null values.
+
+      ```json 
+      { 
+        "s": "fee", 
+        "m": "isnull" 
+      }
+      ```
+
+12. **`notdate`:** Excludes the specified date range.
+
+      ```json 
+      { 
+        "s": "tran_time", 
+        "m": "notdate", 
+        "v": "2024-01-01,2024-01-10" 
+      }
+      ```
+
+13. **`in_array`:** Matches values present in an array.
+
+      ```json 
+      { 
+        "s": "payment_id", 
+        "m": "in_array", 
+        "v": "[1,2,3]" 
+      }
+      ```
+
+14. **`not_in_array`:** Matches values not present in an array.
+
+      ```json 
+      { 
+        "s": "payment_id", 
+        "m": "not_in_array", 
+        "v": "[1,2,3]" 
+      }
+      ```
+
+15. **`contains_all`:** Ensures an array contains all specified values.
+
+      ```json 
+      { 
+        "s": "tags", 
+        "m": "contains_all", 
+        "v": "[tag1,tag2]" 
+      }
+      ```
+
+Multiple filters can be combined in a single request, and all conditions must be met unless specified otherwise. For example, you can use `from`and `to` to filter data between two dates:
+
+  ```json 
+  [
+      { "s": "settlement_date", "m": "from", "v": "2024-01-01" },
+      { "s": "settlement_date", "m": "to", "v": "2024-01-31" }
+  ]
+  ```
+
+## List of Available Reports
+
+Below is a summary of available reports and their details.
+
+| Report ID | Fields                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Mandatory filter fields                                            | Example                     |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------- |
+| 666       | `merchant_order_id` - string(1000)`payment_id` - integer(12)`authorization_date` - datetime(YYYY-MM-DD HH24:MI:SS)`operation_type` - string(1000)`odbref` - string(1000)`amount` - decimal(19,2)`order_description` - string(1000)`currency` - string(3)`fee_currency` - string(3)`transaction_rate` - decimal(19,6)`settlement_rate` - decimal(19,6)`fee_rate` - decimal(19,6)`gross` - decimal(19,2)`commission` - decimal(19,2)`batch_number` - integer(12)`settlement_amount` - decimal(19,2)`url` - string(1000)`settlement_date` - datetime(YYYY-MM-DD HH24:MI:SS)`rolling_reserve_amount` - decimal(19,2)`rolling_reserve_currency` - string(3)`rolling_reserve_settlement_date` - datetime(YYYY-MM-DD HH24:MI:SS)`deposit_setllement_amount` - decimal(19,2)`settlement_currency` - string(3)`merchant_data` - string(1000) | `settlement_date` OR `authorization_date` OR `payment_id`          | Settlements report EU       |
+| 403       | `payment_id` - integer(12)`order_time` - datetime(YYYY-MM-DD HH24:MI:SS)`order_status` - string(1000)`actual_amount` - decimal(19,2)`currency` - string(3)`fee` - decimal(19,2)`order_id` - string(1000)`settlement_amount` - decimal(19,2)`settlement_currency` - string(3)`settlement_date` - datetime(YYYY-MM-DD HH24:MI:SS)`settlement_status` - string(1000)`odb_ref` - string(1000)`tran_time` - datetime(YYYY-MM-DD HH24:MI:SS)`settlement_type` - string(1000)`payment_system` - string(1000)`sender_email` - string(1000)`order_desc` - string(1000)`merchant_data` - string(1000)`settlement_desc` - string(1000)`transaction_id` - integer(12)                                                                                                                                                                           | `settlement_date` OR `tran_time` OR `payment_id`                   | Settlements report non-EU   |
+| 500       | `chargeback_createtime` - datetime(YYYY-MM-DD HH24:MI:SS)`tran_id` - integer(12)`sender_email` - string(1000)`status` - string(1000)`tran_timestart` - datetime(YYYY-MM-DD HH24:MI:SS)`tran_timeend` - datetime(YYYY-MM-DD HH24:MI:SS)`tran_type` - string(1000)`protocol` - string(1000)`currency` - string(3)`amount` - decimal(19,2)`payout_date` - datetime(YYYY-MM-DD HH24:MI:SS)`payout_amoun` - datetime(YYYY-MM-DD HH24:MI:SS)                                                                                                                                                                                                                                                                                                                                                                                              | `tran_id` OR `chargeback_createtime`                               | Chargebacks report          |
+| 528       | `tran_id` - integer(12)`parent_tran_id` - integer(12)`sender_email` - string(1000)`status` - string(1000)`tran_timestart` - datetime(YYYY-MM-DD HH24:MI:SS)`tran_timeend` - datetime(YYYY-MM-DD HH24:MI:SS)`tran_type` - string(1000)`currency` - string(3)`actual_amount` - decimal(19,2)`payout_date` - datetime(YYYY-MM-DD HH24:MI:SS)`payout_amoun` - decimal(19,2)`order_desc` - string(1000)`checkout_url` - string(1000)                                                                                                                                                                                                                                                                                                                                                                                                     | `tran_id` OR `tran_timestart`                                      | Success transactions report |
+| 745       | `payment_id` - integer(12)`order_timestart` - datetime(YYYY-MM-DD HH24:MI:SS)`order_timeend` - datetime(YYYY-MM-DD HH24:MI:SS)`order_status` - string(1000)`amount` - decimal(19,2)`actual_amount` - decimal(19,2)`currency` - string(3)`actual_currency` - string(3)`order_type` - string(1000)`approval_code` - string(6)`card_bin` - string(6)`eci` - string(2)`fee` - decimal(19,2)`masked_card` - string(19)`order_id` - string(1000)`payment_system` - string(1000)`response_code` - integer(4)`response_description` - string(1000)`reversal_amount` - decimal(19,2)`rrn` - string(1000)`sender_email` - string(1000)`settlement_amount` - decimal(19,2)`settlement_currency` - string(3)`settlement_date` - datetime(YYYY-MM-DD HH24:MI:SS)`merchant_data` - string(1000)`order_desc` - string(1000)                        | `order_timestart` OR `order_timeend` OR `payment_id` OR `order_id` | All transactions report     |
+

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_extend "http://ns.adobe.com/Extensibility/1.0/">
+	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
+	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
+	<!ENTITY ns_vars "http://ns.adobe.com/Variables/1.0/">
+	<!ENTITY ns_imrep "http://ns.adobe.com/ImageReplacement/1.0/">
+	<!ENTITY ns_sfw "http://ns.adobe.com/SaveForWeb/1.0/">
+	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
+	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
+]>
+<svg version="1.1" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:#009C63;}
+</style>
+<metadata>
+	<sfw  xmlns="&ns_sfw;">
+		<slices></slices>
+		<sliceSourceBounds  bottomLeftOrigin="true" height="476.9" width="476.9" x="17.5" y="17.5"></sliceSourceBounds>
+	</sfw>
+</metadata>
+<g>
+	<path id="path3364" class="st0" d="M17.5,494.5h476.9V17.5H17.5V494.5z"/>
+	<path id="path2802" class="st1" d="M20.4,17.6l153.2,153.5V17.6H20.4z M193.7,17.6v173.6l27.5,27.5V17.6H193.7z M241,17.6v220.9
+		l4.8,4.8l22.4-22.4V17.6H241z M288.3,17.6v183.2l27.2-27.2v-156H288.3z M335.3,17.6v136.2l27.5-27.5V17.6H335.3z M382.9,17.6v88.6
+		l88.6-88.6H382.9z M494.5,23.2L382.9,134.8l-58.6,58.3l-36,36l-95.1,95.1v34.8l301.3-301V23.2z M17.6,43.1v37.4L213,276.1
+		l18.7-18.7L17.6,43.1z M494.5,86.4l-301.3,301V422l301.3-301V86.4z M17.6,108.8v37.9L180.1,309l18.7-18.7L17.6,108.8z M494.5,149.3
+		l-301.3,301v34.8l301.3-301V149.3z M17.6,175v38.8L173,369v-38.8L17.6,175z M494.5,212.4l-282.3,282h34.5l247.8-247.8V212.4z
+		 M17.6,242.1v37.7L173,435.3v-37.9L17.6,242.1z M494.5,275.3L275,494.5h219.5V275.3z M17.6,308.1v186.3H173v-30.9L17.6,308.1z"/>
+</g>
+</svg>

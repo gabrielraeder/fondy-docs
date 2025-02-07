@@ -1,0 +1,149 @@
+---
+title: "Get Accounts"
+description: "Learn how to retrieve account information using Fondy's API, including methods to fetch all accounts or get details for a specific account."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Get Accounts operation lets you retrieve a list of accounts associated with a specific client or a particular account by its ID.
+
+This page will guide you through the process of using the operations:
+
+* [Retrieve All Accounts](#retrieve-all-accounts)
+* [Retrieve Specific Account](#retrieve-specific-account)
+
+The following sections will describe them in more detail.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Retrieve All Accounts
+
+To retrieve a list of all accounts under, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+    {
+        "encrypted_payload": null,
+        "encrypted_user": ENCRYPTED(<username>),    
+        "encrypted_url": ENCRYPTED("/accounts"),
+        "method": "GET"
+    }
+   ```
+
+### Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(accounts)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload will return an array of account objects, like the one in the example below:
+
+```json
+[
+  {
+    "account_currency": "GBP",
+      "account_type": "STANDARD",
+      "account_balance": {
+        "currency": "GBP",
+        "amount": 4500
+      },
+      "account_details": {
+        "name": "string",
+        "iban": "FR7630006000011234567890189",
+        "sort_code": "012345",
+        "bic": "string",
+        "account_number": "01234567",
+        "id": "string"
+      },
+      "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+      "classification": "BUSINESS_OTHER",
+      "created_date_time": "2020-01-22T13:15:30.000Z",
+      "default_wallet": true,
+      "updated_date_time": "2020-01-22T13:15:30.000Z",
+      "master_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "wallet_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "wallet_business_reference": "string",
+      "account_alias": "Example123",
+    "status": "ACTIVE"
+  }
+]
+```
+
+The parameters are the same as described in the [Create Account](/flow/fondy-flow-api/core-operations/create-account) operation.
+
+## Retrieve Specific Account
+
+To retrieve information about a specific account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request in the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+    {
+        "encrypted_payload": null,
+        "encrypted_user": ENCRYPTED(<username>),    
+        "encrypted_url": ENCRYPTED("/accounts/{accountId}"),
+        "method": "GET"
+     }
+   ```
+
+<Callout type="warning" title="Path Parameters">
+  Change the `{accountId}` with the ID of the account you wish to retrieve in the `encrypted_url` field.
+</Callout>
+
+### Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(account)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload is as follows:
+
+```json
+[
+  {
+    "account_currency": "GBP",
+      "account_type": "STANDARD",
+      "account_balance": {
+        "currency": "GBP",
+        "amount": 4500
+      },
+      "account_details": {
+        "name": "string",
+        "iban": "FR7630006000011234567890189",
+        "sort_code": "012345",
+        "bic": "string",
+        "account_number": "01234567",
+        "id": "string"
+      },
+      "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+      "classification": "BUSINESS_OTHER",
+      "created_date_time": "2020-01-22T13:15:30.000Z",
+      "default_wallet": true,
+      "updated_date_time": "2020-01-22T13:15:30.000Z",
+      "master_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "wallet_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "wallet_business_reference": "string",
+      "account_alias": "Example123",
+      "status": "ACTIVE"
+    }
+  ]
+```

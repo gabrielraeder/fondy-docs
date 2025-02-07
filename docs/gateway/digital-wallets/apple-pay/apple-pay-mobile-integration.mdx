@@ -1,0 +1,176 @@
+---
+title: "Mobile Integration"
+description: "Learn how to integrate Apple Pay payments using Fondy, enabling seamless and secure transactions for both web and mobile platforms."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Integration of Apple Pay for Mobile has three steps. The initial steps for **registering your Apple Merchant ID** and **creating Apple Pay certificates** are common to all integration methods. After completing these prerequisites, you can follow the specific steps for your chosen programming language to enable Apple Pay and create a smooth, secure payment experience for your users.
+
+Integrating Apple Pay into your mobile application can be achieved using one of the following approaches, based on your preferred development language:
+
+* Objective-C
+* Swift
+* React Native
+* Flutter
+
+This guide provides a step-by-step approach for each language, ensuring you can easily select and implement the method that aligns with your app's requirements and technical stack.
+
+## Step 1: Registering Your Apple Merchant ID
+
+To process Apple Pay transactions, you must [register an Apple Merchant ID through the Apple Developer site](https://developer.apple.com/documentation/passkit/apple_pay/setting_up_apple_pay_requirements). Below, you will find instructions for this procedure.
+
+1. Go to the [Apple Developer Dashboard](https://developer.apple.com/account/#) and log in to your account.
+
+2. Navigate to **Certificates, Identifiers & Profiles** from the sidebar menu. You can access this option directly [here](https://developer.apple.com/account/resources/certificates/list).
+
+<Image src="/media/docs/gateway/apple-1.png"/>
+
+3. In the **Identifiers** section, click the **+** button to add a new Merchant ID. You can access this option directly [here](https://developer.apple.com/account/resources/identifiers/add/bundleId).
+
+<Image src="/media/docs/gateway/apple-2.png"/>
+
+4. Fill out the form. We recommend using the following structure:
+
+   * **Description**: Provide a name for your Merchant ID. This is for your internal reference and can be changed later. For clarity, we recommend using the name of your mobile application.
+   * **Identifier**: This value must be unique across all Apple applications. Once set, it cannot be modified, though you can create a new Merchant ID if needed. We suggest the format `merchant.fondy.eu.{{Your_app_name}}`. Make sure to save this identifier for future use.
+
+<Image src="/media/docs/gateway/apple-3.png"/>
+
+## Step 2: Creating a New Apple Pay Certificate
+
+To enable Apple Pay in your application, you must generate and manage certificates to encrypt payment data. This involves creating Certificate Signing Request (CSR) files and using them to develop the required certificates through your Apple Developer account.
+
+### Generating Certificate Signing Request (CSR) Files
+
+**Using Keychain Access on macOS**
+
+1. Open **Keychain Access**.
+2. Navigate to **Certificate Assistant** and then to **Request a Certificate from a Certificate Authority**.
+
+<Image src="/media/docs/gateway/apple-8.png"/>
+
+3. Follow the instructions to save the CSR files locally.
+
+**Using openssl on Other Platforms**
+
+For non-macOS platforms, use the following commands to generate CSR files:
+
+* To generate the **Apple Merchant Identity Certificate**:
+
+```
+openssl genrsa -out merchant.key 2048
+openssl req -new -key merchant.key -out merchant.csr
+```
+
+* To generate the **Apple Processing Certificate**:
+
+```
+openssl ecparam -out processing.key -name prime256v1 -genkey
+openssl req -new -sha256 -key processing.key -nodes -out processing.csr
+```
+
+### Using CSR Files to Create Certificates
+
+Log in to your Apple Developer account and follow these steps to generate the required certificates:
+
+1. Navigate to Certificates, Identifiers & Profiles in your account.
+
+2. Upload the respective CSR files to create each certificate:
+
+   * **Apple Pay Payment Processing Certificate**: Upload the **processing.csr** file and download the generated certificate.
+
+     <Image src="/media/docs/gateway/apple-4.png"/>
+
+   * **Apple Pay Merchant Identity Certificate**: Upload the **merchant.csr** file and download the generated certificate.
+
+     <Image src="/media/docs/gateway/apple-5.png"/>
+
+### Sharing Certificates with Fondy Support
+
+After downloading the certificates, send them to Fondy Support to finalize the integration and ensure they are correctly configured.
+
+## Step 3: Adding the Apple Pay Feature to Your Application
+
+The final step in integrating Apple Pay is configuring your application to use the Apple Pay feature. This involves enabling Apple Pay in Xcode and linking it to the Merchant ID you registered earlier. Additionally, you will integrate the Fondy SDK to handle transactions. Follow these steps to complete the setup for Objective-C and Swift iOS, React Native, and Flutter applications.
+
+### iOS (Objective-C)
+
+You can find the latest version of the SDK in our [repository](https://github.com/cloudipsp/ios-sdk).
+
+Open your project in Xcode and follow these steps to enable Apple Pay in Xcode:
+
+1. Go to your project's settings.
+
+2. Select the **Capabilities** tab.
+
+3. Turn on the **Apple Pay** switch. You may be prompted to log in to your Apple Developer account.
+
+4. Check the box next to the **Merchant ID** you created in Step 1.
+
+5. Add the generated Merchant ID to the Fondy SDK in two locations:
+
+   * **Xcode Settings**: Navigate to **Xcode**, then **Target**, **Capabilities**, **Apple Pay**, **Merchant IDS** and add the Merchant ID.
+
+     <Image src="/media/docs/gateway/apple-6.jpg"/>
+
+   * **Integration SDK**: Update the SDK constructor with the `merchant_id` obtained during registration in the Fondy Merchant Portal. Replace the placeholder `1396424` with your Merchant ID. Below you can find an example of the code line that you should update:
+
+     ```
+     self.api = [PSCloudipspApi apiWithMerchant:1396424 andCloudipspView:self.webView];
+     ```
+
+### For iOS (Swift)
+
+You can find the latest version of the SDK in our [repository](https://github.com/cloudipsp/ios-sdk).
+
+Open your project in Xcode and follow these steps to enable Apple Pay in Xcode:
+
+1. Go to your project's settings.
+
+2. Select the **Capabilities** tab.
+
+3. Turn on the **Apple Pay** switch. You may be prompted to log in to your Apple Developer account.
+
+4. Check the box next to the **Merchant ID** you created in Step 1.
+
+5. Add the generated Merchant ID to the Fondy SDK in two locations:
+
+   * **Xcode Settings**: Navigate to **Xcode**, then **Target**, **Capabilities**, **Apple Pay**, **Merchant IDS** and add the Merchant ID.
+
+     <Image src="/media/docs/gateway/apple-6.jpg"/>
+
+   * **Integration SDK**: Update the SDK constructor with the `merchant_id` obtained during registration in the Fondy Merchant Portal. Replace the placeholder `1396424` with your Merchant ID. Below you can find an example of the code line that you should update:
+
+     ```
+     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="1396424" borderStyle="roundedRect" placeholder="Enter merchant id" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8pz-e9-tsn">
+     ```
+
+### For React Native
+
+You can find the latest version of the SDK in our [repository](https://github.com/cloudipsp/react-native-cloudipsp).
+
+For React Native applications, configure Apple Pay as follows:
+
+* **Xcode Settings**: Navigate to **Xcode**, then **Target**, **Capabilities**, **Apple Pay**, **Merchant IDS** and add the Merchant ID.
+
+  <Image src="/media/docs/gateway/apple-7.jpg"/>
+
+* **Integration SDK**: Update the SDK constructor with the `merchant_id` obtained during registration in the Fondy Merchant Portal. Below you can find an example of the code line that you should update:
+
+  ```
+  this.api = new Cloudipsp(<your Fondy merchant_id>, this.cloudipspWebView);
+  ```
+
+### For Flutter
+
+You can find the latest version of the SDK in our [repository](https://github.com/cloudipsp/flutter-mobile-sdk).
+
+For Flutter applications, configure Apple Pay as follows:
+
+* **Xcode Settings**: Navigate to **Xcode**, then **Target**, **Capabilities**, **Apple Pay**, **Merchant IDS** and add the Merchant ID.
+
+  <Image src="/media/docs/gateway/apple-7.jpg"/>
+

@@ -1,0 +1,39 @@
+---
+title: "Callbacks"
+description: "Fondy uses callbacks to notify merchants when a payment is completed. To ensure callback notifications are received successfully, follow the instructions presented on this page."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy uses callbacks to notify merchants when a payment is completed. To ensure callback notifications are received successfully, follow the instructions presented on this page.
+
+## Allow Fondy's Server IP Addresses
+
+Update your firewall settings to allow traffic from the following IP addresses:
+
+* `54.154.216.60`
+
+This ensures that callback responses from Fondy can reach your server.
+
+## Processing Callback Responses
+
+A callback is considered successfully processed if your server responds with an HTTP `200 OK` status. If a different status code is returned, Fondy will retry sending the callback at the following intervals (in seconds):
+
+* 2 seconds
+* 60 seconds
+* 300 seconds
+* 600 seconds
+* 3600 seconds
+* 86400 seconds (24 hours)
+
+Ensure your system is configured to handle retries appropriately.
+
+## Callback Request Details
+
+Fondy sends callback requests with the following `User-Agent` header:
+
+```
+Mozilla/5.0 (X11; Linux x86_64; Twisted) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36
+```

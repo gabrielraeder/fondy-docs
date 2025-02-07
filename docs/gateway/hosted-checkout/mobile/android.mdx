@@ -1,0 +1,118 @@
+---
+title: "Android"
+description: "Integrate Google Pay into your Android applications, enabling seamless payment processing for users."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Android SDK from Fondy Gateway allows you to integrate Google Pay into your Android applications, enabling seamless payment processing for users. This SDK simplifies the implementation of Google Pay, offering a reliable solution to accept payments directly within your app.
+
+## Requirements
+
+Before you begin, make sure your environment meets the following requirements:
+
+* **Android Studio** or any compatible IDE for Android development.
+* **Google Play Services 17.0.0** or greater.
+* **Android API level 19** or greater.
+* A **Merchant ID** from the [Fondy Merchant Portal](https://portal.fondy.eu/mportal/#/).
+
+## Installation
+
+To install the Fondy Gateway SDK in your Android project, follow these steps:
+
+1. Add the required dependencies in your `app/build.gradle` file.
+
+<Tabs>
+  <TabItem value="java" label="Java" default>
+    ```java
+    implementation 'com.google.android.gms:play-services-base:17.0.0'
+    implementation 'com.google.android.gms:play-services-wallet:19.4.0'
+    implementation 'com.cloudipsp:android:+'
+    ```
+  </TabItem>
+  <TabItem value="kotlin" label="Kotlin">
+    ```kotlin
+    implementation("com.google.android.gms:play-services-base:17.0.0")
+    implementation("com.google.android.gms:play-services-wallet:19.4.0")
+    implementation("com.cloudipsp:android:+")
+    ```
+  </TabItem>
+</Tabs>
+
+<Callout type="info" title="Version Requirement">
+  Ensure that you are using at least Google Play Services 17.0.0.
+</Callout>
+
+2. Sync your project to download and configure the dependencies. Optionally, refer to the SDK in the central [Maven repository](https://search.maven.org/search?q=g:com.cloudipsp).
+
+<Callout type="info" title="Latest SDK Version">
+  The SDK's latest version is always available on the [public repository](https://github.com/cloudipsp/android-sdk).
+</Callout>
+
+## How to Use the SDK
+
+To integrate the SDK into your Android application, follow these steps:
+
+1. To set up your application, add the necessary permissions and metadata to your `AndroidManifest.xml` file:
+
+  ```xml 
+  <uses-permission android:name="android.permission.INTERNET" />
+  <meta-data
+      android:name="com.google.android.gms.wallet.api.enabled"
+      android:value="true" />
+  ```
+
+<Callout type="info" title="Setup Prerequisites">
+  Make sure Google Play Services is correctly set up for your app, and your **Merchant ID** from the Fondy Merchant Portal is ready.
+</Callout>
+
+2. Initialize the SDK, creating an instance of `Cloudipsp` using your Merchant ID. Replace `<your merchant_id>` with your actual Merchant ID. The `webView` parameter can be used to display a web-based payment form.
+
+
+  ```java 
+  cloudipsp = new Cloudipsp(<your merchant_id>, webView);
+  ```
+
+3. To implement Google Pay functionality in your app, follow the instructions from the [demo directory](https://github.com/cloudipsp/android-sdk/tree/master/app/src/main/java/com/cloudipsp/android/demo) in the GitHub repository for sample code and detailed guidance on adding a card form to your application.
+
+## Usage Examples
+
+The Fondy Gateway Android SDK includes a [demo application](https://github.com/cloudipsp/android-sdk/tree/master/app/src/main/java/com/cloudipsp/android/demo) that demonstrates how to integrate payment processing with both credit card and Google Pay options in your Android app. Below are the key components of the demo, along with a breakdown of each activity's role in the payment process.
+
+### Demo Application Structure
+
+The demo includes examples illustrating how to use the SDK for different payment methods. The following files are available:
+
+| File                           | Description                                                                                                                                                                                                                                                                |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BaseExampleActivity.java`     | Handles the initialization and payment logic for both Google Pay and credit card payments. The `BaseExampleActivity` manages the UI elements, such as fields for entering payment details (amount, email, description), and provides buttons to initiate the payment flow. |
+| `FlexibleExampleActivity.java` | Provides an example of how to integrate a flexible card input form using the `CardInputLayout`. It includes editable fields for card number, expiration date, and CVV, which can be used for manual card entry.                                                            |
+| `SimpleExampleActivity.java`   | Demonstrates a simpler card input form using `CardInputView`, which is ideal for users who need a straightforward card payment form.                                                                                                                                       |
+| `GPay.java`                    | Demonstrates how to integrate Google Pay into your Android app. It shows how to initialize Google Pay, handle the payment process, and process results through callbacks.                                                                                                  |
+| `MainActivity.java`            | The `MainActivity.java` provides a simple interface to navigate the demo's different examples. It includes buttons that allow users to choose between a simple card example and a flexible card example.                                                                   |
+
+### Payment Flow Details
+
+The following sections describe the existing examples and the flow of each example.
+
+#### `BaseExampleActivity`
+
+The `BaseExampleActivity` provides an example of a credit card payment. The following steps describe the flow:
+
+1. The user enters their payment details (amount, email, description).
+2. The app creates an `Order` object containing the transaction details.
+3. The user clicks the "Pay with Card" button, triggering the `processPayCard()` method.
+4. The app invokes `cloudipsp.pay()`, which processes the payment using the card details.
+5. The app receives a payment callback and displays the result (either success or failure) via `onPaidProcessed()` or `onPaidFailure()`.
+
+#### `GPay.java`
+
+The `GPay` example provides an example of adding Google Pay to an application. The following steps describe the flow
+
+1. The app checks if Google Pay is supported on the device.
+2. If supported, the user clicks the "Pay with Google Pay" button, triggering the `processGooglePay()` method.
+3. The app creates an `Order` object and initializes Google Pay using `cloudipsp.googlePayInitialize()`.
+4. Google Pay launches and the user completes the transaction.
+5. The app processes the result in `onActivityResult()`, handling both success and failure scenarios.

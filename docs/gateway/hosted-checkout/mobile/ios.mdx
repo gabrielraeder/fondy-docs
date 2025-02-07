@@ -1,0 +1,186 @@
+---
+title: "iOS"
+description: "Integrate Fondy's payment processing capabilities into your iOS applications."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Fondy Gateway iOS SDK provides a simple and secure way to integrate Fondy's payment processing capabilities into your iOS applications. The SDK supports Objective-C and Swift, allowing you to easily manage payments, retrieve transaction details, and handle payment workflows within your iOS app.
+
+## Requirements
+
+Before using the SDK, ensure your environment meets the following prerequisites:
+
+* **Xcode version:** 12.0 or later.
+* **iOS version:** 11.0 or later.
+* **CocoaPods:** Required for installing dependencies (if using CocoaPods).
+* **Swift Package Manager:** Alternative method for installation.
+* **Swift:** Swift 5.0 or later (if using Swift).
+
+## Installation
+
+The iOS SDK can be integrated into your project using two methods:
+
+* **CocoaPods**
+* **Swift Package Manager**
+
+Both methods ensure you get the latest version of the SDK and its dependencies.
+
+### Installation with CocoaPods
+
+To integrate the iOS SDK using CocoaPods, follow these steps:
+
+1. Make sure you have CocoaPods installed. If not, install it by running:
+
+   
+     ```bash 
+     sudo gem install cocoapods
+     ```
+   
+
+2. Add the following line to your `Podfile`:
+
+   
+     ```ruby 
+     pod 'Cloudipsp', '~> 0.9.3'
+     ```
+  
+
+3. Run the following command in your terminal to install the pod:
+
+  
+     ```bash 
+     pod install
+     ```
+  
+
+4. Open the `.xcworkspace` file to start using the SDK in your project.
+
+### Installation with Swift Package Manager
+
+If you prefer to use Swift Package Manager, follow these steps:
+
+1. Open your Xcode project and navigate to **File > Swift Packages > Add Package Dependency**.
+
+2. Enter the following GitHub repository URL:
+
+     ```plaintext plaintext
+     https://github.com/cloudipsp/ios-sdk.git
+     ```
+
+3. Select the version you want to integrate (`0.9.3`).
+
+4. Add the package to your project, and you can use the SDK.
+
+## How to Use the SDK
+
+First, import the SDK in your application file:
+
+<Tabs>
+  <TabItem value="objectivec" label="Objective-C" default>
+    ```objectivec
+    #import <Cloudipsp/Cloudipsp.h>
+    ```
+  </TabItem>
+  <TabItem value="swift" label="Swift">
+    ```swift
+    import Cloudipsp
+    ```
+  </TabItem>
+</Tabs>
+
+Set the necessary merchant credentials to initialize the SDK. Your **Merchant ID** and **Secret Key** can be found in your Fondy Dashboard.
+
+<Tabs>
+  <TabItem value="objectivec" label="Objective-C" default>
+    ```objectivec
+    [Cloudipsp setMerchantId:@"Your_Merchant_ID"];
+    [Cloudipsp setSecretKey:@"Your_Secret_Key"];
+    ```
+  </TabItem>
+  <TabItem value="swift" label="Swift">
+    ```swift
+    Cloudipsp.setMerchantId("Your_Merchant_ID")
+    Cloudipsp.setSecretKey("Your_Secret_Key")
+    ```
+  </TabItem>
+</Tabs>
+
+Once the SDK is initialized, you can create a payment request. The following code block presents an example of how to create a payment for a purchase.
+
+<Tabs>
+  <TabItem value="objectivec" label="Objective-C" default>
+    ```objectivec
+    CloudipspCheckoutRequest *request = [CloudipspCheckoutRequest new];
+    request.orderId = [NSString stringWithFormat:@"%@", @([[NSDate date] timeIntervalSince1970])];
+    request.amount = @1000;  // Amount in minor units (e.g., 1000 = 10.00)
+    request.currency = @"USD";
+    request.orderDescription = @"Test Payment";
+
+    // Perform the request
+    [Cloudipsp startPayment:request success:^(CloudipspCheckoutResponse *response) {
+        if (response.error == nil) {
+            // Handle successful payment response
+            NSLog(@"Payment successful. Checkout URL: %@", response.checkoutUrl);
+        } else {
+            // Handle error
+            NSLog(@"Error: %@", response.error.message);
+        }
+    } failure:^(NSError *error) {
+        // Handle request failure
+        NSLog(@"Error: %@", error.localizedDescription);
+    }];
+    ```
+  </TabItem>
+  <TabItem value="swift" label="Swift">
+    ```swift
+    let request = CloudipspCheckoutRequest()
+    request.orderId = "\(Int(Date().timeIntervalSince1970))"
+    request.amount = 1000  // Amount in minor units (e.g., 1000 = 10.00)
+    request.currency = "USD"
+    request.orderDescription = "Test Payment"
+
+    // Perform the request
+    Cloudipsp.startPayment(request, success: { response in
+        if let response = response, response.error == nil {
+            // Handle successful payment response
+            print("Payment successful. Checkout URL: \(response.checkoutUrl)")
+        } else {
+            // Handle error
+            print("Error: \(response?.error?.message ?? "Unknown error")")
+        }
+    }, failure: { error in
+        // Handle request failure
+        print("Error: \(error.localizedDescription)")
+    })
+    ```
+  </TabItem>
+</Tabs>
+
+## Usage Examples
+
+The iOS SDK provides two example projects, one for **Objective-C** and one for **Swift**, to demonstrate how to integrate payment processing into your app. Both examples provide a simple checkout flow where users can initiate a payment, redirect to the payment gateway, and handle the payment response. You can modify these examples to suit your app's specific requirements.
+
+For more information on callbacks and handling payment status, refer to the [Callbacks documentation](/docs/gateway/direct-integration/callbacks.mdx).
+
+### Objective-C Example
+
+To run the Objective-C example:
+
+1. Clone the repository.
+2. Navigate to the `Example` directory for Objective-C.
+3. Run `pod install` to install the dependencies.
+4. Open the `Example.xcworkspace` file in Xcode.
+5. Build and run the project.
+
+### Swift Example
+
+To run the Swift example:
+
+1. Clone the repository.
+2. Navigate to the `ExampleSwift` directory for Swift.
+3. Run `pod install` to install the dependencies.
+4. Open the `ExampleSwift.xcworkspace` file in Xcode.
+5. Build and run the project.

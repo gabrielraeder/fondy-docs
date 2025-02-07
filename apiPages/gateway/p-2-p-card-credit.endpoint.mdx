@@ -1,0 +1,13 @@
+---
+route: POST /p2pcredit
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+{/* Don't change the file name or the metadata in this file */}
+This endpoint allows a merchant to perform a peer-to-peer (P2P) card credit transaction, transferring funds directly to a recipient's card number or a stored receiver token. The request must include either `receiver_card_number` or `receiver_rectoken`, along with transaction details such as `order_id`, `order_desc`, and `amount`.
+
+To secure this request, the merchant must generate a signature using their Credit private key specifically for `p2pcredit` operations.
+

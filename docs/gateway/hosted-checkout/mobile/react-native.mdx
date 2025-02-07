@@ -1,0 +1,299 @@
+---
+title: "React-Native"
+description: "Integrate Google Pay and Apple Pay into your React Native applications."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The React Native SDK from Fondy Gateway enables you to accept payments via Google Pay and Apple Pay in your React Native applications, providing a seamless payment experience for users. This SDK integrates directly with the Fondy Gateway, simplifying payment processing for your app.
+
+## Requirements
+
+Before you begin, ensure your environment meets the following prerequisites:
+
+* **React Native version 0.60 or higher** (For versions below 0.60, manual linking is required).
+* **Android Studio** or any compatible IDE for Android development.
+* **Google Play Services 16.0.1** or greater.
+* **Android API level 19** or greater for Google Pay.
+* A **Merchant ID** from the [Fondy Merchant Portal](https://portal.fondy.eu/mportal/#/).
+* **Apple Developer Account** (For Apple Pay integration)
+
+## Installation
+
+To install the Fondy Gateway SDK in your React Native project, follow these steps:
+
+1. Use either `yarn` or `npm` to install the `react-native-cloudipsp` package:
+
+<Tabs>
+  <TabItem value="yarn" label="yarn" default>
+    ```bash
+    yarn add react-native-cloudipsp
+    ```
+  </TabItem>
+  <TabItem value="npm" label="npm">
+    ```bash
+    npm install react-native-cloudipsp
+    ```
+  </TabItem>
+</Tabs>
+
+<Callout type="info" title="Manual Linking for Older Versions">
+  If you are using a React Native version lower than 0.60, you will need to link the package manually:
+
+  ```
+  react-native link react-native-cloudipsp
+  ```
+</Callout>
+
+2. Update the `android/settings.gradle` with the following content:
+
+
+  ```gradle android/settings.gradle
+  include ':react-native-cloudipsp'
+  project(':react-native-cloudipsp').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-cloudipsp/android')
+  ```
+
+3. Add the following dependencies to your `android/app/build.gradle` file:
+
+  ```gradle android/app/build.gradle
+  implementation project(':react-native-cloudipsp')
+  implementation 'com.google.android.gms:play-services-base:16.0.1'
+  implementation 'com.google.android.gms:play-services-wallet:16.0.1'
+  ```
+
+4. Update your `AndroidManifest.xml` file, ensuring that the following meta-data is added within the `<application>` tag:
+
+
+  ```xml 
+  <application ...>
+    <meta-data
+      android:name="com.google.android.gms.wallet.api.enabled"
+      android:value="true" />
+  </application>
+  ```
+
+
+5. Add the required permission to your `AndroidManifest.xml` file:
+
+
+  ```xml 
+  <uses-permission android:name="android.permission.INTERNET" />
+  ```
+
+## How to Use the SDK
+
+Once the SDK is installed and configured, you can use it in your React Native project to handle payments via Google Pay and Apple Pay.
+
+### 1. Initialize the SDK
+
+To initialize the SDK, import `react-native-cloudipsp` and set up the payment methods you wish to use. For example, to initialize payments with Google Pay:
+
+  ```javascript 
+  import Cloudipsp from 'react-native-cloudipsp';
+  // Initialize Google Pay with the Merchant ID from your Fondy account
+  Cloudipsp.initialize({ merchantId: '<your-merchant-id>' });
+  ```
+
+You can now integrate Google Pay and Apple Pay into your app. For detailed guidance on integrating the SDK into your app, refer to the [GitHub examples](https://github.com/cloudipsp/react-native-cloudipsp).
+
+For Google Pay, use the following code to initiate the payment process:
+
+  ```javascript 
+  Cloudipsp.payWithGooglePay(orderDetails)
+    .then((result) => {
+      if (result.success) {
+        console.log('Payment successful', result);
+      } else {
+        console.error('Payment failed', result);
+      }
+    })
+    .catch((error) => {
+      console.error('Error processing payment', error);
+    });
+  ```
+
+For Apple Pay, the process is similar:
+
+  ```javascript 
+  Cloudipsp.payWithApplePay(orderDetails)
+    .then((result) => {
+      if (result.success) {
+        console.log('Payment successful', result);
+      } else {
+        console.error('Payment failed', result);
+      }
+    })
+    .catch((error) => {
+      console.error('Error processing payment', error);
+    });
+  ```
+
+## Usage Examples
+
+The SDK includes a sample code for integrating card payments and wallet payments (Google Pay and Apple Pay). The complete code example is available in the [SDK repository](https://github.com/cloudipsp/react-native-cloudipsp/blob/master/Example/index.tsx). The following sections explain the same code example step by step.
+
+### Code example
+
+To start, React, React Native components, and Cloudipsp SDK components are imported:
+
+  ```javascript 
+  import React from 'react';
+  import { SafeAreaView, ScrollView, Text, TextInput, Button, Alert, Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
+  import { CardInput, CardFieldNumber, CardFieldExpMm, CardFieldExpYy, CardFieldCvv, Cloudipsp, Order } from 'react-native-cloudipsp';
+  ```
+
+From Cloudipsp, the following components are used:
+
+* `CardInput`, `CardFieldNumber`, `CardFieldExpMm`, `CardFieldExpYy`, `CardFieldCvv`: Components for capturing card details like number, expiration month/year, and CVV.
+* `Cloudipsp`: The main object that interacts with the Fondy Gateway API to process payments.
+* `Order`: Used to create an order object with the details of the transaction.
+
+After, the information about the payment is defined, including the data from the merchant and the buyer.
+
+  ```javascript 
+  class PaymentExample extends React.Component {
+    state = {
+      merchant: '1396424',
+      amount: '1',
+      ccy: 'GBP',
+      email: '[email protected]',
+      description: 'test payment :)',
+      mode: 'entry',
+    };
+    private _cloudipspWebView = React.createRef();
+  }
+  ```
+
+No data about the payment method is provided right now. The customer will add it directly to the SDK's interface.
+
+The example also uses a method (`componentDidMount`) to check whether the device supports Apple Pay and Google Pay. It is called when the component is mounted.
+
+  ```javascript 
+  componentDidMount() {
+    Cloudipsp.supportsApplePay().then((result) => {
+      console.log('Supports Apple Pay:', result);
+    });
+    Cloudipsp.supportsGooglePay().then((result) => {
+      console.log('Supports Google Pay:', result);
+    });
+  }
+  ```
+
+The `_getOrder` function creates a new `Order` object that includes the amount, currency, description, email, and a unique order ID. The `Order` object is passed to the payment methods (Apple Pay, Google Pay, or card payment) to process the transaction.
+
+  ```javascript 
+  _getOrder = () => {
+    return new Order(Number(this.state.amount), this.state.ccy, 'rn_' + Math.random(), this.state.description, this.state.email);
+  };
+  ```
+
+The `_pay` function validates the card details using the `CardInput` reference. It checks if the card number, expiration month/year, and CVV are valid. If the card details are valid, the order is created using `_getOrder()`. The `cloudipsp.pay(card, order)` method is called to process the payment. If the payment is successful, a receipt is returned.
+
+  ```javascript 
+  _pay = () => {
+    let card = this._cardInputRef.current?.getCard();
+    const order = this._getOrder();
+
+    if (!card || !card.isValidCardNumber()) {
+      Alert.alert('Warning', 'Credit card number is not valid');
+    } else if (!card.isValidExpireMonth()) {
+      Alert.alert('Warning', 'Expire month is not valid');
+    } else if (!card.isValidExpireYear()) {
+      Alert.alert('Warning', 'Expire year is not valid');
+    } else if (!card.isValidExpireDate()) {
+      Alert.alert('Warning', 'Expire date is not valid');
+    } else if (!card.isValidCvv()) {
+      Alert.alert('Warning', 'CVV is not valid');
+    } else {
+      const cloudipsp = this._cloudipsp();
+      cloudipsp.pay(card, order)
+        .then((receipt) => {
+          Alert.alert('Transaction Completed :)', `Result: ${receipt.status}\nPaymentId: ${receipt.paymentId}`);
+          console.log('Receipt:', receipt);
+        })
+        .catch((error) => {
+          console.log('Error:', error);
+        });
+    }
+  };
+  ```
+
+The `_cloudipsp` method initializes the `Cloudipsp` object with the merchant ID from the state. The `payConfirmator` callback is used to handle the confirmation process, which involves displaying the payment confirmation in a WebView (referenced by `_cloudipspWebView`). The `webView` state is set to `1` to indicate that the WebView should be displayed.
+
+  ```javascript 
+  _cloudipsp = () => {
+    return new Cloudipsp(Number(this.state.merchant), (payConfirmator) => {
+      this.setState({ webView: 1 });
+      return payConfirmator(this._cloudipspWebView.current);
+    });
+  };
+  ```
+
+The `googlePay` method handles Google Pay integration. It uses the same `Cloudipsp` object to process the payment and display the receipt.
+
+
+  ```javascript 
+  googlePay = () => {
+    const cloudipsp = this._cloudipsp();
+    const order = this._getOrder();
+
+    cloudipsp.googlePay(order)
+      .then((receipt) => {
+        Alert.alert('Transaction Completed :)', `Result: ${receipt.status}\nPaymentId: ${receipt.paymentId}`);
+        console.log('Receipt:', receipt);
+      })
+      .catch((error) => {
+        console.log('Error:', error);
+        Alert.alert('Transaction Failure :(', `Result: ${error}`);
+      });
+  };
+  ```
+
+The `applePay` method handles Apple Pay integration, similar to Google Pay. It processes the payment and shows the result or errors.
+
+  ```javascript 
+  applePay = () => {
+    const cloudipsp = this._cloudipsp();
+    const order = this._getOrder();
+
+    cloudipsp.applePay(order)
+      .then((receipt) => {
+        Alert.alert('Transaction Completed :)', `Result: ${receipt.status}\nPaymentId: ${receipt.paymentId}`);
+        console.log('Receipt:', receipt);
+      })
+      .catch((error) => {
+        console.log('Error:', error);
+      });
+  };
+  ```
+The `renderModes` provides a way to switch between different input modes for card details:
+
+* `default`: Uses a standard card input view.
+* `flexible`: Allows for a custom layout of the card fields (number, expiration, CVV).
+
+  ```javascript 
+  private renderModes = () => (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button onPress={() => this.setState({ mode: 'default' })} title="Default Example" />
+      <Button onPress={() => this.setState({ mode: 'flexible' })} title="Flexible Example" />
+    </View>
+  );
+  ```
+
+The final part of the code example is used to render the payment form. The main UI is rendered inside a `SafeAreaView` to ensure it works well on all devices. Through the the interface, the user can provide the card information, and the button triggers the `_pay` method to process the payment.
+
+  ```javascript 
+  return (
+    <SafeAreaView style={styles.flex1}>
+      <ScrollView style={styles.flex1}>
+        <View style={{ padding: 20 }}>
+          {/* Input Fields for Merchant, Amount, Email, Description */}
+          <CardInput ref={this._cardInputRef} style={styles.simpleTextInput} />
+          <Button onPress={this._pay} title="Pay by Card" />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+  ```

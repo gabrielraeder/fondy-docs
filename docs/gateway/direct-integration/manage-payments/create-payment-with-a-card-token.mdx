@@ -1,0 +1,237 @@
+---
+title: "Create Payment with a Card Token"
+description: ""
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Create Payment with a Card Token process in the Fondy Gateway allows merchants to send payment requests using previously saved card tokens. This host-to-host integration provides a secure method to process payments without requiring customers to re-enter their card details, enhancing user convenience and reducing friction in the payment experience.
+
+In order to have the token, the client must have already made another payment, and you must save the token that comes back in the response. This guide will walk you through both steps.
+
+Before proceeding to the step-by-step guide, make sure you know how to use your [Signature](/gateway/signatures) and that you have your Merchant ID (`merchant_id`). To get your Merchant ID, go to the [Fondy Dashboard](https://portal.fondy.eu/mportal/#/) and log in. In the left sidebar, select **Merchant Settings** and then **Technical**. You can copy the **Merchant ID** by clicking the green button to the right of the number.
+
+<Image src="/media/docs/gateway/token-1.png"/>
+
+## Creating the first Payment
+
+To create the initial payment, follow the steps below. For more details, such as example request and responses, go to the [Create Payment](/gateway/direct-integration/manage-payments/create-payment) guide.
+
+1. Prepare the request data with the required fields:
+
+   * `server_callback_url`: Callback URL for payment updates.
+   * `order_id`: Unique order identifier.
+   * `currency`: Payment currency.
+   * `order_desc`: Order description.
+   * `amount`: Payment amount.
+   * `merchant_id`: Your merchant ID.
+   * `signature`: The request signature.
+
+2. Use your preferred protocol to send a `POST` request to the [Accept Purchase endpoint](/reference/gateway/accept-purchase-fondy-checkout).
+
+<Callout type="info" title="Supported Request Formats">
+  The supported protocols for this request are:
+
+  * **URL-encoded form**
+  * **XML**
+  * **JSON**
+</Callout>
+
+3. Handle the response to retrieve the `checkout_url` and use it to redirect the customer to complete the payment.
+4. After finishing, Fondy will send a `POST` request with the final payment information to the `server_callback_url` containing all the information from the processed payment. Here you will find the `rectoken` needed for the next steps. For more details, access the [Callbacks](/gateway/direct-integration/callbacks) guide.
+
+## Creating a Payment with the Card Token
+
+The steps in this part are similar to the ones above, but you must send the `rectoken` in the first request.
+
+1. Prepare the request data with the required fields:
+
+   * `server_callback_url`: Callback URL for payment updates.
+   * `order_id`: Unique order identifier.
+   * `currency`: Payment currency.
+   * `order_desc`: Order description.
+   * `amount`: Payment amount.
+   * `merchant_id`: Your merchant ID.
+   * `signature`: The request signature.
+   * `rectoken`: The encrypted card data.
+
+2. Use your preferred protocol to send a `POST` request to the [Accept Purchase endpoint](/reference/gateway/accept-purchase-fondy-checkout).
+
+<Callout type="info" title="Token Usage Tip">
+  You can also use the `rectoken` with the [Recurring Payment](/reference/gateway/recurring-payment) endpoint.
+</Callout>
+
+3. Handle the response to retrieve the `checkout_url` and use it to redirect the customer to complete the payment.
+4. After finishing, Fondy will send a `POST` request with the final payment information to the `server_callback_url` containing all the information from the processed payment. For more details, access the [Callbacks](/gateway/direct-integration/callbacks) guide.
+
+### Example Requests and Responses
+
+Below, you find examples of requests and responses for each supported protocol.
+
+**JSON Example**
+
+<Tabs>
+  <TabItem value="request1" label="Request">
+  ```json 
+  {
+    "request":{
+      "order_id":"test8037875286",
+      "order_desc":"Test payment",
+      "currency":"USD",
+      "amount":"100",
+      "rectoken":"544d3f86237886b6404d8b000f6a7d71c45410b7",
+      "signature":"07bc309047a56275f8d89ae222e2af0ceb94fe79",
+      "merchant_id":"1"
+    }
+  }
+  ```
+  </TabItem>
+
+  <TabItem value="response1" label="Response"> 
+  ```json 
+  {
+    "response": {
+      "rrn": "",
+      "masked_card": "",
+      "sender_cell_phone": "",
+      "response_signature_string": "**********1000USD1000530159USDTest1test7926651365approved13.01.2014 15:10:472100Visa/MC",
+      "response_status": "",
+      "currency": "USD",
+      "fee": "",
+      "reversal_amount": "",
+      "settlement_amount": "",
+      "actual_amount": "1000",
+      "order_status": "approved",
+      "response_description": "",
+      "order_time": "13.01.2014 15:10:47",
+      "actual_currency": "USD",
+      "order_id": "test7926651365",
+      "tran_type": "",
+      "eci": "",
+      "settlement_date": "",
+      "payment_system": "Visa/MC",
+      "approval_code": "530159",
+      "merchant_id": "1",
+      "settlement_currency": "",
+      "payment_id": "2100",
+      "card_bin": "",
+      "response_code": "",
+      "card_type": "",
+      "amount": "1000",
+      "sender_email": "",
+      "signature": "3a587a6908e1b4119729e6b00f9f055a927728fd",
+      "product_id": ""
+    }
+  }
+  ```
+  </TabItem>
+
+  <TabItem value="error-response1" label="Error Response"> 
+  ```json 
+  {
+    "response":{
+    "response_status":"failure",
+    "error_message":"Parameter `amount` is mandatory",
+    "error_code":"1008"
+    }
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+**XML Example**
+
+<Tabs>
+  <TabItem value="request3" label="Request">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <request>
+    <response_url>https://pay.fondy.eu/responsepage/</response_url>
+    <order_id>test622138965</order_id>
+    <order_desc>Test payment</order_desc>
+    <currency>USD</currency>
+    <amount>100</amount>
+    <rectoken>544d3f86237886b6404d8b000f6a7d71c45410b7</rectoken>
+    <signature>fad685643ed5375d6d08c27f4f600e848549b0c5</signature>
+    <merchant_id>1</merchant_id>
+  </request>
+  ```
+  </TabItem>
+
+  <TabItem value="response3" label="Response">
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+    <rrn>401311593803</rrn>
+    <masked_card>444455XXXXXX1111</masked_card>
+    <sender_cell_phone />
+    <response_status />
+    <currency>USD</currency>
+    <fee />
+    <reversal_amount />
+    <settlement_amount />
+    <actual_amount>1000</actual_amount>
+    <order_status>approved</order_status>
+    <response_description />
+    <order_time>13.01.2014 15:10:47</order_time>
+    <actual_currency>USD</actual_currency>
+    <order_id>test7926651365</order_id>
+    <tran_type />
+    <eci />
+    <settlement_date />
+    <payment_system>Visa/MC</payment_system>
+    <approval_code>530159</approval_code>
+    <merchant_id>1</merchant_id>
+    <settlement_currency />
+    <payment_id>2100</payment_id>
+    <card_bin>444455</card_bin>
+    <response_code />
+    <card_type>VISA</card_type>
+    <amount>1000</amount>
+    <sender_email />
+    <signature>1f894ec8c9b9c0a619e87f92ad7d347431f705c0</signature>
+    <product_id />
+  </response>
+  ```
+  </TabItem>
+
+  <TabItem value="error-response3" label="Error Response"> 
+  ```xml 
+  <?xml version="1.0" encoding="UTF-8"?>
+  <response>
+    <response_status>failure</response_status>
+    <error_message>Parameter `amount` is mandatory</error_message>
+    <error_code>1008</error_code>
+  </response>
+  ```
+  </TabItem>
+</Tabs>
+
+**HTML-form Example**
+
+<Tabs>
+  <TabItem value="request2" label="Request">
+  ```html 
+  order_id=test3600040034&order_desc=Test payment&currency=USD
+  &amount=100&merchant_id=1&signature=ea326b841f9a1e2e90fb392392d3ed6255a6698d
+  ```
+
+  ```html Normal Reponse
+  rrn=401311593803&masked_card=444455XXXXXX1111&sender_cell_phone=&response_status=
+  &currency=USD&fee=&reversal_amount=&settlement_amount=&actual_amount=1000
+  &order_status=approved&response_description=&order_time=13.01.2014+15%3A10%3A47
+  &actual_currency=USD&order_id=test7926651365&tran_type=&eci=
+  &settlement_date=&payment_system=Visa%2FMC&approval_code=530159&merchant_id=1
+  &settlement_currency=&payment_id=2100&card_bin=444455&response_code=&
+  card_type=VISA&amount=1000&sender_email=&signature=1f894ec8c9b9c0a619e87f92ad7d347431f705c0&product_id=
+  ```
+  </TabItem>
+
+  <TabItem value="error-response2" label="Error Response"> 
+  ```Text Error Response
+  response_status=failure&error_message=Parameter%20%60amount%60%20is%20mandatory&error_code=1008
+  ```
+  </TabItem>
+</Tabs>

@@ -1,0 +1,14 @@
+---
+route: POST /capture/order_id
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+{/* Don't change the file name or the metadata in this file */}
+This endpoint allows a merchant to capture a previously pre-authorized amount on a card. The capture operation is the second stage in a two-stage payment scheme, where the initial amount was held during a pre-authorization request (`preauth = Y`). This capture can be a full or partial capture of the amount.
+
+> 📘 Note
+> This operation applies only to card payments. If capture is not completed, only a reversal of the full held amount is available.
+

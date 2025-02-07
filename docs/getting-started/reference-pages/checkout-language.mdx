@@ -1,0 +1,67 @@
+---
+title: "Checkout Language"
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The checkout page language is determined dynamically based on the customer's preferences and system configurations. This ensures a seamless and personalized user experience. The language is chosen in the following order of priority:
+
+1. **Browser cookies**: Uses the `lang` cookie value if available.
+2. **`lang` parameter sent via API**: Overrides the cookie value if specified.
+3. **Browser language preferences**: Acts as a fallback if no cookie or `lang` parameter is provided.
+
+## 1. Browser Cookies
+
+The **`lang` cookie** stores the customer's preferred language for the checkout page. If the cookie exists, the checkout page uses its value to set the language.
+
+## 2. Define the Checkout Language
+
+If the `lang` cookie is empty or not set, the `lang` parameter provided in the API request determines the checkout page's language. You can use this option when using any of the Fondy solutions. This option is useful for custom integrations or scenarios where the API dictates user preferences.
+
+The following code block shows how to set the `lang`parameter.
+
+```http 
+POST /checkout
+Content-Type: application/json
+
+{
+  "lang": "fr"
+}
+```
+
+In this example, the checkout page will display the content in French (`fr`).For more details on sending the `lang` parameter via API, refer to the [Accept Purchase documentation](/reference/gateway/accept-purchase-fondy-checkout).
+
+## 3. Browser Language Preferences
+
+If neither the **`lang` cookie** nor the **`lang` parameter** is set, and the checkout page defaults to the browser's language preferences. The browser automatically applies the language set as the default preference in its settings. For more information, access [Setting language preferences in a browser](https://www.w3.org/International/questions/qa-lang-priorities.en)
+
+## Supported Languages
+
+Merchants set the `lang` parameter in the API request to control the display language of the checkout page. This parameter configures the checkout page to render in the specified language.
+
+<Accordion title="Supported Languages">
+| Language        | Code |
+| --------------- | ---- |
+| Azərbaycan dili | `az` |
+| Čeština         | `cs` |
+| Dansk           | `da` |
+| Deutsch         | `de` |
+| English         | `en` |
+| Español         | `es` |
+| Suomi           | `fi` |
+| Français        | `fr` |
+| Magyar          | `hu` |
+| Italiano        | `it` |
+| ქართული         | `ka` |
+| 한국어             | `ko` |
+| Latviešu valoda | `lv` |
+| Nederlands      | `nl` |
+| Język polski    | `pl` |
+| Română          | `ro` |
+| Русский         | `ru` |
+| Slovenčina      | `sk` |
+| Українська      | `uk` |
+| 中文              | `zh` |
+</Accordion>

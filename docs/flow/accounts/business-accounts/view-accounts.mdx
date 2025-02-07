@@ -1,0 +1,97 @@
+---
+title: "View Accounts"
+description: "Access and manage your account information using Fondy's View Account Details and View All Accounts features, with step-by-step guides for both individual and multiple account management."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy provides powerful tools for viewing and managing your account details. Whether you need to access information for a single account or an overview of multiple accounts, the **View Account Details** and **View All Accounts** features ensure transparency and control over your financial operations.
+
+## View Account Details
+
+The **View Account Details** feature allows users to retrieve comprehensive information about individual accounts. This includes essential details like account type, status, currency, and transaction history.
+
+### Step-by-Step Guide to Viewing Account Details
+
+1. **Access the Account Dashboard**
+
+   * Log in to your account dashboard using your credentials.
+   * Navigate to the **Account** section and select **View Account Details**.
+
+2. **Retrieve Account Information**
+
+   * Click on **View Account Details** to display detailed account information, such as:
+
+     * Business name and contact details;
+     * Account status (e.g., Active, Pending, Suspended);
+     * Transaction history;
+     * Billing and payment details;
+     * User roles and permissions.
+
+3. **Updating Information**
+
+   * Use the **Edit** or **Update** buttons adjacent to the relevant fields to update account details.
+   * Save your changes to ensure your account information remains current.
+
+4. **Download and Export Data**
+
+   * Export account details and transaction history in formats like CSV, PDF, or Excel for record-keeping or analysis.
+
+### Additional Information
+
+* **Endpoint**: `/accounts/{account_id}`
+
+  * **Description**: Retrieve detailed information about a specific account, including balance and associated details.
+  * **Use Case Example**: Check the status and transaction history of an account to ensure all operations are running smoothly.
+
+* **Key Details Available**
+
+  * Account name;
+  * IBAN/Sort Code & account number;
+  * Account balance;
+  * Account type and status;
+  * For Wallets: Includes Master Account ID and wallet business reference.
+
+## View All Accounts
+
+The **View All Accounts** feature provides an easy way to manage and monitor multiple accounts in one place. Gain comprehensive insights into your financial landscape, including account names, IBAN/Sort Codes, balances, and statuses.
+
+### Step-by-Step Guide to Viewing All Accounts
+
+1. **Access the Account Overview**
+
+   * Log in to your primary account dashboard.
+   * Navigate to the **Accounts** section and select **View All Accounts**.
+
+2. **Account List Display**
+
+   * A list of all your linked accounts will appear, showing essential details like:
+
+     * Account names;
+     * Statuses (Active, Pending, Suspended);
+     * Key contact information.
+
+3. **Detailed Account Information**
+
+   * Click on any account to view more detailed information, including:
+
+     * Business details;
+     * Transaction history;
+     * User roles and permissions.
+
+4. **Sorting and Filtering**
+
+   * Use sorting options to organize accounts by criteria such as name, status, or creation date.
+   * Apply filters to narrow the list based on parameters like account type or business type.
+
+### Additional Details
+
+* **Endpoint**: `/accounts/`
+
+  * **Description**: Retrieve a complete list of all existing accounts, including balances and associated details.
+  * **Use Case Example**: Get a comprehensive list of balances for all user-held accounts.
+
+* **Key Features of Wallet Details**
+  * Includes Master Account ID and wallet business reference for each Wallet account.

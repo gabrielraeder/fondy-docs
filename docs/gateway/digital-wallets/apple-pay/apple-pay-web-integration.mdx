@@ -1,0 +1,145 @@
+---
+title: "Web Integration"
+description: "Learn how to integrate Apple Pay payments using Fondy, enabling seamless and secure transactions for both web and mobile platforms."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Integrating Apple Pay into a website can be achieved through two main methods:
+
+* [Embedded Apple Pay Button Integration](#embedded-apple-pay-button-integration): Embed the Apple Pay button directly into your website for a seamless user experience.
+* [Direct Integration with Apple Pay API](#direct-integration-with-apple-pay-api): Implement the Apple Pay API to control the payment flow completely.
+
+The embedded method requires integration with Fondy's API or SDK, offering a straightforward implementation with minimal complexity.
+
+In contrast, the direct integration method involves additional steps, such as managing Apple certificates and handling encryption/decryption processes. This method also varies based on the payment flow, depending on whether a tokenized Primary Account Number (DPAN) or an encrypted payment container is used. While more complex, direct integration provides greater flexibility and customization options.
+
+## Embedded Apple Pay Button Integration
+
+The embedded Apple Pay button offers a seamless checkout experience directly on the merchant's website, eliminating the need for users to navigate away. This approach can significantly improve the conversion rate by streamlining the payment process.
+
+The Apple Pay button can be customized to align with your website's look and feel, creating a cohesive brand experience. Additionally, this integration provides merchants with greater control over the checkout process and design, allowing for a tailored user journey.
+
+### Domain Verification for Apple Pay Integration
+
+To integrate the Apple Pay button with Fondy, you must verify all web domains where the button will be displayed. This includes top-level domains (e.g., site.com) and subdomains (e.g., shop.site.com, www\.site.com) for production and development environments.
+
+1. Contact Fondy support to obtain the `apple-developer-merchantid-domain-association.txt` file.
+2. Upload the file to the following location on your domain or subdomain: https://example.com/.well-known/apple-developer-merchantid-domain-association
+
+<Callout type="warning" title="Use Your Domain">
+  Replace `example.com` with the appropriate domain or subdomain for your site.
+</Callout>
+
+3. Notify Fondy to activate your domain with Apple.
+
+Once the domain verification is complete, your embedded Apple Pay button will be ready to process payments securely and efficiently.
+
+## Direct Integration with Apple Pay API
+
+This guide explains how to integrate directly with the Apple Pay API using decrypted card tokens.
+
+### Step 1: Configure Your Apple Pay Environment
+
+1. Set up your Apple Merchant ID in your Apple Developer account. Follow instructions presented on the [Apple Developer's documentation](https://developer.apple.com/documentation/apple_pay_on_the_web/configuring_your_environment).
+2. Register your web domain with Apple and verify it.
+
+### Step 2: Integrate Apple Payment Request API
+
+1. Integrate Apple Payment Request API by following [Apple's Payment Request API documentation](https://developer.apple.com/documentation/apple_pay_on_the_web/payment_request_api).
+2. Add Apple Pay buttons to your website following [Apple's Display Pay Button documentation](https://developer.apple.com/documentation/apple_pay_on_the_web/displaying_apple_pay_buttons_using_css).
+3. Create a `PaymentRequest` object with the required parameters following [Apple's guide](https://webkit.org/blog/8182/introducing-the-payment-request-api-for-apple-pay/). Here is an example configuration:
+
+```
+const applePayMethod = {
+  supportedMethods: "https://apple.com/apple-pay",
+  data: {
+      version: 3,
+      merchantIdentifier: "merchant.com.example",
+      merchantCapabilities: ["supports3DS", "supportsCredit", "supportsDebit"],
+      supportedNetworks: ["masterCard", "visa"],
+      countryCode: "GE",
+  },
+};
+```
+
+<Callout type="info" title="Don't Forget to Replace">
+  Replace `merchant.com.example` with your **Apple Merchant ID** configured in [Step 1.](#step-1-configure-your-apple-pay-environment)
+</Callout>
+
+### Step 3: Acquire a Payment Session
+
+Perform [merchant validation](https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/providing_merchant_validation) to acquire a payment session from Apple.
+
+<Callout type="warning" title="Back-End Server">
+  This step must be executed on your back-end server for security reasons, unlike the other steps, which are front-end-based.
+</Callout>
+
+### Step 4: Handle Payment Authorization
+
+Handle the authorization response returned by Apple Pay, ensuring proper validation of the payment data.
+
+### Step 5: Obtain Payment Response
+
+Retrieve the PaymentResponse and the associated [ApplePayPayment](https://developer.apple.com/documentation/apple_pay_on_the_web/applepaypayment) dictionary, which contains the tokenized payment data.
+
+### Step 6: Extract Token
+
+Extract the [payment token](https://developer.apple.com/documentation/passkit_apple_pay_and_wallet/pkpayment/1619239-token) from the ApplePayPayment dictionary for decryption.
+
+### Step 7: Decrypt Payment Data
+
+Decrypt the [`paymentData`](https://developer.apple.com/documentation/passkit_apple_pay_and_wallet/apple_pay/payment_token_format_reference) field from the payment token to retrieve card details. The decrypted data should be in the following format:
+
+```
+{
+  "applicationPrimaryAccountNumber": "",
+  "applicationExpirationDate": "",
+  "currencyCode": "",
+  "transactionAmount": ,
+  "deviceManufacturerIdentifier": "",
+  "paymentDataType": "",
+  "paymentData": {
+    "onlinePaymentCryptogram": ""
+  }
+}
+```
+
+### Step 8: Send Parameters to Fondy Gateway API
+
+Using the decrypted data, construct a payment request to the [Enroll Card in 3DSecure Service endpoint](/reference/gateway/enroll-card-3-ds) with the following mapping:
+
+`applicationPrimaryAccountNumber` → `card_number`
+
+`applicationExpirationDate` → `expiry_date`
+
+`onlinePaymentCryptogram` → `cavv`
+
+Add `wallet` = `applepay` to indicate the payment method.
+
+Below, you can find an example of how that request should be formatted:
+
+```
+{
+  "request": {
+    "order_id": "Order_id123",
+    "merchant_id": 1549901,
+    "order_desc": "Apple Pay Payment with card token",
+    "amount": 1000,
+    "currency": "GEL",
+    "client_ip": "2.2.2.2",
+    "server_callback_url": "https://server.com/callback",
+    "preauth": "Y",
+    "version": "1.0.1",
+    "card_number": "4444555566661111",
+    "expiry_date": "0527",
+    "cavv": "AEBBjhMvE4xRAg97n9DpAoABFA==",
+    "wallet": "applepay"
+    "signature": "64d565cdf9bfb2ad556eac54bd57706e5dc6c412",
+  }
+}
+```
+
+By following these steps, you can directly integrate with the Apple Pay API and process payments securely using decrypted card tokens.

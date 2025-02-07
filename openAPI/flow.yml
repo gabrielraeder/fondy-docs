@@ -1,0 +1,159 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Encrypted Flow",
+    "version": "2.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.fondyflow.io/clientapi"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+
+    }
+  },
+  "security": [
+    {
+
+    }
+  ],
+  "paths": {
+    "/encrypted/v1/{clientRef}": {
+      "post": {
+        "summary": "Encrypted Request",
+        "description": "",
+        "operationId": "encrypted",
+        "parameters": [
+          {
+            "name": "clientRef",
+            "in": "path",
+            "description": "Unique client identifier provided by Fondy.",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "X-correlation-id",
+            "in": "header",
+            "description": "Standard HTTP host header giving a UUID for this specific message.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "description": "Standard HTTP host header giving :  the domain name of the server the TCP port number on which the server is listening",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Date",
+            "in": "header",
+            "description": "Standard HTTP date header giving (in \"HTTP-date\" format as defined by RFC 7231 Date/Time Formats) of the originating message.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "encrypted_payload",
+                  "encrypted_user",
+                  "method",
+                  "signature",
+                  "encrypted_url"
+                ],
+                "properties": {
+                  "encrypted_payload": {
+                    "type": "string",
+                    "description": "The encrypted payload with the operation you wish to perform on the API.",
+                    "default": "ENCRYPTED_PAYLOAD"
+                  },
+                  "encrypted_user": {
+                    "type": "string",
+                    "description": "The encrypted user that is sending the operation to the API.",
+                    "default": "ENCRYPTED_USER"
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "The method of the operation: GET, POST or PUT",
+                    "default": "API_METHOD"
+                  },
+                  "signature": {
+                    "type": "string",
+                    "description": "The encrypted signature of the request.",
+                    "default": "ENCRYPTED_SIGNATURE"
+                  },
+                  "encrypted_url": {
+                    "type": "string",
+                    "description": "The encrypted URL of the operation",
+                    "default": "ENCRYPTED_URL"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Result": {
+                    "value": "{\n    \"encrypted_payload\": ENCRYPTED(paymentObject)\n    \"encrypted_url\": null\n    \"method\": null\n    \"nonce\": null\n}"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Result": {
+                    "value": "{\n  \"code\": \"string\",\n  \"reference\": \"string\",\n  \"message\": \"string\"\n}"
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "reference": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "x-readme": {
+    "headers": [],
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  },
+  "x-readme-fauxas": true
+}

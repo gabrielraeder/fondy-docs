@@ -1,0 +1,66 @@
+---
+title: "Manage Payments"
+description: "Learn how to create payments in your platform."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The **Payments** feature enables users to initiate, track, and manage financial transactions. Using the **Create Payments** endpoint, you can transfer funds between an account and a designated counterparty.
+
+Following these guidelines, you can efficiently initiate and manage payments while maintaining complete control over your financial transactions. For more details on payment setup, refer to the [API Reference](/reference/introduction_flow).
+
+## Create Payments
+
+The **Create a Payment** operation allows users to move funds from a specified account (**account\_id**) to a counterparty (the beneficiary receiving the funds). It is ideal for processing customer transactions, vendor payments, internal transfers, or payroll payments.
+
+### Operation Details
+
+The [Create Payments](/flow/fondy-flow-api/core-operations/create-payments) operation facilitates the creation of new payments within the system, such as vendor payments or customer transactions.
+
+<Image src="/media/docs/flow/payments/payments/create-payments.png" alt="Create Payments" />
+
+<Callout type="warning" title="Required Fields">
+  Ensure all required fields are correctly filled to avoid errors or delays.
+</Callout>
+
+## Payment Status
+
+Payments go through various statuses, which provide insights into their progress:
+
+<Image src="/media/docs/flow/payments/payments/create-payment-process.png" alt="Create Payment Process" />
+
+1. **Processing**: The initial status after submitting a payment request. Indicates the system validates payment details and checks the account balance (including fees).
+
+2. **Settled**: Payment has been successfully sent to the counterparty.
+
+3. **Rejected**: Payment could not be processed. Use the **View Payment Details** endpoint to determine the reason for the rejection. Common rejection reasons are:
+
+   * Insufficient funds;
+   * Incorrect or missing payment details.
+
+<Callout type="info" title="Payment Status">
+  You can check payment status at any time within the system. Webhooks are not currently supported for status updates.
+</Callout>
+
+## Payment Fees
+
+Payment fees are calculated based on the settlement scheme, which depends on the counterparty's country and currency.
+
+### Key Details:
+
+* The **Create Payment** endpoint response includes the fee amount, currency, and payment\_id.
+* Ensure the account balance covers both the payment amount and associated fees.
+* Insufficient funds will result in a rejected payment with an **'Insufficient funds'** message.
+
+## Account Entries
+
+Account balances are affected by the success or failure of a payment. The system creates a transaction entry for each debit or credit to the account. The table below explains how different payment flows impact account balances:
+
+| **Payment Status** | **Error**          | **Debit/Credit Account Entries**                                                                                                                                                              |
+| ------------------ | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Processing**     | -                  | Debit client account for the payment amount. Debit client account for the payment fee amount.                                                                                                 |
+| **Settled**        | -                  | Debit client account for the payment amount. Debit client account for the payment fee amount.                                                                                                 |
+| **Rejected**       | Insufficient funds | Debit client account for the payment amount. Debit client account for the payment fee amount. Credit client account for the payment amount. Credit client account for the payment fee amount. |
+| **Rejected**       | Bad request        | No account entries are made.                                                                                                                                                                  |

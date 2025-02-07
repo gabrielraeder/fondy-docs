@@ -1,0 +1,64 @@
+---
+title: "Request Structure"
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+
+When using the Fondy Gateway API, all requests and responses follow a consistent structure to ensure reliable communication between your system and the API.
+
+## Request Format
+
+Each API request must include a root element named `request`. This root element contains the necessary parameters for the operation. The following code block presents an example of a body request, where all the information to create the payment is contained within the `request` object.
+
+  ```json 
+  {
+    "request": {
+      "version": "1.0.1",
+      "order_id": "test_order_id_132412412",
+      "currency": "GBP",
+      "merchant_id": 1549901,
+      "order_desc": "Test order",
+      "amount": 10025,
+      "response_url": "https://example.com/thankyoupage",
+      "server_callback_url": "https://example.com/api/callback",
+      "signature": "7f52380cefaf3cb793746e2deeb56cf7cd75d532"
+    }
+  }
+  ```
+### Response Format
+
+Every API response includes a root element named `response`, which contains the outcome of the operation and any additional details. The following code block presents an example of a response where all the information related to the created payment is contained within the `response` object.
+>
+  ```json 
+  {
+    "response": {
+      "order_status": "approved",
+      "response_status": "success",
+      "order_id": "test33694502191",
+      "amount": "200",
+      "currency": "GBP",
+      "payment_id": 805243692,
+      "masked_card": "444455XXXXXX1111",
+      "card_type": "VISA",
+      "approval_code": "123456",
+      "response_signature_string": "**********",
+      "additional_info": {
+        "transaction_id": 1994930931,
+        "payment_method": "card",
+        "is_test": true
+      }
+    }
+  }
+  ```
+
+## Fondy Response Status
+
+When you send a request, Fondy always returns a response with HTTP status 200. To understand the operation status related to the operation you are performing or consulting, you have to check the status within the response object. The following list describes the possible statuses you can receive using the Fondy Gateway API.
+
+* **`response_status`**: Indicates the HTTP request status, such as `success`. This does not reflect the payment, reversal, or capture status.
+* **`order_status`**: Provides order processing status, which indicates the current state of the transaction.
+* **`revers_status`**: Indicates whether the reversal request has been successfully created, declined, or approved.
+* **`capture_status`**: Indicates whether the capture was completed (captured) or declined (declined).

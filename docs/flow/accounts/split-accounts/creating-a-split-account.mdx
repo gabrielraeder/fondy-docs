@@ -1,0 +1,58 @@
+---
+title: "Create Split Account"
+description: "Learn how to create a Split Account with Fondy, enabling automated payment distribution between platforms and partners."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Fondy Split Account API enables platforms and marketplaces to automate payment management. This page will walk you through creating and managing a Split Account.
+
+## Step 1: Set Up Your Account
+
+To start, you have to set up your account. To create Split Accounts and Default Wallets, you need to contact the Fondy supporting team via email [support@fondy.eu](mailto:support@fondy.eu).
+
+This setup ensures that incoming payments are automatically distributed according to your business needs.
+
+<Callout type="success" title="Dedicated IBAN Account">
+  Once you create a Split Account, Fondy automatically generates an **IBAN account** dedicated to your business. Use this account for transactions and to manage platform commissions.
+
+  For setup assistance or further questions, contact **[support@fondy.eu](mailto:support@fondy.eu)**.
+</Callout>
+
+## Step 2: Integrate the API
+
+Ensure your platform is configured to handle all Split Account operations effectively. To do this, you must integrate Fondy API into your platform, which will enable you to onboard clients and perform payments. Follow the [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) page to configure endpoints and programmatically manage transactions.
+
+## Step 3: Manage Onboarding
+
+After you have integrated the Fondy Flow API, you can start using it to automate the partner onboarding. Use the onboarding APIs to streamline merchant, seller, or partner registration.
+
+First, you have to create a merchant compliance profile for your customers. The page [Create Compliance Profile](/flow/fondy-flow-api/compliance/create-compliance-profile) describes this process.
+
+After, you can create wallets for your customers. When creating a wallet, you must provide the payee details, which will be used to process payouts from the wallet. For details on how to accomplish this, refer to the [Create Wallet Under the Split Account](/flow/fondy-flow-api/split-accounts-operations/create-wallet-under-the-split-account) page.
+
+## Step 4: Create Payments
+
+With your clients onboarded you can use the Fondy Flow API to create payments and schedule payouts to transfer funds from partner wallets to their respective bank accounts based on your business logic. To execute this process, you need to:
+
+1. Initiate payments from wallets associated with your Split Account.
+2. Choose operations such as transfers, reversals, or payouts based on your transaction requirements.
+3. Specify the source and target wallets, amount, and other transaction details.
+
+To learn more about the operation types and how to execute the operations, access the [Create Split Payment](/flow/fondy-flow-api/split-accounts-operations/create-split-payment) page.
+
+## Step 5: Monitor Transactions
+
+Fondy provides a complete solution to monitor all operations under your Split Account:
+
+1. Use real-time monitoring tools to track all split payments.
+2. Generate detailed reports to ensure transparency and accuracy in fund management.
+
+You can use the following API operations to monitor transactions:
+
+* [Get Payment from Wallet in Split Account](/flow/fondy-flow-api/split-accounts-operations/get-payment-from-wallet-in-split-account)
+* [Get Transaction List of Wallet](/flow/fondy-flow-api/split-accounts-operations/get-transaction-list-of-wallet)
+
+In addition, the [Fondy Dashboard](https://staging.fondybank.io/split-account) also provides a visual tool to track your operations.

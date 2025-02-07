@@ -1,0 +1,129 @@
+---
+title: "Get Compliance Profiles"
+description: "Learn how to retrieve compliance profiles for individuals or organizations using Fondy's API, with methods to fetch all compliance profiles or get details for a specific profile."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+By calling this operation, you can get a comprehensive list of all Compliance profiles of a client, or you can focus on retrieving details of a specific profileby its unique ID.
+
+This page will guide you trough the process of using these operations:
+
+* [Retrieve All Profiles](#retrieve-all-profiles)
+* [Retrieve Specific Profile](#retrieve-specific-profile)
+
+The following sections will describe them in more detail.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Retrieve All Profiles
+
+To retrieve a list of all profiles under a client follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/onboarding/compliance/profile"),
+       "method": "GET"
+   }
+   ```
+
+### Response
+
+A succesful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(profiles)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted with the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload is as follows:
+
+```json
+[
+  {
+    "profile_type": "SOLETRADER",
+    "full_name": "string",
+    "external_url_validation": "string",
+    "client_ref": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "type_of_compliance": "EXTERNAL_FULL",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "telephone": "string",
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "created_date": "2020-01-22T13:15:30.000Z",
+    "email": "string",
+    "linked_identities": [
+      "f8605015-90ac-4450-bb99-cbb1591bce7a"
+    ],
+    "status": null
+  }
+]
+```
+
+The parameters for each profile are the same received in the response of the [Create Compliance Profile](/flow/fondy-flow-api/compliance/create-compliance-profile) operation.
+
+## Retrieve Specific Profile
+
+To retrieve information of a specific profile under a client follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/onboarding/compliance/profile/{complianceId}"),
+       "method": "GET"
+   }
+   ```
+
+<Callout type="warning" title="Path Parameters">
+  Change the following in the `encrypted_url`
+
+  * Change `{complianceId}` with the ID of the Identity to retrieve the details from.
+</Callout>
+
+### Response
+
+A succesful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(profile)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted with the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload is as follows:
+
+```json
+{
+  "profile_type": "SOLETRADER",
+  "full_name": "string",
+  "external_url_validation": "string",
+  "client_ref": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "type_of_compliance": "EXTERNAL_FULL",
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "telephone": "string",
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "created_date": "2020-01-22T13:15:30.000Z",
+  "email": "string",
+  "linked_identities": [
+    "f8605015-90ac-4450-bb99-cbb1591bce7a"
+  ],
+  "status": null
+}
+```
+
+The parameters for each profile are the same received in the response of the [Create Compliance Profile](/flow/fondy-flow-api/compliance/create-compliance-profile) operation.

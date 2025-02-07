@@ -1,0 +1,35 @@
+---
+title: "Refund Split Payments"
+description: "Learn how to refund split payments in your platform."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy Flow also allows refunds for split payments. This feature reverses or adjusts transactions made within the split account structure, transferring Funds from the Wallet back to the Master Account.
+
+## How to Refund a Split Payment
+
+This process uses the [Create Split Payment](/flow/fondy-flow-api/split-accounts-operations/create-split-payment) operation through the Fondy API. In the payload of the request, it is essential to use the `REVERSAL` payment type. See the code block below for an example:
+
+```json
+  {   "source_wallet_id: The wallet to send the reversal from,
+      "target_wallet_id: default_wallet_id we have provided,
+      "requested_amount: {
+         "amount: amount in pence (e.g. 1000 = £10)
+         "currency: GBP must be GBP
+      },
+      "type: REVERSAL
+      "external_id": Unique ID from you,
+  }
+  ```
+
+As you can see, the `type` parameter is set to`REVERSAL`. You also need to provide the following parameters:
+
+* `source_wallet_id`: The ID of the wallet from where the reversal is being made.
+* `target_wallet_id`: The ID of the default wallet of the account to send funds back.
+
+<Callout type="warning" title="Sending Requests to Fondy API">
+  See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the Fondy Encrypted endpoint.
+</Callout>

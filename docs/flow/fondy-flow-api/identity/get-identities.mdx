@@ -1,0 +1,443 @@
+---
+title: "Get Identities"
+description: "Learn how to retrieve identity information using Fondy's API, with methods to fetch all client identities or get details for a specific identity profile."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+By calling this operation, you can get a comprehensive list of all a client's identities or focus on retrieving details of a specific identity by its unique ID.
+
+This page will guide you through the process of using these operations:
+
+* [Retrieve All Identities](#retrieve-all-identities)
+* [Retrieve Specific Identity](#retrieve-specific-identity)
+
+The following sections will describe them in more detail.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Retrieve All Identities
+
+To retrieve a list of all identities under a client, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/onboarding/identity"),
+       "method": "GET"
+   }
+   ```
+
+### Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(identities)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload is as follows:
+
+```json
+[
+  {
+    "addresses": {
+      "country": {
+        "code": "GB",
+        "country": "England"
+      },
+      "town": "Example Large Town",
+      "postcode": "EX1 1EG",
+      "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+      "dates": {
+        "date_to": "1990-02-28T00:00:00.000Z",
+        "date_from": "1990-02-28T00:00:00.000Z"
+      },
+      "full_address": "123 Example House, example road, Example town, UK",
+      "type": "REGISTERED_OFFICE",
+      "address_line_1": "123 Example House",
+      "address_line_3": "Example Small Hamlet",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "address_line_2": "Example Road",
+      "state": "Middlesex",
+      "address_line_4": "Example Village",
+      "status": "CURRENT"
+    },
+    "ubo": {
+      "dates": {
+        "date_to": "1990-02-28T00:00:00.000Z",
+        "date_from": "1990-02-28T00:00:00.000Z"
+      },
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "audit_dates": {
+        "created": "2020-01-22T13:15:30.000Z",
+        "updated": "2020-01-22T13:15:30.000Z"
+      },
+      "ubo_identity_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "ubo_type": "DIRECTOR"
+    },
+    "organisation": {
+      "company_number": [
+        {
+          "value": {},
+          "country_of_number": {
+            "code": "GB",
+            "country": "England"
+          },
+          "dates": {
+            "date_to": "1990-02-28T00:00:00.000Z",
+            "date_from": "1990-02-28T00:00:00.000Z"
+          },
+          "type": "COMPANY_HOUSE"
+        }
+      ],
+      "type_of_organisation": "LIMITED_COMPANY",
+      "company_name": {},
+      "fatca": true,
+      "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+    },
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "telephone": {
+      "number_type": "REGISTERED_OFFICE",
+      "routing_type": "MOBILE",
+      "valid": true,
+      "primary": true,
+      "country": {
+        "code": "GB",
+        "country": "England"
+      },
+      "details_confirmed_by": "CLIENT",
+      "number": [
+        {
+          "tel_number": "07117 754764",
+          "tel_type": "LOCAL"
+        }
+      ],
+      "confirmed": true,
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+    },
+    "type": "PERSON",
+    "audit_dates": {
+      "created": "2020-01-22T13:15:30.000Z",
+      "updated": "2020-01-22T13:15:30.000Z"
+    },
+    "compliance_profile_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "person": {
+      "nationality": [
+        {
+          "country": {
+            "code": "GB",
+            "country": "England"
+          },
+          "dates": {
+            "date_to": "1990-02-28T00:00:00.000Z",
+            "date_from": "1990-02-28T00:00:00.000Z"
+          },
+          "status": "CURRENT"
+        }
+      ],
+      "date_of_birth": "1990-02-28T00:00:00.000Z",
+      "details": {
+        "gender": "FEMALE",
+        "firstname": "ExampleFirstname",
+        "surname": "Example-Surname",
+        "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+        "other_names": "Example-OtherNames",
+        "title": "PROF",
+        "married": "YES",
+        "status": "CURRENT"
+      },
+      "residency": [
+        {
+          "country": {
+            "code": "GB",
+            "country": "England"
+          },
+          "dates": {
+            "date_to": "1990-02-28T00:00:00.000Z",
+            "date_from": "1990-02-28T00:00:00.000Z"
+          },
+          "status": "CURRENT"
+        }
+      ],
+      "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+      "aliases": {
+        "gender": "FEMALE",
+        "firstname": "ExampleFirstname",
+        "surname": "Example-Surname",
+        "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+        "other_names": "Example-OtherNames",
+        "title": "PROF",
+        "married": "YES",
+        "status": "CURRENT"
+      },
+      "identity_references": [
+        {
+          "country": {
+            "code": "GB",
+            "country": "England"
+          },
+          "dates": {
+            "date_to": "1990-02-28T00:00:00.000Z",
+            "date_from": "1990-02-28T00:00:00.000Z"
+          },
+          "reference_of_document": {},
+          "document_type": {},
+          "status": "CURRENT"
+        }
+      ],
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "audit_dates": {
+        "created": "2020-01-22T13:15:30.000Z",
+        "updated": "2020-01-22T13:15:30.000Z"
+      },
+      "fatca": true
+    },
+    "compliance": {
+      "risk_rated": "CLIENT",
+      "screened": "CLIENT"
+    },
+    "terms_of_service": {
+      "tos_accepted_date": "1990-02-28T00:00:00.000Z",
+      "tos_accepted": true
+    },
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "email": {
+      "email": "string",
+      "confirmed": true,
+      "primary": true,
+      "details_confirmed_by": "CLIENT",
+      "valid": true,
+      "email_type": "REGISTERED_OFFICE",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+    }
+  }
+]
+```
+
+The parameters for each identity are the same as those received in the response of the [Create Identity](/flow/fondy-flow-api/identity/create-identity) operation.
+
+## Retrieve Specific Identity
+
+To retrieve information about a specific identity under a client, follow the steps below:
+
+1. To encrypt your request in the stack, follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api).
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": null,
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/onboarding/identity/{identityId}"),
+       "method": "GET"
+   }
+   ```
+
+<Callout type="warning" title="Path Parameters">
+  Change the following in the `encrypted_url`
+
+  * Change `{identityId}` with the ID of the Identity to retrieve the details from.
+</Callout>
+
+### Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(identity)
+    "encrypted_url": null
+    "method": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once you decrypt it, the unencrypted payload is as follows:
+
+```json
+{
+  "addresses": {
+    "country": {
+      "code": "GB",
+      "country": "England"
+    },
+    "town": "Example Large Town",
+    "postcode": "EX1 1EG",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "dates": {
+      "date_to": "1990-02-28T00:00:00.000Z",
+      "date_from": "1990-02-28T00:00:00.000Z"
+    },
+    "full_address": "123 Example House, example road, Example town, UK",
+    "type": "REGISTERED_OFFICE",
+    "address_line_1": "123 Example House",
+    "address_line_3": "Example Small Hamlet",
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "address_line_2": "Example Road",
+    "state": "Middlesex",
+    "address_line_4": "Example Village",
+    "status": "CURRENT"
+  },
+  "ubo": {
+    "dates": {
+      "date_to": "1990-02-28T00:00:00.000Z",
+      "date_from": "1990-02-28T00:00:00.000Z"
+    },
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "audit_dates": {
+      "created": "2020-01-22T13:15:30.000Z",
+      "updated": "2020-01-22T13:15:30.000Z"
+    },
+    "ubo_identity_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "ubo_type": "DIRECTOR"
+  },
+  "organisation": {
+    "company_number": [
+      {
+        "value": {},
+        "country_of_number": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "type": "COMPANY_HOUSE"
+      }
+    ],
+    "type_of_organisation": "LIMITED_COMPANY",
+    "company_name": {},
+    "fatca": true,
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+  },
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "telephone": {
+    "number_type": "REGISTERED_OFFICE",
+    "routing_type": "MOBILE",
+    "valid": true,
+    "primary": true,
+    "country": {
+      "code": "GB",
+      "country": "England"
+    },
+    "details_confirmed_by": "CLIENT",
+    "number": [
+      {
+        "tel_number": "07117 754764",
+        "tel_type": "LOCAL"
+      }
+    ],
+    "confirmed": true,
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+  },
+  "type": "PERSON",
+  "audit_dates": {
+    "created": "2020-01-22T13:15:30.000Z",
+    "updated": "2020-01-22T13:15:30.000Z"
+  },
+  "compliance_profile_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "person": {
+    "nationality": [
+      {
+        "country": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "status": "CURRENT"
+      }
+    ],
+    "date_of_birth": "1990-02-28T00:00:00.000Z",
+    "details": {
+      "gender": "FEMALE",
+      "firstname": "ExampleFirstname",
+      "surname": "Example-Surname",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "other_names": "Example-OtherNames",
+      "title": "PROF",
+      "married": "YES",
+      "status": "CURRENT"
+    },
+    "residency": [
+      {
+        "country": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "status": "CURRENT"
+      }
+    ],
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "aliases": {
+      "gender": "FEMALE",
+      "firstname": "ExampleFirstname",
+      "surname": "Example-Surname",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "other_names": "Example-OtherNames",
+      "title": "PROF",
+      "married": "YES",
+      "status": "CURRENT"
+    },
+    "identity_references": [
+      {
+        "country": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "reference_of_document": {},
+        "document_type": {},
+        "status": "CURRENT"
+      }
+    ],
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "audit_dates": {
+      "created": "2020-01-22T13:15:30.000Z",
+      "updated": "2020-01-22T13:15:30.000Z"
+    },
+    "fatca": true
+  },
+  "compliance": {
+    "risk_rated": "CLIENT",
+    "screened": "CLIENT"
+  },
+  "terms_of_service": {
+    "tos_accepted_date": "1990-02-28T00:00:00.000Z",
+    "tos_accepted": true
+  },
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "email": {
+    "email": "string",
+    "confirmed": true,
+    "primary": true,
+    "details_confirmed_by": "CLIENT",
+    "valid": true,
+    "email_type": "REGISTERED_OFFICE",
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+  }
+}
+```
+
+The parameters for each identity are the same as those received in the response of the [Create Identity](/flow/fondy-flow-api/identity/create-identity) operation.

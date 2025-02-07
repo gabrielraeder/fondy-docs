@@ -1,0 +1,34 @@
+---
+title: "Counterparties"
+description: "Learn how to manage counterparties in your platform."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Counterparties represent the beneficiaries of payments made through the system. Depending on the destination of your funds, counterparties can be identified in various ways. Accurate identification ensures seamless and efficient transactions.
+
+## Sending Funds Externally to Existing Counterparties
+
+If the counterparty already exists within the system, you can use the **counterparty\_id** to identify the beneficiary during the payment process. This ensures quick and reliable processing of transactions to pre-registered counterparties.
+
+<Image src="/media/docs/flow/payments/counterparties/existing-counterparty.png" alt="Existing Counterparty" />
+
+<Callout type="info" title="Available Soon">
+  A dedicated API for managing counterparties will be available soon, providing additional functionality for creating, updating, and managing counterparties directly.
+</Callout>
+
+## Sending Funds Externally to New Counterparties
+
+For payments to new counterparties, users can provide the required details directly when initiating the payment:
+
+* **Name**
+* **Account Number**
+* **Sort Code**
+
+<Image src="/media/docs/flow/payments/counterparties/new-counterparty.png" alt="New Counterparty" />
+
+<Callout type="warning" title="Include Counterparty Details">
+  Including counterparty details in the payment request will facilitate the transaction but will **not** create a new counterparty record in the system.
+</Callout>

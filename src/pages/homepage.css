@@ -1,0 +1,428 @@
+:root {
+            --background-color: #fff;
+            --text-color: #23232a;
+            --description-color: #474751;
+            --feature-bg-color: #f8f8f8;
+            --display-main-default: block;
+            --display-main-dark: none;
+        }
+
+        [data-theme="dark"] {
+            --background-color: #1f142c;
+            --text-color: #fff;
+            --description-color: #e5e5e5;
+            --feature-bg-color: hsla(0, 0%, 100%, .08);
+            --display-main-default: none;
+            --display-main-dark: block;
+        }
+
+        main#content {
+            width: 100%
+        }
+
+        .fondy-page h1,
+        .fondy-page h2,
+        .fondy-page h3,
+        .fondy-page h4,
+        .fondy-page h5,
+        main#content {
+            margin: 0;
+            padding: 0;
+        }
+
+        .fondy-page .hide {
+            display: none
+        }
+
+        .fondy-page .wrapper {
+            background-color: var(--background-color);
+            width: 100%
+        }
+
+        .fondy-page .container {
+            margin: 0 auto;
+            max-width: 1440px;
+            padding: 0 20px
+        }
+
+        .fondy-page .main-heading {
+            overflow: hidden;
+            padding: 10px 0
+        }
+
+        .fondy-page .main-heading .container {
+            align-items: center;
+            display: grid;
+            grid-template-columns: 502px 1fr
+        }
+
+        .fondy-page .main-heading .header {
+            color: var(--text-color);
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 42px;
+            margin: 0;
+            padding-bottom: 24px
+        }
+
+        .fondy-page .main-heading .header:first-letter {
+            font-style: italic
+        }
+
+        .fondy-page .main-heading .header s {
+            color: var(--text-color);
+            font-weight: 600;
+            text-decoration: unset
+        }
+
+        .fondy-page .main-heading .description {
+            color: var(--description-color);
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            max-width: 460px;
+            padding-bottom: 24px
+        }
+
+        .fondy-page .main-heading .button-link {
+            background-color: #fc2772;
+            border-radius: 40px;
+            color: #fff;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            padding: 13px 56px 15px 28px;
+            position: relative;
+            text-decoration: unset;
+            transition: .1s
+        }
+
+        .fondy-page .main-heading .button-link:after {
+            background: url(https://files.readme.io/878255f-right-w.svg) no-repeat 50%/contain;
+            content: "";
+            height: 24px;
+            margin-left: 8px;
+            position: absolute;
+            top: 11px;
+            transition: .1s;
+            width: 24px
+        }
+
+        .fondy-page .main-heading .button-link:hover {
+            background-color: #dc1058
+        }
+
+        .fondy-page .main-heading .button-link:hover:after {
+            margin-left: 12px
+        }
+
+        .fondy-page .main-heading .image {
+            text-align: right
+        }
+
+        .fondy-page .main-heading .image img {
+            max-height: 620px;
+            padding-right: 46px
+        }
+
+        .fondy-page .main-heading .image .main-default {
+            display: var(--display-main-default);
+        }
+
+        .fondy-page .main-heading .image .main-dark {
+            display: var(--display-main-dark);
+        }
+
+        .fondy-page .grids-benefits {
+            margin-top: -100px;
+            padding: 0 0 132px
+        }
+
+        .fondy-page .grids-benefits .header {
+            color: var(--text-color);
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 42px;
+            padding: 52px 24px 80px;
+            position: relative;
+            text-align: center
+        }
+
+        .fondy-page .grids-benefits .header:first-letter {
+            font-style: italic
+        }
+
+        .fondy-page .grids-benefits .content {
+            display: grid;
+            grid-gap: 40px;
+            grid-template-columns: repeat(2, 1fr)
+        }
+
+        .fondy-page .grids-benefits .item .divider {
+            background-color: #6605ff;
+            height: 6px;
+            margin-bottom: 16px;
+            width: 72px
+        }
+
+        .fondy-page .grids-benefits .item .title {
+            color: var(--text-color);
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 24px;
+            margin: 0 0 12px;
+            text-align: left
+        }
+
+        .fondy-page .grids-benefits .item .title:first-letter {
+            font-style: italic
+        }
+
+        .fondy-page .grids-benefits .item .description {
+            color: var(--description-color);
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            margin-bottom: 16px;
+            text-align: left
+        }
+
+        .fondy-page .grids-benefits .item .link {
+            color: #6605ff;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            padding-right: 36px;
+            position: relative;
+            text-decoration: unset
+        }
+
+        .fondy-page .grids-benefits .item .link:after {
+            background: url(https://files.readme.io/190f905-right.svg) no-repeat 50%/contain;
+            bottom: -4px;
+            content: "";
+            height: 24px;
+            margin-left: 8px;
+            position: absolute;
+            transition: .1s;
+            width: 24px
+        }
+
+        .fondy-page .grids-benefits .item .link:hover:after {
+            margin-left: 12px
+        }
+
+        .fondy-page .grids-feature {
+            padding-bottom: 80px
+        }
+
+        .fondy-page .grids-feature .header {
+            color: var(--text-color);
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 42px;
+            padding-bottom: 80px;
+            text-align: center
+        }
+
+        .fondy-page .grids-feature .header:first-letter {
+            font-style: italic
+        }
+
+        .fondy-page .grids-feature .content {
+            display: grid;
+            grid-gap: 20px;
+            grid-template-columns: repeat(3, 1fr)
+        }
+
+        .fondy-page .grids-feature .item {
+            background-color: var(--feature-bg-color);
+            border-radius: 8px;
+            padding: 40px 24px 24px
+        }
+
+        .fondy-page .grids-feature .item .icon {
+            padding-bottom: 32px
+        }
+
+        .fondy-page .grids-feature .item .title {
+            color: var(--text-color);
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 24px;
+            margin: 0 0 12px;
+            text-align: left
+        }
+
+        .fondy-page .grids-feature .item .title:first-letter {
+            font-style: italic
+        }
+
+        .fondy-page .grids-feature .item .description {
+            color: var(--description-color);
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            margin-bottom: 16px;
+            text-align: left
+        }
+
+        .fondy-page .grids-feature .item .link {
+            color: #6605ff;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            padding-right: 36px;
+            position: relative;
+            text-decoration: unset
+        }
+
+        .fondy-page .grids-feature .item .link:after {
+            background: url(https://files.readme.io/190f905-right.svg) no-repeat 50%/contain;
+            bottom: -4px;
+            content: "";
+            height: 24px;
+            margin-left: 8px;
+            position: absolute;
+            transition: .1s;
+            width: 24px
+        }
+
+        .fondy-page .grids-feature .item .link:hover:after {
+            margin-left: 12px
+        }
+
+        .fondy-page .footer {
+            background-color: #39058b
+        }
+
+        .fondy-page .footer .container {
+            display: grid;
+            grid-template-columns: 1fr
+        }
+
+        .fondy-page .footer .content {
+            border-bottom: 1px solid hsla(0, 0%, 100%, .08);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 16px;
+            padding: 32px 0 24px;
+            text-align: center
+        }
+
+        .fondy-page .footer .content p {
+            margin: 0 auto;
+            max-width: 800px
+        }
+
+        .fondy-page .footer .content span {
+            color: #70d0cc
+        }
+
+        .fondy-page .footer .copyright {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+            padding: 24px 0;
+            text-align: center
+        }
+
+        .fondy-page .curve {
+            height: 236px;
+            overflow: hidden;
+            position: relative
+        }
+
+        .fondy-page .curve svg {
+            left: 50%;
+            position: absolute;
+            right: unset;
+            transform: translateX(-50%)
+        }
+
+        .fondy-page .curve .desktop,
+        .fondy-page .curve .tablet {
+            display: none
+        }
+
+        @media (max-width:1920px) {
+            .fondy-page .curve .max {
+                display: none
+            }
+
+            .fondy-page .curve .desktop {
+                display: block
+            }
+        }
+
+        @media (max-width:992px) {
+            .fondy-page .main-heading .container {
+                grid-template-columns: 400px 1fr
+            }
+
+            .fondy-page .main-heading .container img {
+                max-height: 500px
+            }
+
+            .fondy-page .grids-benefits .content,
+            .fondy-page .grids-feature .content {
+                grid-template-columns: 1fr;
+                margin: 0 auto;
+                max-width: 720px
+            }
+        }
+
+        @media (max-width:768px) {
+            .fondy-page .main-heading {
+                padding-top: 40px
+            }
+
+            .fondy-page .main-heading .container {
+                grid-template-columns: 1fr
+            }
+
+            .fondy-page .main-heading .container .content {
+                margin: 0 auto;
+                max-width: 470px;
+                text-align: center
+            }
+
+            .fondy-page .main-heading .image {
+                margin: 20px auto auto;
+                max-width: 620px;
+                text-align: center
+            }
+
+            .fondy-page .main-heading .image img {
+                max-height: none;
+                padding: 0;
+                width: 100%
+            }
+
+            .fondy-page .curve {
+                height: 182px
+            }
+
+            .fondy-page .curve .desktop {
+                display: none
+            }
+
+            .fondy-page .curve .tablet {
+                display: block
+            }
+
+            .fondy-page .grids-benefits,
+            .fondy-page .grids-feature {
+                padding-bottom: 80px
+            }
+
+            .fondy-page .grids-benefits .header,
+            .fondy-page .grids-feature .header {
+                font-size: 32px;
+                line-height: 36px;
+                padding-bottom: 40px
+            }
+        }

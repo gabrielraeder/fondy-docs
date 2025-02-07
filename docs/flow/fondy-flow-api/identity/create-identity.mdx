@@ -1,0 +1,479 @@
+---
+title: "Create Identity"
+description: "Learn how to create identity profiles for individuals or organizations using Fondy's API, including steps for handling personal information, addresses, and compliance details."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Create Identity Profile operation is the first step in setting up an identity within the system. Depending on your requirements, this operation allows you to create a profile for either a person or an organization.
+
+This page will guide you trough the process of using this operation, see the following sections for more details.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Request
+
+The request process of this operation consists of the following two steps:
+
+1. [Create the payload](#step-1-create-the-payload)
+2. [Make the encrypted request](#step-2-make-the-encrypted-request)
+
+See the sections below for more details on each step.
+
+### Step 1: Create the payload
+
+The identity information must be sent to the payload. See the code block below for an example:
+
+```json
+{
+  "id": "43971e26-61b1-420b-9add-c510d44a354f",
+  "compliance_profile_id": "43971e26-61b1-420b-9add-c510d44a354f",
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "type": "PERSON",
+  "person": {
+    "id": "43971e26-61b1-420b-9add-c510d44a354f",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "date_of_birth": "1970-12-31T00:00:00.000Z",
+    "details": {
+      "id": "43971e26-61b1-420b-9add-c510d44a354f",
+      "title": "PROF",
+      "surname": "Example-Surname",
+      "firstname": "ExampleFirstname",
+      "other_names": "Example-OtherNames",
+      "gender": "FEMALE",
+      "married": "YES",
+      "dates": {
+        "date_to": "1970-12-31T00:00:00.000Z",
+        "date_from": "1970-12-31T00:00:00.000Z"
+      },
+      "status": "CURRENT"
+    },
+    "fatca": true,
+    "aliases": [
+      {
+        "id": "43971e26-61b1-420b-9add-c510d44a354f",
+        "title": "PROF",
+        "surname": "Example-Surname",
+        "firstname": "ExampleFirstname",
+        "other_names": "Example-OtherNames",
+        "gender": "FEMALE",
+        "married": "YES",
+        "dates": {
+          "date_to": "1970-12-31T00:00:00.000Z",
+          "date_from": "1970-12-31T00:00:00.000Z"
+        },
+        "status": "CURRENT"
+      }
+    ],
+    "identity_references": [
+      {
+        "id": "43971e26-61b1-420b-9add-c510d44a354f",
+        "country": {
+          "country": "England",
+          "code": "GB"
+        },
+        "dates": {
+          "date_to": "1970-12-31T00:00:00.000Z",
+          "date_from": "1970-12-31T00:00:00.000Z"
+        },
+        "status": "CURRENT",
+        "document_type": "PASSPORT",
+        "reference_of_document": "AB123456C"
+      }
+    ]
+  },
+  "organisation": {
+    "id": "43971e26-61b1-420b-9add-c510d44a354f",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "company_name": "ExampleCompany",
+    "company_number": [
+      {
+        "type": "COMPANY_HOUSE",
+        "value": "12345678",
+        "country_of_number": {
+          "country": "England",
+          "code": "GB"
+        },
+        "dates": {
+          "date_to": "1970-12-31T00:00:00.000Z",
+          "date_from": "1970-12-31T00:00:00.000Z"
+        }
+      }
+    ],
+    "type_of_organisation": "LIMITED_COMPANY",
+    "fatca": true
+  },
+  "addresses": [
+    {
+      "id": "43971e26-61b1-420b-9add-c510d44a354f",
+      "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+      "full_address": "123 Example House, Example Road, Example Town, UK",
+      "address_line_1": "123 Example House",
+      "address_line_2": "Example Road",
+      "town": "Example Town",
+      "postcode": "EX1 1EG",
+      "country": {
+        "country": "England",
+        "code": "GB"
+      },
+      "type": "REGISTERED_OFFICE",
+      "status": "CURRENT",
+      "dates": {
+        "date_to": "1970-12-31T00:00:00.000Z",
+        "date_from": "1970-12-31T00:00:00.000Z"
+      }
+    }
+  ],
+  "telephone": [
+    {
+      "id": "43971e26-61b1-420b-9add-c510d44a354f",
+      "valid": true,
+      "primary": true,
+      "confirmed": true,
+      "details_confirmed_by": "CLIENT",
+      "routing_type": "MOBILE",
+      "number": [
+        {
+          "tel_type": "LOCAL",
+          "tel_number": "07117 754764"
+        }
+      ],
+      "country": {
+        "country": "England",
+        "code": "GB"
+      }
+    }
+  ],
+  "email": [
+    {
+      "id": "43971e26-61b1-420b-9add-c510d44a354f",
+      "valid": true,
+      "primary": true,
+      "confirmed": true,
+      "details_confirmed_by": "CLIENT",
+      "email_type": "REGISTERED_OFFICE",
+      "email": "[email protected]"
+    }
+  ],
+  "ubo": [
+    {
+      "id": "43971e26-61b1-420b-9add-c510d44a354f",
+      "ubo_identity_id": "
+```
+
+Where:
+
+| **Parameter**                       | **Description**                                                                                                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                                | Unique identifier for the identity profile.                                                                                                                  |
+| `compliance_profile_id`             | Identifier for the compliance profile associated with the identity.                                                                                          |
+| `external_id`                       | An external reference ID provided by the user.                                                                                                               |
+| `type`                              | Type of identity being created. Can be either `PERSON` or `ORGANISATION`. The type of profile determines which sections of the payload you need to populate. |
+| **Person Profile**                  |                                                                                                                                                              |
+| `person.id`                         | Unique identifier for the person profile.                                                                                                                    |
+| `person.external_id`                | External reference ID for the person.                                                                                                                        |
+| `person.date_of_birth`              | Date of birth of the person (in ISO 8601 format).                                                                                                            |
+| `person.details.id`                 | Unique identifier for the person's details.                                                                                                                  |
+| `person.details.title`              | Title (e.g., Mr, Mrs, Dr, etc.) of the person.                                                                                                               |
+| `person.details.surname`            | Surname of the person.                                                                                                                                       |
+| `person.details.firstname`          | First name of the person.                                                                                                                                    |
+| `person.details.other_names`        | Other names (if applicable) of the person.                                                                                                                   |
+| `person.details.gender`             | Gender of the person (e.g., `MALE`, `FEMALE`).                                                                                                               |
+| `person.details.married`            | Marital status of the person (e.g., `YES` or `NO`).                                                                                                          |
+| `person.details.dates.date_from`    | Start date for the person's details.                                                                                                                         |
+| `person.details.dates.date_to`      | End date for the person's details (if applicable).                                                                                                           |
+| `person.details.status`             | Status of the person's details (e.g., `CURRENT`).                                                                                                            |
+| `person.fatca`                      | Indicates whether the person is subject to FATCA (Foreign Account Tax Compliance Act). (`true` or `false`).                                                  |
+| `person.aliases`                    | List of alias details associated with the person.                                                                                                            |
+| `person.identity_references`        | Identity reference documents for the person, e.g., passport.                                                                                                 |
+| `person.nationality`                | Nationality details of the person, including the country and code.                                                                                           |
+| `person.residency`                  | Residency details, including country and status.                                                                                                             |
+| **Organisation Profile**            |                                                                                                                                                              |
+| `organisation.id`                   | Unique identifier for the organization profile.                                                                                                              |
+| `organisation.external_id`          | External reference ID for the organization.                                                                                                                  |
+| `organisation.company_name`         | Name of the organization.                                                                                                                                    |
+| `organisation.company_number`       | Company registration number, including type (e.g., `COMPANY_HOUSE`) and country code.                                                                        |
+| `organisation.type_of_organisation` | Type of the organization (e.g., `LIMITED_COMPANY`).                                                                                                          |
+| `organisation.fatca`                | Indicates whether the organization is subject to FATCA (true/false).                                                                                         |
+| **Address Details**                 |                                                                                                                                                              |
+| `addresses.full_address`            | Full address of the person or organization.                                                                                                                  |
+| `addresses.address_line_1`          | First line of the address.                                                                                                                                   |
+| `addresses.address_line_2`          | Second line of the address (if applicable).                                                                                                                  |
+| `addresses.address_line_3`          | Third line of the address (if applicable).                                                                                                                   |
+| `addresses.address_line_4`          | Fourth line of the address (if applicable).                                                                                                                  |
+| `addresses.town`                    | Town or city of the address.                                                                                                                                 |
+| `addresses.state`                   | State or region of the address.                                                                                                                              |
+| `addresses.postcode`                | Postcode of the address.                                                                                                                                     |
+| `addresses.country.country`         | Country name of the address.                                                                                                                                 |
+| `addresses.type`                    | Type of address (e.g., `REGISTERED_OFFICE`).                                                                                                                 |
+| `addresses.status`                  | Status of the address (e.g., `CURRENT`).                                                                                                                     |
+| **Contact Information**             |                                                                                                                                                              |
+| `telephone.number.tel_type`         | Type of telephone number (e.g., `LOCAL`).                                                                                                                    |
+| `telephone.number.tel_number`       | The actual telephone number.                                                                                                                                 |
+| `telephone.country.country`         | Country name for the telephone number.                                                                                                                       |
+| `telephone.valid`                   | Indicates whether the phone number is valid (true/false).                                                                                                    |
+| `telephone.primary`                 | Whether this is the primary telephone number (true/false).                                                                                                   |
+| `email.email`                       | Email address of the person or organization.                                                                                                                 |
+| `email.valid`                       | Indicates whether the email address is valid (true/false).                                                                                                   |
+| `email.primary`                     | Whether this is the primary email address (true/false).                                                                                                      |
+| `email.details_confirmed_by`        | Who confirmed the email details (e.g., `CLIENT`).                                                                                                            |
+| **Ultimate Beneficial Owner (UBO)** |                                                                                                                                                              |
+| `ubo.ubo_identity_id`               | Unique ID for the UBO (Ultimate Beneficial Owner).                                                                                                           |
+| `ubo.ubo_type`                      | Type of UBO (e.g., `DIRECTOR`).                                                                                                                              |
+| **Terms and Compliance**            |                                                                                                                                                              |
+| `terms_of_service.tos_accepted`     | Whether the terms of service were accepted (`true` or `false`).                                                                                              |
+| `compliance.screened`               | Whether the identity has been screened (e.g., `CLIENT`).                                                                                                     |
+| `compliance.risk_rated`             | Whether the identity has been risk-rated (e.g., `CLIENT`).                                                                                                   |
+| **Audit Dates**                     |                                                                                                                                                              |
+| `audit_dates.created`               | The date and time when the identity profile was created.                                                                                                     |
+| `audit_dates.updated`               | The date and time when the identity profile was last updated.                                                                                                |
+
+Once you create the payload it has to be encrypted, see the following section for more details.
+
+### Step 2: Make the encrypted request
+
+To create a wallet under a split account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json
+   {
+       "encrypted_payload": ENCRYPTED(identityObject),
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/onboarding/identity"),
+       "method": "POST"
+   }
+   ```
+
+In the request `ENCRYPTED(identityObject)` is the payload previously created, which is now encrypted.
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(identityObject)
+    "encrypted_url": null
+    "method": null
+    "nonce": null
+}
+```
+
+This response has to be decrypted with the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once it is decrypted, the unencrypted payload is as follows:
+
+```json
+{
+  "addresses": {
+    "country": {
+      "code": "GB",
+      "country": "England"
+    },
+    "town": "Example Large Town",
+    "postcode": "EX1 1EG",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "dates": {
+      "date_to": "1990-02-28T00:00:00.000Z",
+      "date_from": "1990-02-28T00:00:00.000Z"
+    },
+    "full_address": "123 Example House, example road, Example town, UK",
+    "type": "REGISTERED_OFFICE",
+    "address_line_1": "123 Example House",
+    "address_line_3": "Example Small Hamlet",
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "address_line_2": "Example Road",
+    "state": "Middlesex",
+    "address_line_4": "Example Village",
+    "status": "CURRENT"
+  },
+  "ubo": {
+    "dates": {
+      "date_to": "1990-02-28T00:00:00.000Z",
+      "date_from": "1990-02-28T00:00:00.000Z"
+    },
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "audit_dates": {
+      "created": "2020-01-22T13:15:30.000Z",
+      "updated": "2020-01-22T13:15:30.000Z"
+    },
+    "ubo_identity_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "ubo_type": "DIRECTOR"
+  },
+  "organisation": {
+    "company_number": [
+      {
+        "value": {},
+        "country_of_number": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "type": "COMPANY_HOUSE"
+      }
+    ],
+    "type_of_organisation": "LIMITED_COMPANY",
+    "company_name": {},
+    "fatca": true,
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+  },
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "telephone": {
+    "number_type": "REGISTERED_OFFICE",
+    "routing_type": "MOBILE",
+    "valid": true,
+    "primary": true,
+    "country": {
+      "code": "GB",
+      "country": "England"
+    },
+    "details_confirmed_by": "CLIENT",
+    "number": [
+      {
+        "tel_number": "07117 754764",
+        "tel_type": "LOCAL"
+      }
+    ],
+    "confirmed": true,
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+  },
+  "type": "PERSON",
+  "audit_dates": {
+    "created": "2020-01-22T13:15:30.000Z",
+    "updated": "2020-01-22T13:15:30.000Z"
+  },
+  "compliance_profile_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "person": {
+    "nationality": [
+      {
+        "country": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "status": "CURRENT"
+      }
+    ],
+    "date_of_birth": "1990-02-28T00:00:00.000Z",
+    "details": {
+      "gender": "FEMALE",
+      "firstname": "ExampleFirstname",
+      "surname": "Example-Surname",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "other_names": "Example-OtherNames",
+      "title": "PROF",
+      "married": "YES",
+      "status": "CURRENT"
+    },
+    "residency": [
+      {
+        "country": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "status": "CURRENT"
+      }
+    ],
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+    "aliases": {
+      "gender": "FEMALE",
+      "firstname": "ExampleFirstname",
+      "surname": "Example-Surname",
+      "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+      "other_names": "Example-OtherNames",
+      "title": "PROF",
+      "married": "YES",
+      "status": "CURRENT"
+    },
+    "identity_references": [
+      {
+        "country": {
+          "code": "GB",
+          "country": "England"
+        },
+        "dates": {
+          "date_to": "1990-02-28T00:00:00.000Z",
+          "date_from": "1990-02-28T00:00:00.000Z"
+        },
+        "reference_of_document": {},
+        "document_type": {},
+        "status": "CURRENT"
+      }
+    ],
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "audit_dates": {
+      "created": "2020-01-22T13:15:30.000Z",
+      "updated": "2020-01-22T13:15:30.000Z"
+    },
+    "fatca": true
+  },
+  "compliance": {
+    "risk_rated": "CLIENT",
+    "screened": "CLIENT"
+  },
+  "terms_of_service": {
+    "tos_accepted_date": "1990-02-28T00:00:00.000Z",
+    "tos_accepted": true
+  },
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "email": {
+    "email": "string",
+    "confirmed": true,
+    "primary": true,
+    "details_confirmed_by": "CLIENT",
+    "valid": true,
+    "email_type": "REGISTERED_OFFICE",
+    "id": "f8605015-90ac-4450-bb99-cbb1591bce7a"
+  }
+}
+```
+
+See the descriptions of the parameters exclusive to the response in the table below:
+
+| **Parameter**                                      | **Description**                                                             |
+| -------------------------------------------------- | --------------------------------------------------------------------------- |
+| `addresses.id`                                     | Unique identifier for the address.                                          |
+| `addresses.external_id`                            | External reference ID for the address.                                      |
+| `addresses.dates.date_from`                        | Start date for the address entry.                                           |
+| `addresses.dates.date_to`                          | End date for the address entry (if applicable).                             |
+| `addresses.status`                                 | Status of the address.                                                      |
+| `ubo.id`                                           | Unique identifier for the Ultimate Beneficial Owner (UBO).                  |
+| `ubo.audit_dates.created`                          | Timestamp when the UBO entry was created.                                   |
+| `ubo.audit_dates.updated`                          | Timestamp when the UBO entry was last updated.                              |
+| `organisation.company_number.value`                | Company registration number (if applicable).                                |
+| `organisation.company_number.type`                 | Type of company registration number.                                        |
+| `organisation.company_number.country_of_number`    | Country of the organization's company registration number.                  |
+| `telephone.id`                                     | Unique identifier for the telephone entry.                                  |
+| `telephone.confirmed`                              | Indicates if the telephone number is confirmed (true/false).                |
+| `telephone.details_confirmed_by`                   | The entity that confirmed the telephone details.                            |
+| `telephone.id`                                     | Unique identifier for the telephone entry.                                  |
+| `telephone.routing_type`                           | The routing type of the telephone number.                                   |
+| `telephone.country.country`                        | Country name of the telephone number.                                       |
+| `person.aliases.id`                                | Unique identifier for the alias.                                            |
+| `person.aliases.title`                             | Title of the alias.                                                         |
+| `person.aliases.surname`                           | Surname of the alias.                                                       |
+| `person.aliases.firstname`                         | First name of the alias.                                                    |
+| `person.aliases.other_names`                       | Other names of the alias (if applicable).                                   |
+| `person.aliases.status`                            | Status of the alias.                                                        |
+| `person.identity_references.id`                    | Unique identifier for the identity reference document.                      |
+| `person.identity_references.reference_of_document` | Reference number of the identity document (e.g., passport number).          |
+| `person.identity_references.document_type`         | Type of the identity reference document (e.g., passport, driver's license). |
+| `person.identity_references.status`                | Status of the identity reference.                                           |
+| `compliance_profile_id`                            | Unique identifier for the compliance profile associated with the identity.  |
+| `terms_of_service.tos_accepted_date`               | The date when the terms of service were accepted.                           |
+| `audit_dates.created`                              | Timestamp when the identity profile was created.                            |
+| `audit_dates.updated`                              | Timestamp when the identity profile was last updated.                       |

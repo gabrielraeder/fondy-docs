@@ -1,0 +1,56 @@
+---
+title: "Receive and Split Wallet Funds"
+description: "Learn how to receive and split funds in your platform's wallet."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy enables platforms to manage and distribute funds between wallets. Once your platform wallet (default wallet) and partner wallets are set up and active, you can begin receiving and splitting funds.
+
+## Platform Wallet
+
+The Platform Wallet serves as the central account for:
+
+* Settling all funds from your platform's business activities.
+* Distributing funds to partner wallets.
+* Transferring platform commissions to your operational IBAN account.
+
+<Image src="media/docs/flow/wallets/receive-funds-in-wallets/platform-wallet.png" alt="Platform Wallet" />
+
+## Payment Types
+
+The platform wallet supports two types of payments:
+
+1. **Split**: Transfer funds from the Platform Wallet to a partner's wallet.
+2. **Payout**: Transfer the platform's revenue to its operational IBAN account, provided by Fondy. You can also payout from partners' wallets to their bank accounts.
+
+<Callout type="info" title="Learn about Payouts">
+  To learn more about payouts, check the following pages:
+
+  * [Make Payouts](/flow/accounts/split-accounts/make-payouts)
+  * [Withdraw to IBAN Account](/flow/accounts/split-accounts/withdraw-to-iban-account)
+</Callout>
+
+## Receive and Split funds
+
+The process to receive funds into the platform wallet and split the funds to the partners' accounts consists of the following steps:
+
+1. **Receive Funds**: All funds are settled into the platform wallet. This acts as the primary account for receiving funds generated through platform transactions.
+
+2. **Split Payments**: You can transfer funds to your partners after receiving the funds in the platform wallet. To transfer the funds to your partners' wallets, you have to use the Flow API. To check all the details for executing this operation, access the [Create Payment](/flow/fondy-flow-api/core-operations/create-payments) guide. To transfer the funds, you must provide the following details:
+
+   * **Type:** `"TRANSFER"`
+   * **fromWallet:** The Platform Wallet Account ID.
+   * **toWallet:** The Partner Wallet Account ID.
+
+3. Once the Split Payment is complete, the funds are immediately available in the partner's wallet.
+
+<Image src="media/docs/flow/wallets/receive-funds-in-wallets/receive-and-split-funds.png" alt="Receive and Split Funds" />
+
+You can also transfer your platform's revenue or commission to your operational IBAN account. Check the [Withdraw to IBAN Account](/flow/accounts/split-accounts/withdraw-to-iban-account) guide to learn how to execute this operation.
+
+## Monitoring Payments
+
+After initiating a payment, you will receive a `payment_id`. This ID can be used with Fondy Flow API to retrieve the payment details, verify the status, and confirm the transaction. Check the [Get Payment from Wallet in Split Account](link) guide to learn how to retrieve the payment data.

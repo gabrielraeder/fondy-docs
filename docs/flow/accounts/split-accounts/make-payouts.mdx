@@ -1,0 +1,27 @@
+---
+title: "Make Payouts"
+description: "Learn how to make payouts from partners' wallets to their respective bank accounts."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy Flow allows you to transfer funds from partners' wallets to their respective bank accounts. Each platform determines the timing of payouts based on its business rules. Some platforms may release funds immediately upon arrival in the wallet, while others may delay the payout until certain conditions are met.
+
+## How Payouts Work
+
+The funds to execute the payouts reside in the partners' wallets, which are linked to a specific bank account configured during the wallet creation process. To execute the payout, platforms can choose when to initiate payouts based on their business model:
+
+* **Immediate Payouts:** Release funds when they arrive in the wallet.
+* **Conditional Payouts:** Trigger payouts based on specific rules or timeframes.
+
+<Image src="media/docs/flow/split-accounts/make-payouts/how-payouts-work.png" alt="How Payouts Work" />
+
+To perform the payout, you have to:
+
+* Set `type` to `"PAYOUT"`.
+* Specify the wallet ID from which the funds should be transferred using the `fromWallet` parameter.
+* The destination bank account is automatically linked to the wallet and does not need to be specified in the API call.
+
+The page [Create Payment](/flow/fondy-flow-api/core-operations/create-payments) cover in details how to use the API to perform the payout.

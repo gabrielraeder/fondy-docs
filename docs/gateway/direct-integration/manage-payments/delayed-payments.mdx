@@ -1,0 +1,63 @@
+---
+title: "Delayed Payments"
+description: "Enable customers to retry payments without generating a new payment request."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Delayed Payments enable customers to retry payments without generating a new payment request. This feature is particularly useful when initial payment attempts fail due to common issues, such as:
+
+* Insufficient funds.
+* Invalid card details (e.g., CVV2, expiry date, card number).
+* Restrictions on internet payments or low internet limits.
+* Declines by the issuing bank for other reasons.
+* Declines triggered by FONDY or bank antifraud systems.
+
+With delayed payments (enabled by setting `delayed=Y`), customers can resolve these issues by recharging their card, correcting card details, or contacting their bank and retrying payment within the order's specified lifetime. This eliminates the need to recreate the payment request.
+
+Before proceeding to the step-by-step guide, make sure you know how to use your [Signature](/gateway/signatures) and that you have your Merchant ID (`merchant_id`). To get your Merchant ID, go to the [Fondy Dashboard](https://portal.fondy.eu/mportal/#/) and log in. In the left sidebar, select **Merchant Settings** and then **Technical**. You can copy the **Merchant ID** by clicking the green button to the right of the number.
+
+<Image src="/media/docs/gateway/delayed-1.png"/>
+
+## Creating the Delayed Payment
+
+To create the delayed payment, follow the steps below. For more details, such as example request and responses, go to the [Create Payment](/gateway/direct-integration/manage-payments/create-payment) guide.
+
+1. Prepare the request data with the required fields:
+
+   * `server_callback_url`: Callback URL for payment updates.
+   * `order_id`: Unique order identifier.
+   * `currency`: Payment currency.
+   * `order_desc`: Order description.
+   * `amount`: Payment amount.
+   * `merchant_id`: Your merchant ID.
+   * `signature`: The request signature.
+   * `delayed`: When set to `Y`, allows the customer to pay the order within the period specified in the `lifetime` parameter.
+   * `lifetime`: The duration for which the order is valid, in seconds.
+
+2. Use your preferred protocol to send a `POST` request to the [Accept Purchase endpoint](/reference/gateway/accept-purchase-fondy-checkout).
+
+<Callout type="info" title="Supported Protocols">
+  The supported protocols for this request are:
+
+  * **URL-encoded form**
+  * **XML**
+  * **JSON**
+</Callout>
+
+3. Handle the response to retrieve the `checkout_url` and use it to redirect the customer to complete the payment.
+4. After finishing, Fondy will send a `POST` request with the final payment information to the `server_callback_url` containing all the information from the processed payment. For more details, access the [Callbacks](/gateway/direct-integration/callbacks) guide.
+
+### Returned `order_status` Values with `delayed = Y`
+
+The `order_status` parameter provides information about the state of a delayed payment order. Below are the possible statuses and their meanings:
+
+* **`processing`**: Indicates that the client attempted a payment but the bank declined it. Non-empty parameters `response_code` and `response_description` are returned to the `server_callback_url`. The order's lifetime, defined by the `lifetime` parameter, has not yet expired.
+
+* **`created`**: Indicates that the client was redirected to the payment page but has not yet entered their payment details.
+
+* **`expired`**: Indicates that the client did not enter their payment details, and the order's lifetime has expired.
+
+* **`declined`**: Similar to `processing`, but the order's lifetime has expired, and no further payment attempts are allowed.

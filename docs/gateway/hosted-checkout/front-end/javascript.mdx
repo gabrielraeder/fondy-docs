@@ -1,0 +1,444 @@
+---
+title: "Javascript"
+description: "Integrate a customizable card payment form into your website or web application."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+The Fondy JavaScript SDK lets you securely integrate a customizable card payment form into your website or web application. With just a few lines of code, you can seamlessly process payments through Fondy's payment gateway, ensuring a smooth and secure checkout experience for your users. In addition, the SDK supports multiple payment systems and integrates easily with your existing HTML structure.
+
+One key advantage of using the Fondy JavaScript SDK is that it simplifies compliance with PCI DSS. Since the SDK securely captures and transmits payment details directly to Fondy, your application never handles sensitive card information, eliminating your need for PCI compliance.
+
+## Requirements
+
+Before you can use the JavaScript SDK, ensure the following prerequisites are met:
+
+* [A Fondy account](https://fondy.io/gb/login/).
+
+## Installation
+
+You can integrate the JavaScript SDK into your project using any of the following methods:
+
+### Using Npm
+
+If you're using [Npm](https://www.npmjs.com/), you can install the `ipsp-js-sdk` dependency by running the following command:
+
+  ```bash 
+  npm install ipsp-js-sdk --save
+  ```
+
+Alternatively, manually add it to your `package.json`:
+
+  ```json 
+  {
+    "dependencies": {
+      "ipsp-js-sdk": "^1.0"
+    }
+  }
+  ```
+
+### Using Bower
+
+If you prefer using [Bower](https://bower.io/), run the following command:
+
+  ```bash 
+  bower install ipsp-js-sdk
+  ```
+
+Or manually add the dependency in your `bower.json`:
+
+  ```json 
+  {
+    "dependencies": {
+      "ipsp-js-sdk": "^1.0"
+    }
+  }
+  ```
+
+### Manual Installation
+
+If you do not use NodeJS or Bower, you can download the SDK manually from GitHub:
+
+  ```bash 
+  git clone https://github.com/cloudipsp/ipsp-js-sdk.git
+  ```
+
+## How to Use the SDK
+
+After adding the SDK to your project, you can add a card form to your system to receive payments. The following steps describe how to do it.
+
+### 1. Create the payment form
+
+First, you have to create your own payment form. Using the JavaScript SDK, you can build a unique design and custom functionality. You can style the form to match your website's design by adjusting the HTML and CSS. The following code snippet presents an example of a basic design.
+
+<Tabs>
+  <TabItem value="html" label="HTML" default>
+    ```html
+    <form class="checkout-form">
+      <input type="hidden" name="payment_system" value="card">
+      <input type="hidden" name="merchant_id" value="1396424">
+      <input type="hidden" name="amount" value="100">
+      <input type="hidden" name="currency" value="USD">
+      <input type="hidden" name="email" value="[email protected]" />
+      <input type="hidden" name="response_url" value="https://example.com/" />
+      <div class="container">
+        <div class="error-wrapper"></div>
+        <div class="input-wrapper">
+          <div class="input-label w-1">
+            Card Number:
+          </div>
+          <div class="input-field w-1">
+            <input type="tel" name="card_number" class="input" onkeydown="nextInput(this,event)" maxlength="16" placeholder="XXXXXXXXXXXXXXXX" />
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <div class="input-label w-3-2">
+            Expiry Date:
+          </div>
+          <div class="input-label w-3">
+            CVV2:
+          </div>
+          <div class="input-field w-3">
+            <input type="tel" name="expiry_month" onkeydown="nextInput(this,event)" class="input" maxlength="2" placeholder="MM" />
+          </div>
+          <div class="input-field w-3">
+            <input type="tel" name="expiry_year" onkeydown="nextInput(this,event)" class="input" maxlength="2" placeholder="YY" />
+          </div>
+          <div class="input-field w-3">
+            <input type="tel" name="cvv2" onkeydown="nextInput(this,event)" class="input" maxlength="3" placeholder="XXX" />
+          </div>
+        </div>
+        <div class="input-wrapper stack-1">
+          <div class="input-field w-1">
+            <button type="submit" onkeydown="nextInput(this,event)" class="button">Pay</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    ```
+  </TabItem>
+  <TabItem value="css" label="CSS">
+    ```css
+    html,
+    input,
+    button {
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    .checkout-form {
+      max-width: 325px;
+      margin: 0 auto;
+    }
+
+    .checkout-form .container {
+      border: 1px solid #ccc;
+      padding: 0.85rem;
+    }
+
+    .checkout-form .error-wrapper {
+      padding: 0.15rem 0.15rem 1rem 0.15rem;
+      display: none;
+      color: #000000;
+      color: darkred;
+      font-size: 0.85rem;
+      text-align:center;
+    }
+
+    .checkout-form .error-wrapper.show {
+      display: block;
+    }
+
+    .checkout-form button.button {
+      cursor: pointer;
+    }
+
+    .checkout-form input.input,
+    .checkout-form button.button {
+      padding: .7rem;
+      border: 1px solid #ccc;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      outline: none;
+      text-align: center;
+    }
+
+    .checkout-form input.input:focus,
+    .checkout-form button.button:focus {
+      box-shadow: inset 0px 0px 1px 1px lightgray;
+      border-color: gray;
+      position: relative;
+      z-index: 2;
+    }
+
+    .checkout-form .input-wrapper {
+      margin: 0 0 0.85rem;
+    }
+
+    .checkout-form .input-wrapper:last-child {
+      margin-bottom: 0;
+    }
+
+    .checkout-form .input-label {
+      font-size: 0.85rem;
+      color: gray;
+    }
+
+    .checkout-form .input-label,
+    .checkout-form .input-field {
+      box-sizing: border-box;
+      padding: 0.15rem;
+      float: left;
+    }
+
+    .checkout-form .input-wrapper:after {
+      clear: both;
+      content: '';
+      display: block;
+    }
+
+    .w-1 {
+      width: 100%;
+    }
+
+    .w-2 {
+      width: 50%;
+    }
+
+    .w-3 {
+      width: 33.33333%;
+    }
+
+    .w-3-2 {
+      width: 66.66666%;
+    }
+
+    .w-4 {
+      width: 25%;
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+The following image displays the resulting payment form.
+
+<Image src="media/docs/gateway/javascript-1.png" width="500px"/>
+
+### 2. Get the `token`
+
+Before mounting the payment form, you must get a token from Fondy. The SDK uses this token to identify your transaction when it sends the payment information to Fondy. To get this token, use the [Accept Purchase (Payment Token)](/reference/gateway/accept-purchase-payment-token), informing the merchant and purchase information. The following code block presents request and response examples to get the `token` and the table describes the parameters used in the request.
+
+<Tabs>
+  <TabItem value="request" label="Request" default>
+    ```bash
+    curl -i -X POST \
+    -H "Content-Type: application/json" \
+    -d '{
+      "request": {
+        "server_callback_url": "http://myshop/callback/",
+        "order_id": "TestOrder2",
+        "currency": "GEL",
+        "merchant_id": 1549901,
+        "order_desc": "Test payment",
+        "amount": 1000,
+        "signature": "91ea7da493a8367410fe3d7f877fb5e0ed666490"
+      }
+    }' \
+    'https://pay.flitt.com/api/checkout/token'
+    ```
+  </TabItem>
+  <TabItem value="response" label="Response">
+    ```json
+    {
+      "response":{
+        "response_status":"success",
+        "token":"afcb21aef707b1fea2565b66bac7dc41d7833390"
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+| Parameter             | Description                                                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `server_callback_url` | The URL to which the Fondy will send a callback upon success or failure of the transaction.                                       |
+| `order_id`            | A unique identifier for the order being processed.                                                                                |
+| `currency`            | The currency code for the transaction. Check the [Currencies](/getting-started/reference-pages/supported-currencies) page to see a complete list of options. |
+| `merchant_id`         | The unique merchant identifier. You can find this information by accessing the Fondy dashboard.                                   |
+| `order_desc`          | A description of the order.                                                                                                       |
+| `amount`              | The total amount for the transaction.                                                                                             |
+| `signature`           | The [Signature](/gateway/signatures) used to validate the request.                                                                   |
+
+Save the `token` parameter to use when starting the payment form.
+
+### 3. Execute the payment
+
+After the client provides the payment method information and clicks pay, you must call the `$checkout('Api')` function to execute the payment. When you call the `$checkout('Api')` function, you must inform the payment parameters. The following code block presents an example of the necessary information:
+
+  ```json 
+  {
+    "payment_system":"card", // Supported payment systems: card, p24",
+    "token":"<token-generated-in-step-2>",
+    "card_number":"<16/19-digits-number>",
+    "expiry_date":"MM/YY", // Supported formats: MM/YY, MM/YYYY, MMYY, MMYYYY
+    "cvv2":"XXX" // 3-digits number
+  }
+  ```
+
+With the payment information in hand, you can execute the `$checkout('Api')` function. The following code block presents an example of how to do it:
+
+  ```html 
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    </head>
+    <body>
+      <script src="https://unpkg.com/ipsp-js-sdk@latest/dist/checkout.min.js"></script>
+      <script>
+      $checkout('Api').scope(function(){
+          this.request('api.checkout.form','request', 
+                       {
+                          "payment_system":"card", 
+                          "token":"<token-generated-in-step-2>",
+                          "card_number":"<16/19-digits-number>",
+                          "expiry_date":"MM/YY", 
+                          "cvv2":"XXX" 
+          						 } ).done(function(model){
+              model.sendResponse();
+              console.log(model.attr('order'));
+          }).fail(function(model){
+              console.log(model.attr('error'));
+          });
+      });
+      </script>
+    </body>
+  </html>
+  ```
+
+The SDK will execute the payment and send the final result to the `server_callback_url` informed in step 2.
+
+### 4. Handle the payment result
+
+You can use JavaScript callbacks to handle payment results when executing the payment. Using this option, you can obtain the transaction result directly from the SDK without needing to check the callback Fondy sends to the `server_callback_url`.
+
+To use this approach, you must define the `.on('success')` and `.on('error')` functions when calling `$checkout('Api')`, as presented in the following code block.
+
+<Tabs>
+  <TabItem value="code" label="Code" default>
+    ```javascript
+    $checkout('Api').on('success', function(model) {
+      console.log('Payment successful', JSON.stringify(model.attr('order').order_data));
+    }).on('error', function(model) {
+      console.log('Payment failed', model.attr('error.message'));
+    });
+    ```
+  </TabItem>
+  <TabItem value="response" label="Success Response Example">
+    ```json
+    {
+      "rrn": "",
+      "masked_card": "444455XXXXXX1111",
+      "sender_cell_phone": "",
+      "response_signature_string": "**********|10000|USD|10000|123456|444455|VISA|USD|06|444455XXXXXX1111|[]|1396424|Order_1396424_ZtP6E6IQMC_1520944420|approved|13.03.2018 14:33:40|85233820|card|success|0|[email protected]|0|purchase",
+      "response_status": "success",
+      "sender_account": "",
+      "fee": "",
+      "rectoken_lifetime": "",
+      "reversal_amount": "0",
+      "settlement_amount": "0",
+      "actual_amount": "10000",
+      "order_status": "approved",
+      "response_description": "",
+      "verification_status": "",
+      "order_time": "13.03.2018 14:33:40",
+      "actual_currency": "USD",
+      "order_id": "Order_1396424_ZtP6E6IQMC_1520944420",
+      "parent_order_id": "",
+      "merchant_data": "[]",
+      "tran_type": "purchase",
+      "eci": "06",
+      "settlement_date": "",
+      "payment_system": "card",
+      "rectoken": "",
+      "approval_code": "123456",
+      "merchant_id": 1396424,
+      "settlement_currency": "",
+      "payment_id": 85233820,
+      "product_id": "",
+      "currency": "USD",
+      "card_bin": 444455,
+      "response_code": "",
+      "card_type": "VISA",
+      "amount": "10000",
+      "sender_email": "[email protected]",
+      "signature": "b39ac49a1bdf4bbd7fc09e990fbba63197be67d0"
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+In the event of a success, the order data will contain details such as the transaction ID and approval code. If the payment fails, the `error.message` will provide the reason for the decline.
+
+### 5. Process the final response
+
+If you informed the `server_callback_url` in Step 2, when creating the `token`, you will receive the final payment response as a callback when Fondy finishes processing the payment. The following code block presents an example of a final response:
+
+<Tabs>
+  <TabItem value="json" label="JSON" default>
+    ```json json
+    {
+      "response": {
+        "rrn": "111111111111",
+        "masked_card": "444455XXXXXX1111",
+        "sender_cell_phone": "",
+        "sender_account": "",
+        "currency": "GEL",
+        "fee": "",
+        "reversal_amount": "0",
+        "settlement_amount": "0",
+        "actual_amount": "200",
+        "response_description": "",
+        "sender_email": "[email protected]",
+        "order_status": "approved",
+        "response_status": "success",
+        "order_time": "13.07.2024 01:23:59",
+        "actual_currency": "GEL",
+        "order_id": "test33694502191",
+        "tran_type": "purchase",
+        "eci": "5",
+        "settlement_date": "",
+        "payment_system": "card",
+        "approval_code": "123456",
+        "merchant_id": 1549901,
+        "settlement_currency": "",
+        "payment_id": 805243692,
+        "card_bin": 444455,
+        "response_code": "",
+        "card_type": "VISA",
+        "amount": "200",
+        "signature": "b7884b5c4906956fbac4d20390388d913a78c0b0",
+        "product_id": "",
+        "merchant_data": "Test merchant data",
+        "rectoken": "",
+        "rectoken_lifetime": "",
+        "verification_status": "",
+        "parent_order_id": "",
+        "fee_oplata": "0",
+        "additional_info": "{\"capture_status\": null, \"capture_amount\": null, \"reservation_data\": \"{}\", \"transaction_id\": 1994930931, \"bank_response_code\": null, \"bank_response_description\": null, \"client_fee\": 0.0, \"settlement_fee\": 0.0, \"bank_name\": null, \"bank_country\": null, \"card_type\": \"VISA\", \"card_product\": \"empty_visa\", \"card_category\": null, \"timeend\": \"13.07.2024 01:24:08\", \"ipaddress_v4\": \"178.54.60.26\", \"payment_method\": \"card\", \"version_3ds\": 1, \"is_test\": true}",
+        "response_signature_string": "**********|200|GEL|{\"capture_status\": null, \"capture_amount\": null, \"reservation_data\": \"{}\", \"transaction_id\": 1994930931, \"bank_response_code\": null, \"bank_response_description\": null, \"client_fee\": 0.0, \"settlement_fee\": 0.0, \"bank_name\": null, \"bank_country\": null, \"card_type\": \"VISA\", \"card_product\": \"empty_visa\", \"card_category\": null, \"timeend\": \"13.07.2024 01:24:08\", \"ipaddress_v4\": \"178.54.60.26\", \"payment_method\": \"card\", \"version_3ds\": 1, \"is_**********\": true}|200|123456|444455|VISA|GEL|5|0|444455XXXXXX1111|Test merchant data|1549901|**********33694502191|approved|13.07.2024 01:23:59|805243692|card|success|0|111111111111|**********@**********.com|0|purchase"
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+## Complementary Information
+
+For more detailed information and advanced features, please refer to the [GitHub repository](https://github.com/cloudipsp/ipsp-js-sdk).
+
+You can also access the [Fondy interactive example](https://jsfiddle.net/flitt/on8ydsgq/1/), which you can use to change the form or the CSS style.

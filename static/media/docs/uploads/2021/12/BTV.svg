@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_extend "http://ns.adobe.com/Extensibility/1.0/">
+	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
+	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
+	<!ENTITY ns_vars "http://ns.adobe.com/Variables/1.0/">
+	<!ENTITY ns_imrep "http://ns.adobe.com/ImageReplacement/1.0/">
+	<!ENTITY ns_sfw "http://ns.adobe.com/SaveForWeb/1.0/">
+	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
+	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
+]>
+<svg version="1.1" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#D00017;}
+</style>
+<metadata>
+	<sfw  xmlns="&ns_sfw;">
+		<slices></slices>
+		<sliceSourceBounds  bottomLeftOrigin="true" height="203.8" width="502.5" x="4.8" y="154.1"></sliceSourceBounds>
+	</sfw>
+</metadata>
+<g>
+	<g>
+		<path class="st0" d="M100,295c0,21.6-10.8,32.4-32.4,32.4c-5.7,0-10.6-0.4-14.7-1.2c-4.1-0.8-6.9-1.4-8.3-1.8v-58.4
+			c1.8,0,4.7-0.2,8.6-0.4c3.9-0.2,8.1-0.2,12.4-0.2C88.4,265.3,100,275,100,295 M93.7,210.5c0,8.3-2.4,14.9-7.5,19.5
+			s-13,7.1-23.6,7.1c-4.5,0-8.1,0-11.4-0.2c-3.1-0.2-5.3-0.4-6.5-0.4v-48.7c1-0.2,3.1-0.4,6.1-0.6c3.1-0.2,7.7-0.4,13.4-0.4
+			c9.4,0,16.7,2,21.8,6.3C91.1,197.3,93.7,203,93.7,210.5 M126.9,227.4c4.9-6.7,7.1-15.5,7.1-26.5c0-15.1-5.7-26.7-17.1-34.8
+			c-11.2-7.9-27.9-12-50.1-12c-15.3,0-28.5,0.4-39.3,1.2c-11,0.8-18.5,1.6-22.8,2.2v196.7c3.9,0.6,10.8,1.2,21,2.2
+			c10.2,0.8,22.6,1.4,37.5,1.4c24.8,0,43.8-5.9,57.2-17.7s20-27.9,20-48.3c0-12.4-2.9-22.2-8.6-28.9c-5.7-6.7-11.4-11.2-17.1-13.4
+			s-10.2-3.5-12.8-3.7c2.4-0.6,5.9-2,10.6-4.7C117.4,238.8,122.2,234.1,126.9,227.4"/>
+	</g>
+	<polygon class="st0" points="320.9,157.6 152.6,157.6 152.6,194 216.5,194 216.5,354.2 257.4,354.2 257.4,194 320.9,194 	"/>
+	<polygon class="st0" points="466.5,157.6 418.1,286 371.4,157.6 326.2,157.6 399.1,354.2 431.3,354.2 507.2,157.6 	"/>
+</g>
+</svg>

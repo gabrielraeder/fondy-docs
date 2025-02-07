@@ -1,0 +1,77 @@
+---
+title: "Create Accounts"
+description: "Learn how to create new business accounts with Fondy using the Create Accounts endpoint."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Setting up new accounts with Fondy using the **Create Accounts** endpoint is straightforward. Newly created accounts will initially have a **'Pending'** status until approved. Once approved, the status will change to **'Active'**.
+
+By following these guidelines, you can efficiently create new business accounts, ensuring a seamless onboarding experience and quick access to Fondy's services. For API-specific parameters and sample request/response formats, refer to the [Create Account API documentation](link).
+
+## Step 1: Initiate the Account Creation
+
+Use the **Create Accounts** endpoint to begin the process. Ensure all required fields are accurately completed, including:
+
+* Business name
+* Contact information
+* Additional necessary details specific to your account type
+
+## Step 2: Account Status 'Pending'
+
+Upon submitting the account creation request, the new account will automatically enter a **'Pending'** status. This status indicates the account information is under review and awaiting approval.
+
+## Step 3: Review and Approval Process
+
+During the **'Pending'** phase:
+
+* The submitted information is reviewed for accuracy and compliance.
+* Additional documentation or details may be requested to complete the verification process.
+
+## Step 4: Status Updates to 'Active'
+
+After a successful review, the account transitions to **'Active'** status. An **'Active'** status enables full access to all features and services.
+
+## Step 5: Notifications and Communication
+
+Notifications will be sent at key stages of the process:
+
+* When the account enters the **'Pending'** status
+* Once the account is approved and becomes **'Active'**
+
+Any additional documentation requests or rejection details will be communicated via the following:
+
+* Email
+* The account dashboard
+
+## Additional Information
+
+### Key Features of the Create Accounts Endpoint
+
+| **Feature**          | **Details**                                                       |
+| -------------------- | ----------------------------------------------------------------- |
+| **Endpoint**         | **Create Account**                                                |
+| **Description**      | Allows the creation of new Standard or Master and Wallet accounts |
+| **Use Case Example** | Automatically creating a dedicated wallet for a new provider      |
+| **Required Fields**  | Type, currency, and alias for the new account                     |
+
+### Special Notes on Wallet Creation
+
+* When creating a **Wallet Account**, ensure a **Master Account** exists beforehand.
+* A Master Account ID is required to create Wallet Accounts.
+* Wallet accounts bypass the **'Pending'** status and are immediately created with an **'Active'** status.
+
+### Handling Rejections
+
+If an account is not approved:
+
+* It will not transition to **'Active'**.
+* A notification will be sent with the reason for rejection.
+
+Steps for resubmission or appeal are provided in the rejection notification.
+
+### Support and Assistance
+
+If you encounter issues or have questions during the account creation process, contact our support team at [our contact page](https://fondy.io/gb/contact/?_gl=1*1rcdhu2*_gcl_au*MTUyMjk5OTMwMy4xNzMyMTIzODU1*_ga*NjMyMjAwMjQwLjE3MzIxMjM4NTU.*_ga_Z2KY5VSWGZ*MTczMzc3MDE3Mi4xMC4xLjE3MzM3NzI5MTguNTkuMC4w). We're here to assist with any part of the setup process.

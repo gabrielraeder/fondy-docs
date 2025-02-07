@@ -1,0 +1,164 @@
+---
+title: "Create Split Payment"
+description: "Learn how to initiate transfers, reversals, and payouts between wallets in a Split Account using Fondy's API, with step-by-step guides for each transaction type."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This operation allows you to initiate a payment from a wallet under a specific Split Account. Depending on the transaction type, you can trigger different operations, such as transfers, reversals, or payouts.
+
+This page explains how to structure the request for each operation type and the payload details required for each.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Transaction Types
+
+There are different types of operation in Fondy Flow, these are:
+
+* **Transfer** (Master > Specific Wallet): This operation allows you to transfer funds from the master wallet to a specific wallet under the Split Account.
+* **Reversal** (Wallet > Master): This operation allows you to reverse a previous payment, transferring funds back from a specific wallet to the master wallet.
+* **Payout** (Master or Wallet): This operation enables payouts from either the master wallet or a specific wallet under the Split Account.
+
+For each operation, you will need to specify the relevant source and target wallets, as well as the amount and other transaction details.
+
+## Request
+
+The request process of this operation consists of the following two steps:
+
+1. [Create the payload](#step-1-create-the-payload)
+2. [Make the encrypted request](#step-2-make-the-encrypted-request)
+
+See the sections below for more details on each step.
+
+### Step 1: Create the payload
+
+The information on the wallet must be sent to the payload. See the code block below for an example:
+
+<Tabs>
+  <TabItem value="transfer" label="Transfer" default>
+  ```json
+  {
+    "source_wallet_id": "1111-1222-2333-33aab-bcc9",
+    "target_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "requested_amount": {
+      "amount": 15500,
+      "currency": "GBP"
+    },
+    "type": "TRANSFER",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  }
+  ```
+  </TabItem>
+  <TabItem value="reversal" label="Reversal">
+  ```json 
+  {
+    "source_wallet_id": "1111-1222-2333-33aab-bcc9",
+    "target_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+    "requested_amount": {
+      "amount": 15500,
+      "currency": "GBP"
+    },
+    "type": "REVERSAL",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  }
+  ```
+  </TabItem>
+  <TabItem value="payout" label="Payout">
+  ```json
+  {
+    "source_wallet_id": "1111-1222-2333-33aab-bcc9",
+    "requested_amount": {
+      "amount": 15500,
+      "currency": "GBP"
+    },
+    "type": "PAYOUT",
+    "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  }
+  ```
+  </TabItem>
+</Tabs>
+
+Where:
+
+| **Parameter**      | **Description**                                                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `source_wallet_id` | The ID of the default wallet provided by Fondy. This is the wallet from which the transfer will originate.                                |
+| `target_wallet_id` | The ID of the wallet to which the transfer will be made. This field is only required for **Transfer** and **Reversal** transaction types. |
+| `requested_amount` | An object containing the details of the amount to be transferred.                                                                         |
+| `amount`           | The amount to transfer, expressed in pence.                                                                                               |
+| `currency`         | The currency for the transaction.                                                                                                         |
+| `type`             | The type of transaction.                                                                                                                  |
+| `external_id`      | A unique ID provided by you to identify the transaction for your system or external integration.                                          |
+
+Once you create the payload it has to be encrypted, see the following section for more details.
+
+### Step 2: Make the encrypted request
+
+To create a wallet under a split account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+   ```json Request
+   {
+       "encrypted_payload": ENCRYPTED(paymentObject),
+       "encrypted_user": ENCRYPTED(<username>),    
+       "encrypted_url": ENCRYPTED("/splitaccount/{splitaccount_id}/wallet"),
+       "method": "POST"
+   }
+   ```
+
+In the request `ENCRYPTED(paymentObject)` is the payload previously created, which is now encrypted.
+
+<Callout type="warning" title="Path Parameters">
+  Change the following in the `encrypted_url`
+
+  * Change `{splitaccount_id}` with the ID of the split account containing the wallet.
+  * Change `{id}`with the ID of the wallet to retrieve.
+</Callout>
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json json
+{
+    "encrypted_payload": ENCRYPTED(paymentObject),
+    "encrypted_url": null,
+    "method": null,
+    "nonce": null,
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once it is decrypted, the unencrypted payload is as follows:
+
+```json
+{
+  "target_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "additional_information": "Example123",
+  "payment_direction": "INBOUND",
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "source_wallet_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "payment_reference": "Payment to X",
+  "type": "TRANSFER",
+  "requested_amount": {
+    "currency": "GBP",
+    "amount": 15500
+  },
+  "status": "PROCESSING"
+}
+```
+
+Where:
+
+| **Parameter**            | **Description**                                                                                      |
+| ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `additional_information` | Any additional information related to the transaction (e.g., reference numbers or notes).            |
+| `payment_direction`      | Indicates whether the payment is inbound or outbound.                                                |
+| `id`                     | Unique identifier for the payment transaction.                                                       |
+| `payment_reference`      | The payment reference used to identify the transaction, such as a description or internal reference. |
+| `status`                 | The current status of the payment.                                                                   |

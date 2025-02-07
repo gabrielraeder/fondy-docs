@@ -1,0 +1,162 @@
+---
+title: "Create Account"
+description: "Learn how to create Standard, Master, and Wallet accounts using Fondy's API, with detailed steps for payload creation and encrypted request handling."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+This API Operation allows you to create a specific account in the Fondy system. Accounts can be of three types:
+
+* Standard
+* Master
+* Wallet
+
+This page will guide you through using this operation. See the following sections for more details.
+
+<Callout type="warning" title="Encrypted Requests">
+  All requests into the stack are performed using the [Encrypted Endpoint](/reference/flow/encrypted), where the request and response of the operation are encrypted. See [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to learn how to encrypt your operations and send them through the endpoint.
+</Callout>
+
+## Request
+
+The request process of this operation consists of the following two steps:
+
+1. Create the payload
+2. Make the encrypted request
+
+See the sections below for more details on each step.
+
+### Step 1: Create the payload
+
+The information on the account must be sent to the payload. See the code block below for an example:
+
+```json
+{
+  "default_wallet_id": "Provided by Fondy",
+  "identity_id": "a526165d-3f68-45fa-a3bd-87c6ecd5584b",
+  "payee_compliance_profile_id": "From the call to onboarding",
+  "default_payment_reference": "202408091128",
+  "alias": "name/reference for this wallet for yourselves to set",
+  "additional_information": "202408091129",
+  "payee_details": {
+    "name": "name",
+    "iban": "iban",
+    "currency": "EUR",
+    "address": {
+      "country_code": "LT",
+      "city": "Vilnius",
+      "street": "Street",
+      "building_name": "Building",
+      "building_number": "16B",
+      "postal_code": "LT-12345"
+    },
+    "externalId": "6566c461-957d-4937-b7d5-744c63c8fa66"
+  }
+}
+```
+
+Where:
+
+| **Parameter**                    | **Description**                                                                                    |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `account_type`                   | The type of account being created. Possible values: `MASTER`, `STANDARD`, `WALLET`.                |
+| `account_currency`               | The currency for the account. Currently, only `GBP` is supported.                                  |
+| `account_balance`                | The initial balance of the account, including `currency` and `amount`.                             |
+| `account_balance.currency`       | The currency for the account balance. Must match `account_currency`.                               |
+| `account_balance.amount`         | The amount to initialize the account is in minor units.                                            |
+| `account_details`                | Details of the account include IBAN, sort code, and account number.                                |
+| `account_details.name`           | Name associated with the account.                                                                  |
+| `account_details.iban`           | IBAN of the account (if applicable).                                                               |
+| `account_details.sort_code`      | Sort the account code (if applicable).                                                             |
+| `account_details.account_number` | Account number (if applicable).                                                                    |
+| `external_id`                    | The client provides a unique reference for the account.                                            |
+| `classification`                 | The classification of the account. Possible values: `SOLE_TRADER`, `PRIVATE_LIMITED_COMPANY`, etc. |
+| `created_date_time`              | ISO 8601 formatted date and time when the account was created.                                     |
+| `updated_date_time`              | ISO 8601 formatted date and time when the account was last updated.                                |
+| `master_account_id`              | ID of the master account under which this account is created (only for wallet accounts).           |
+| `wallet_account_id`              | ID of the wallet account (only applicable for wallet accounts).                                    |
+| `account_alias`                  | The client provides an alias for the account.                                                      |
+| `status`                         | Status of the account. Possible values: `PENDING`, `ACTIVE`, etc.                                  |
+| `default_wallet`                 | Indicates whether this wallet is the default wallet for the master account.                        |
+
+Once you create the payload, it has to be encrypted. See the following section for more details.
+
+### Step 2: Make the encrypted request
+
+To create the Fondy account, follow the steps below:
+
+1. Follow the steps in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api) to encrypt your request into the stack.
+2. Send the encrypted operation using [Encrypted Endpoint](/reference/flow/encrypted). See an example in the code block below:
+
+  ```json
+    {
+         "encrypted_payload": ENCRYPTED(walletObject),
+         "encrypted_user": ENCRYPTED(<username>),    
+         "encrypted_url": ENCRYPTED("/account"),
+         "method": "POST"
+    }
+  ```
+
+In the request `ENCRYPTED(walletObject)` is the payload previously created, which is now encrypted.
+
+## Response
+
+A successful request will return the encrypted response, as in the code block below:
+
+```json
+{
+    "encrypted_payload": ENCRYPTED(accountObject)
+    "encrypted_url": null
+    "method": null
+    "nonce": null
+}
+```
+
+This response has to be decrypted using the process explained in [How to Integrate Fondy API](/flow/fondy-flow-api/how-to-integrate-fondy-api). Once it is decrypted, the unencrypted payload is as follows:
+
+```json
+curl --request POST \
+     --url https://api.fondy.io/clientapi/api/version/clientRef/base64user/accounts \
+     --header 'accept: */*' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "account_type": "MASTER",
+  "account_currency": "GBP",
+  "account_balance": {
+    "currency": "GBP",
+    "amount": 4500
+  },
+  "account_details": {
+    "name": "Example",
+      "iban": "FR7630006000011234567890189",
+    "sort_code": "012345",
+    "account_number": "01234567"
+  },
+  "external_id": "ExampleRefId_43971e26-61b1-420b-9add-c510d44a354f",
+  "classification": "SOLE_TRADER",
+  "created_date_time": "2020-01-22T13:15:30.000Z",
+  "updated_date_time": "2020-01-22T13:15:30.000Z",
+  "master_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "wallet_account_id": "f8605015-90ac-4450-bb99-cbb1591bce7a",
+  "account_alias": "Example123",
+  "status": "ACTIVE",
+  "default_wallet": true
+}
+'
+```
+
+Where:
+
+| **Parameter**       | **Type** | **Description**                                                                                           |
+| ------------------- | -------- | --------------------------------------------------------------------------------------------------------- |
+| `id`                | string   | The unique identifier for the account. This is returned upon successful account creation.                 |
+| `wallet_account_id` | string   | The unique identifier for a wallet account is populated when the account type is "WALLET".                |
+| `status`            | string   | The current status of the account. Possible values: `PENDING`, `ACTIVE`, `SUSPENDED`, `CLOSED`, `FAILED`. |
+| `created_date_time` | string   | The ISO 8601 formatted date and time when the account was created.                                        |
+| `updated_date_time` | string   | The ISO 8601 formatted date and time when the account was last updated.                                   |
+| `master_account_id` | string   | The unique identifier for the master account under which this account is created.                         |
+| `default_wallet`    | boolean  | A flag indicating whether this wallet is the default wallet for the master account.                       |

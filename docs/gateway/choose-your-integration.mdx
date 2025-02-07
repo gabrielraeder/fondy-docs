@@ -1,0 +1,129 @@
+---
+title: "Choose Your Integration"
+description: "Choose the right Fondy integration for your business."
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Fondy provides multiple integration options to serve a wide range of business and technical needs. Whether you are looking for simplicity, seamless user experience, or advanced control, Fondy has solutions that will address your needs. This page will help you understand the available integration types and choose the one that best aligns with your business and technical capabilities.
+
+### Why is Choosing the Right Integration Important?
+
+The integration type you select directly affects your business in key areas:
+
+1. **Effort to Integrate and Maintain**: Simple options like Hosted Checkout, Payment Link, or CMS & CRM Plugins require minimal setup and maintenance, while Embedded and Direct integrations demand more technical resources.
+
+2. **Payment Method Management**: Some integrations, such as Hosted Checkout, allow you to manage payment methods easily through the Fondy dashboard, while others, like Direct, may require development work.
+
+3. **Compliance Requirements**: Options like Direct require PCI DSS compliance, adding complexity, while Hosted Checkout, Payment Link, and Embedded shift compliance responsibilities to Fondy.
+
+Choosing the right integration ensures an efficient setup, streamlined payment management, and alignment with your technical and compliance capabilities.
+
+## Integration Options
+
+Fondy provides 8 types of integrations. The table below compares these options, listing key characteristics to help you make a decision.
+
+| Integration Type                       | On-Site Checkout | Customization | PCI DSS Compliance | Setup Complexity | Best For                                                    |
+| -------------------------------------- | ---------------- | ------------- | ------------------ | ---------------- | ----------------------------------------------------------- |
+| [Hosted Checkout](#hosted-checkout)    | No               | Basic         | No                 | Low              | Simplicity and fast implementation.                         |
+| [Payment Link](#payment-link)          | No               | Basic         | No                 | No-code          | Simple, no-code solution for businesses without developers. |
+| [CMS & CRM Plugins](#cms--crm-plugins) | Yes              | Basic         | No                 | Very Low         | Easy integration with popular platforms.                    |
+| [Embedded](#embedded-custom-checkout)  | Yes              | High          | No                 | Moderate         | Seamless user experience on your site.                      |
+| [Direct](#direct-integration)          | Yes              | Full          | Yes                | High             | Advanced workflows and full data control.                   |
+| [Invoice](#invoice)                    | No               | Basic         | No                 | No-code          | Quick, no-code solution for single-use payments.            |
+| [Apple Pay](#apple-pay-integration)     | Yes              | Moderate      | No                 | Low              | Apple device users for web and in-app payments.             |
+| [Google Pay](#google-pay-integration)   | Yes              | Moderate      | No                 | Low              | Android users for web and in-app payments.                  |
+
+### Hosted Checkout
+
+Hosted Checkout integration is a straightforward option ideal for businesses that prioritize ease of implementation. With this setup, customers are redirected from your website to a secure payment page hosted by Fondy. This payment page consolidates all available payment methods in one place, offering a simple and efficient checkout process.
+
+This approach eliminates the need for extensive development efforts, as Fondy manages the entire checkout process on its domain. Although the customer leaves your site temporarily, the page can be customized to reflect your branding by incorporating your logo and chosen color schemes.
+
+The Hosted Checkout integration is particularly suitable for businesses that lack the technical resources to implement embedded options or for platforms that do not support the embedding of JavaScript.
+
+You can use the Hosted Checkout option with the following SDKs:
+
+<CardList cols={3}>
+  <Card 
+    title="JavaScript"
+    icon="file-js"
+    link="/gateway/hosted-checkout/front-end/javascript"
+  />
+
+  <Card 
+    title="PHP"
+    icon="code"
+    link="/gateway/hosted-checkout/back-end/php"
+  />
+
+  <Card 
+    title="Python"
+    icon="file-py"
+    link="/gateway/hosted-checkout/back-end/python"
+  />
+
+  <Card 
+    title="C#"
+    icon="file-c-sharp"
+    link="/gateway/hosted-checkout/back-end/c-sharp"
+  />
+
+  <Card 
+    title="Node.js"
+    icon="graph"
+    link="/gateway/hosted-checkout/back-end/nodejs"
+  />
+</CardList>
+
+In addition, you can use the Hosted Checkout with the [Plugins](/gateway/plugins-guides/plugins) or Fondy API. Access the [Create Payment](/gateway/direct-integration/manage-payments/create-payment) guide to learn how to use the Hosted Checkout feature using the Fondy API.
+
+### Payment Link
+
+The Payment Link integration is a simple, no-code solution for businesses with no or reduced technical resources. Using the Fondy dashboard, you can generate a payment link that can be added to your website, social media platforms like Instagram, or messaging services. The link remains active until you manually deactivate it. This solution is perfect for businesses selling through social media or with basic websites.
+
+### CMS & CRM Plugins
+
+Fondy's CMS and CRM plugins are ready-to-use solutions for businesses relying on popular platforms like WordPress, Shopify, or other site builders. These plugins eliminate the need for custom development by providing prebuilt modules that can be downloaded and installed directly on your website.
+
+This integration option is perfect for businesses without development resources or those seeking a quick and hassle-free way to enable online payments. With these plugins, you can activate Fondy's payment solutions in just a few clicks. Check the [Plugins](/gateway/plugins-guides/plugins) to access the complete list of platforms Fondy supports.
+
+### Embedded Custom Checkout
+
+For businesses that want to retain customers on their website throughout the checkout process, the Embedded Custom Checkout integration is the ideal solution. This approach seamlessly integrates a payment form into your website using JavaScript and HTML. Customers can complete their transactions without being redirected to an external page, maintaining a consistent and uninterrupted user experience.
+
+The Embedded Custom Checkout offers extensive customization options, allowing you to match the design of the payment form to your website's branding. Additionally, it supports advanced features such as configuring payment methods, enabling subscription payments, customizing the user interface, and enabling Apple Pay and Google Pay. Access the [Embedded Custom Checkout](/gateway/embedded/embedded-custom-checkout) page to learn how to use this solution.
+
+This integration type is well-suited for businesses with access to front-end development resources, as it requires the ability to embed and customize JavaScript code. For platforms that support embedding but lack development resources, Fondy provides prebuilt JavaScript fragments to simplify the process.
+
+### Direct Integration
+
+The Direct integration is designed for businesses that need full control over the payment process and have achieved PCI DSS SAQ D compliance. This approach lets you collect card data directly on your website and process it through your backend systems before transmitting it to Fondy's API.
+
+This option best suits businesses with more technical capabilities and strict security protocols. It allows you to fully customize the payment experience while supporting workflows like 3D-Secure authentication. Access the [Create Payment (PCIDSS Merchants)](/gateway/direct-integration/manage-payments/create-payment-pcidss-merchants) guide to learn how to use the direct integration.
+
+### Invoice
+
+The Invoice integration is a no-code solution that lets you generate a payment link directly in the Fondy dashboard. This link is intended for a single user and becomes inactive after the payment is made, or the payment window expires. It is an ideal option for businesses that need to send payment links for one-off transactions.
+
+### Apple Pay Integration
+
+Apple Pay integration is tailored for businesses that target customers within the Apple ecosystem. It supports seamless in-app purchases and online payments on iOS and macOS platforms. This integration provides a quick and secure payment experience, making it particularly appealing for businesses with a significant customer base using Apple devices. Access the [Apple Pay](/gateway/digital-wallets/apple-pay/apple-pay-overview) page for additional information on integrating this solution.
+
+### Google Pay Integration
+
+GooglePay integration serves businesses focused on Android users, enabling smooth payment experiences for in-app and online purchases. This integration offers convenience and security, streamlining the checkout process for Android users across web and mobile platforms. Access the [Google Pay](/gateway/digital-wallets/google-pay/google-pay-overview) page for additional information on integrating this solution.
+
+## Making the Right Choice
+
+When choosing an integration type, consider your business's technical resources, the desired customer experience, and compliance requirements.
+
+* **Hosted Checkout** integration is a great starting point for simplicity and ease of use.
+* **Payment Link** integration is a great starting point for simplicity and ease of use, ideal for businesses without developers.
+* **CMS & CRM** plugins provide a convenient solution for platforms that support plugins.
+* **Embedded Custom Checkout** provides a seamless on-site experience for businesses with development resources.
+* **Direct** integration offers complete control but requires significant technical expertise and compliance with PCI DSS standards.
+* **Invoice** integration is perfect for single-use, no-code payment links.
+* **ApplePay** and **GooglePay** are excellent choices for businesses targeting specific user bases.

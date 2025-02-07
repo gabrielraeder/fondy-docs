@@ -1,0 +1,375 @@
+{
+  "websiteName": "Fondy Documentation",
+  "description": "Explore our docs to find comprehensive resources and tools for customising your payment processes using the Fondy API.",
+  "images": {
+    "logo": "media/logo.svg",
+    "favicon": "media/favicon.ico",
+    "metadata": "media/metadata-cover.png"
+  },
+  "languages": [
+    "en"
+  ],
+  "styles": {
+    "mainColor": "#6606FF",
+    "darkModeMainColor": "#FC2672",
+    "navbarColor": "#20142A",
+    "navbarDarkModeColor": "#20142A",
+    "backgroundDarkModeColor": "#20142A",
+    "logoSize": "large",
+    "pagination": true
+  },
+  "apiFiles": [
+    "auth.yml",
+    "gateway.yml",
+    "reports.yml",
+    "flow.yml"
+  ],
+  "homepage": "homepage.html",
+  "changelog": false,
+  "navbar": [
+    {
+      "label": "Getting Started",
+      "sidebarRef": "getting-started"
+    },
+    {
+      "label": "Fondy Flow",
+      "dropdown": [
+        {
+          "label": "Guides",
+          "sidebarRef": "guides-flow"
+        },
+        {
+          "label": "API Reference",
+          "sidebarRef": "api-reference-flow"
+        }
+      ]
+    },
+    {
+      "label": "Fondy Gateway",
+      "dropdown": [
+        {
+          "label": "Guides",
+          "sidebarRef": "guides-gateway"
+        },
+        {
+          "label": "API Reference",
+          "sidebarRef": "api-reference-gateway"
+        }
+      ]
+    }
+  ],
+  "externalLinks": [
+    {
+      "link": "https://fondy.io/gb/contact/",
+      "name": "Contact",
+      "style": "link"
+    },
+    {
+      "link": "https://fondy.io/gb",
+      "name": "Website",
+      "style": "link"
+    }
+  ],
+  "integrations": {
+    "askAi": {
+      "hubspot": "49059636"
+    }
+  },
+  "sidebars": [
+    {
+      "sidebarRef": "getting-started",
+      "categories": [
+        {
+          "categoryName": "Getting Started",
+          "pages": [
+            "getting-started/welcome-to-fondy",
+            "getting-started/fondy-gateway",
+            "getting-started/fondy-flow"
+          ]
+        },
+        {
+          "categoryName": "Reference Pages",
+          "pages": [
+            "getting-started/reference-pages/supported-countries",
+            "getting-started/reference-pages/supported-currencies",
+            "getting-started/reference-pages/antifraud-solutions",
+            "getting-started/reference-pages/pcidss-compliance",
+            "getting-started/reference-pages/payment-systems",
+            "getting-started/reference-pages/checkout-language"
+          ]
+        }
+      ]
+    },
+    {
+      "sidebarRef": "guides-flow",
+      "categories": [
+        {
+          "categoryName": "Overview",
+          "pages": [
+            "flow/dashboard"
+          ]
+        },
+        {
+          "categoryName": "Accounts",
+          "pages": [
+            {
+              "groupName": "Business Accounts",
+              "page": "flow/accounts/business-accounts/business-accounts",
+              "subpages": [
+                "flow/accounts/business-accounts/create-accounts",
+                "flow/accounts/business-accounts/view-accounts"
+            ]
+            },
+            {
+            "groupName": "Split Accounts",
+            "page": "flow/accounts/split-accounts/split-accounts",
+            "subpages": [
+                "flow/accounts/split-accounts/creating-a-split-account",
+                "flow/accounts/split-accounts/managing-profiles",
+                "flow/accounts/split-accounts/make-payouts",
+                "flow/accounts/split-accounts/withdraw-to-iban-account"
+              ]
+            }
+          ]
+        },
+        {
+          "categoryName": "Wallets",
+          "pages": [
+            "flow/wallets/creating-wallets",
+            "flow/wallets/receive-funds-in-wallets"
+          ]
+        },
+        {
+          "categoryName": "Payments",
+          "pages": [
+            "flow/payments/payments",
+            "flow/payments/counterparties",
+            "flow/payments/refund-split-payments"
+          ]
+        },
+        {
+          "categoryName": "Fondy Flow API",
+          "pages": [
+            "flow/fondy-flow-api/how-to-integrate-fondy-api",
+            {
+              "groupName": "Core Operations",
+              "page": "flow/fondy-flow-api/core-operations/core-operations",
+              "subpages": [
+                "flow/fondy-flow-api/core-operations/create-account",
+                "flow/fondy-flow-api/core-operations/get-accounts",
+                "flow/fondy-flow-api/core-operations/create-payments"
+              ]
+            },
+            {
+              "groupName": "Split Accounts Operations",
+              "page": "flow/fondy-flow-api/split-accounts-operations/split-accounts-operations",
+              "subpages": [
+                "flow/fondy-flow-api/split-accounts-operations/get-wallets-in-split-account",
+                "flow/fondy-flow-api/split-accounts-operations/create-wallet-under-the-split-account",
+                "flow/fondy-flow-api/split-accounts-operations/create-split-payment",
+                "flow/fondy-flow-api/split-accounts-operations/get-payment-from-wallet-in-split-account",
+                "flow/fondy-flow-api/split-accounts-operations/get-transaction-list-of-wallet",
+                "flow/fondy-flow-api/split-accounts-operations/get-default-wallet-in-split-account"
+              ]
+            },
+            {
+              "groupName": "Identity",
+              "page": "flow/fondy-flow-api/identity/identity",
+              "subpages": [
+                "flow/fondy-flow-api/identity/create-identity",
+                "flow/fondy-flow-api/identity/get-identities"
+              ]
+            },
+            {
+              "groupName": "Compliance",
+              "page": "flow/fondy-flow-api/compliance/compliance",
+              "subpages": [
+                "flow/fondy-flow-api/compliance/create-compliance-profile",
+                "flow/fondy-flow-api/compliance/get-compliance-profiles"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sidebarRef": "api-reference-flow",
+      "categories": [
+        {
+          "categoryName": "Overview",
+          "pages": [
+            "reference/introduction_flow"
+          ]
+        },
+        {
+          "categoryName": "Fondy Client API",
+          "pages": [
+            "reference/flow/encrypted"
+          ]
+        }
+      ]
+    },
+    {
+      "sidebarRef": "guides-gateway",
+      "categories": [
+        {
+          "categoryName": "Overview",
+          "pages": [
+            "gateway/choose-your-integration",
+            "gateway/test-gateway-payments",
+            "gateway/signatures"
+          ]
+        },
+        {
+          "categoryName": "Hosted Checkout (SDKs)",
+          "pages": [
+            "gateway/hosted-checkout/sdks",
+            {
+              "groupName": "Mobile",
+              "subpages": [
+                "gateway/hosted-checkout/mobile/ios",
+                "gateway/hosted-checkout/mobile/android",
+                "gateway/hosted-checkout/mobile/react-native"
+              ]
+            },
+            {
+              "groupName": "Front-End",
+              "subpages": [
+                "gateway/hosted-checkout/front-end/javascript"
+              ]
+            },
+            {
+              "groupName": "Back-End",
+              "subpages": [
+                "gateway/hosted-checkout/back-end/c-sharp",
+                "gateway/hosted-checkout/back-end/nodejs",
+                "gateway/hosted-checkout/back-end/php",
+                "gateway/hosted-checkout/back-end/python"
+              ]
+            }
+          ]
+        },
+        {
+          "categoryName": "Plugins",
+          "pages": [
+            "gateway/plugins-guides/plugins"
+          ]
+        },
+        {
+          "categoryName": "Embedded Custom Checkout",
+          "pages": [
+            "gateway/embedded/embedded-custom-checkout",
+            "gateway/embedded/one-click-payments"
+          ]
+        },
+        {
+          "categoryName": "Direct Integration",
+          "pages": [
+            {
+              "groupName": "Manage Payments",
+              "subpages": [
+                "gateway/direct-integration/manage-payments/create-payment",
+                "gateway/direct-integration/manage-payments/create-payment-pcidss-merchants",
+                "gateway/direct-integration/manage-payments/create-payment-with-a-card-token",
+                "gateway/direct-integration/manage-payments/create-payment-with-pre-authorization",
+                "gateway/direct-integration/manage-payments/delayed-payments"
+              ]
+            },
+            "gateway/direct-integration/card-verification",
+            "gateway/direct-integration/create-reports",
+            "gateway/direct-integration/callbacks",
+            "gateway/direct-integration/p2p-credit-card-operation"
+          ]
+        },
+        {
+          "categoryName": "Digital Wallets",
+          "pages": [
+            {
+              "groupName": "Apple Pay",
+              "page": "gateway/digital-wallets/apple-pay/apple-pay-overview",
+              "subpages": [
+                "gateway/digital-wallets/apple-pay/apple-pay-web-integration",
+                "gateway/digital-wallets/apple-pay/apple-pay-mobile-integration"
+              ]
+            },
+            {
+              "groupName": "Google Pay",
+              "page": "gateway/digital-wallets/google-pay/google-pay-overview",
+              "subpages": [
+                "gateway/digital-wallets/google-pay/google-pay-web-integration",
+                "gateway/digital-wallets/google-pay/google-pay-mobile-integration"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sidebarRef": "api-reference-gateway",
+      "categories": [
+        {
+          "categoryName": "Overview",
+          "pages": [
+            "reference/introduction_gateway",
+            "reference/authentication",
+            "reference/request-structure"
+          ]
+        },
+        {
+          "categoryName": "Endpoints",
+          "pages": [
+            {
+              "groupName": "Access Token",
+              "subpages": [
+                "reference/auth/generate-access-token"
+              ]
+            },
+            {
+              "groupName": "Reports",
+              "subpages": [
+                "reference/reports/get-report-data"
+              ]
+            },
+            {
+              "groupName": "Accept Payments",
+              "subpages": [
+                "reference/gateway/enroll-card-3-ds",
+                "reference/gateway/capture-pre-auth-payment",
+                "reference/gateway/accept-purchase-fondy-checkout",
+                "reference/gateway/accept-3-ds-payment",
+                "reference/gateway/accept-purchase-payment-token"
+              ]
+            },
+            {
+              "groupName": "Orders",
+              "subpages": [
+                "reference/gateway/check-order-status",
+                "reference/gateway/order-reversal",
+                "reference/gateway/transaction-list-by-order"
+              ]
+            },
+            {
+              "groupName": "Reccuring Payments",
+              "subpages": [
+                "reference/gateway/recurring-payment"
+              ]
+            },
+            {
+              "groupName": "Subscriptions",
+              "subpages": [
+                "reference/gateway/manage-subscription"
+              ]
+            },
+            {
+              "groupName": "Cards",
+              "subpages": [
+                "reference/gateway/card-verification",
+                "reference/gateway/p-2-p-card-credit"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

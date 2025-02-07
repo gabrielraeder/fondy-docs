@@ -1,0 +1,65 @@
+---
+title: "Introduction"
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+
+The Fondy Gateway API is a complete solution for implementing various online payment scenarios. It provides multiple endpoints, each designed for specific operations, enabling you to build payment flows of any complexity.
+
+The Fondy Gateway API has the following characteristics:
+
+-   **Versatile Payment Options**: Support for card payments, 3D Secure, subscriptions, splits, mobile wallets (Apple Pay, Google Pay), Open Banking, local payment methods (iDEAL, Klarna, Blik, Sofort), and more.
+-   **Flexible Data Format**: Choose between FORM-encoded or JSON-encoded request and response bodies based on your preference.
+-   **Custom Payment Flows**: Create custom payment workflows tailored to your business needs.
+
+The Gateway API authenticates via signatures. Every request must include a valid signature to ensure secure communication. To learn more about creating and using signatures, visit the [Signatures](/reference/signatures) page. For additional details on authentication, access the [Authentication](/reference/gateway/authentication) page.
+
+To use the Gateway API, you must follow a specific structure for sending data and interpreting responses. For detailed instructions on the request structure, visit the [Request Structure](/request-structure) page.
+
+<CardList cols={3}>
+  <Card 
+    title="Access Token"
+    icon="key"
+    link="/reference/auth/generate-access-token"
+  />
+
+  <Card 
+    title="Reports"
+    icon="chart-donut"
+    link="/reference/reports/get-report-data"
+  />
+
+  <Card 
+    title="Accept Payments"
+    icon="money-wavy"
+    link="/reference/gateway/enroll-card-3-ds"
+  />
+
+  <Card 
+    title="Orders"
+    icon="shopping-cart"
+    link="/reference/gateway/check-order-status"
+  />
+
+  <Card 
+    title="Recurring Payments"
+    icon="arrows-counter-clockwise"
+    link="/reference/gateway/recurring-payment"
+  />
+
+  <Card 
+    title="Subscriptions"
+    icon="cardholder"
+    link="/eference/gateway/manage-subscription"
+  />
+
+  <Card 
+    title="Cards"
+    icon="credit-card"
+    link="/reference/gateway/card-verification"
+  />
+</CardList>
+

@@ -1,0 +1,97 @@
+---
+title: "Antifraud Solutions"
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+Antifraud solutions are essential for protecting businesses and customers from unauthorized transactions. By detecting and preventing fraud in real-time, these solutions help businesses avoid financial losses, comply with industry standards, and maintain customer trust. Securing transactions not only builds customer confidence but also strengthens brand reputation.
+
+All Fondy solutions have antifraud protection enabled by default. Fondy uses the payment information to validate the payment's authenticity. To improve antifraud system accuracy, you can add information when creating the payment using the `reservation_data` parameter.
+
+<Callout type="info" title="Disable Antifraud">
+  If you need to disable the antifraud feature, please contact our support team.
+</Callout>
+
+## Improve Antifraude Accuracy
+
+When sending purchase requests, you can include the `reservation_data` parameter. This parameter contains JSON-encoded data formatted in Base64 to provide additional transaction details. The information shared through the `reservation_data` is used to improve the accuracy of the antifraud solution when identifying a fraudulent transaction.
+
+The following table lists and describes all parameters you can share using the `reservation_data`.
+
+| Name               | Type     | Description                           | Example                              |
+| ------------------ | -------- | ------------------------------------- | ------------------------------------ |
+| `phonemobile`      | AN(16)   | Client mobile phone number.           | +12345678                            |
+| `customer_address` | AN(1024) | Client address.                       | 15 gannet street elspark             |
+| `customer_country` | AN(2)    | Client billing country (ISO code).    | US                                   |
+| `customer_state`   | AN(1024) | Client state.                         | NY                                   |
+| `customer_name`    | AN(1024) | Client name.                          | Brandon Nyathi                       |
+| `customer_city`    | AN(1024) | Client city.                          | New York                             |
+| `customer_zip`     | AN(250)  | ZIP code.                             | 1401                                 |
+| `account`          | AN(250)  | Client account ID in merchant system. | id32648480                           |
+| `uuid`             | AN(250)  | Device UUID.                          | 00002415-0000-1000-8000-00805F9B34FB |
+
+The following code block presents an example of JSON object:
+
+
+  ```json 
+  {
+    "phonemobile": "+12345678",
+    "customer_address": "15 gannet street elspark",
+    "customer_country": "US",
+    "customer_state": "NY",
+    "customer_name": "Brandon Nyathi",
+    "customer_city": "New York",
+    "customer_zip": "1401",
+    "account": "id32648480",
+    "uuid": "00002415-0000-1000-8000-00805F9B34FB"
+  }
+  ```
+
+
+<Callout type="info" title="Parameter Format Requirements">
+  All parameters must be alphanumeric and use Latin characters, digits, and separator symbols.
+</Callout>
+
+After defining the object with the additional information, you must encode it into Base64. Below, you find an example of encoded data in Base64 using the information from the above code block:
+
+```
+ewogICJwaG9uZW1vYmlsZSI6ICIrMTIzNDU2NzgiLAogICJjdXN0b21lcl9hZGRyZXNzIjogIjE1IGdhbm5ldCBzdHJlZXQgZWxzcGFyayIsCiAgImN1c3RvbWVyX2NvdW50cnkiOiAiVVMiLAogICJjdXN0b21lcl9zdGF0ZSI6ICJOWSIsCiAgImN1c3RvbWVyX25hbWUiOiAiQnJhbmRvbiBOeWF0aGkiLAogICJjdXN0b21lcl9jaXR5IjogIk5ldyBZb3JrIiwKICAiY3VzdG9tZXJfemlwIjogIjE0MDEiLAogICJhY2NvdW50IjogImlkMzI2NDg0ODAiLAogICJ1dWlkIjogIjAwMDAyNDE1LTAwMDAtMTAwMC04MDAwLTAwODA1RjlCMzRGQiIKfQ==
+```
+
+With the encoded information in your hands, you can create a new purchase request, including the `reservation_data` parameter, as shown in the following example. You can use the `reservation_data` parameter when creating purchase requests in XML and JSON formats
+
+<Tabs>
+  <TabItem value="json" label="Request Example (JSON)" default>
+    ```json
+    {
+      "request": {
+        "response_url": "https://site.com/responsepage/",
+        "order_id": "test_reservation_data_12345",
+        "order_desc": "Test payment",
+        "currency": "EUR",
+        "amount": "100",
+        "signature": "dcf5a9a582872bf0ba89bb77a25c3894671b423a",
+        "merchant_id": "1396424",
+        "reservation_data": "ewogICJwaG9uZW1vYmlsZSI6ICIrMTIzNDU2NzgiLAogICJjdXN0b21lcl9hZGRyZXNzIjogIjE1IGdhbm5ldCBzdHJlZXQgZWxzcGFyayIsCiAgImN1c3RvbWVyX2NvdW50cnkiOiAiVVMiLAogICJjdXN0b21lcl9zdGF0ZSI6ICJOWSIsCiAgImN1c3RvbWVyX25hbWUiOiAiQnJhbmRvbiBOeWF0aGkiLAogICJjdXN0b21lcl9jaXR5IjogIk5ldyBZb3JrIiwKICAiY3VzdG9tZXJfemlwIjogIjE0MDEiLAogICJhY2NvdW50IjogImlkMzI2NDg0ODAiLAogICJ1dWlkIjogIjAwMDAyNDE1LTAwMDAtMTAwMC04MDAwLTAwODA1RjlCMzRGQiIKfQ=="
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem value="xml" label="Request Example (XML)">
+    ```xml
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <request>
+    <response_url>https://site.com/responsepage/</response_url>
+    <order_id>test_reservation_data_12345</order_id>
+    <order_desc>Test payment</order_desc>
+    <currency>EUR</currency>
+    <amount>100</amount>
+    <signature>dcf5a9a582872bf0ba89bb77a25c3894671b423a</signature>
+    <merchant_id>1396424</merchant_id>
+    <reservation_data>ewogICJwaG9uZW1vYmlsZSI6ICIrMTIzNDU2NzgiLAogICJjdXN0b21lcl9hZGRyZXNzIjogIjE1IGdhbm5ldCBzdHJlZXQgZWxzcGFyayIsCiAgImN1c3RvbWVyX2NvdW50cnkiOiAiVVMiLAogICJjdXN0b21lcl9zdGF0ZSI6ICJOWSIsCiAgImN1c3RvbWVyX25hbWUiOiAiQnJhbmRvbiBOeWF0aGkiLAogICJjdXN0b21lcl9jaXR5IjogIk5ldyBZb3JrIiwKICAiY3VzdG9tZXJfemlwIjogIjE0MDEiLAogICJhY2NvdW50IjogImlkMzI2NDg0ODAiLAogICJ1dWlkIjogIjAwMDAyNDE1LTAwMDAtMTAwMC04MDAwLTAwODA1RjlCMzRGQiIKfQ</reservation_data>
+    </request>
+    ```
+  </TabItem>
+</Tabs>

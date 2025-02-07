@@ -1,0 +1,43 @@
+---
+title: "Authentication"
+---
+
+import { Accordion, AccordionGroup, Card, CardList, Image, Video, Callout, TabItem, Tabs } from "@site/src/components";
+
+
+
+To ensure the security of your transactions, all API requests To Fondy Gateway must be made over HTTPS using the **POST** method. The Fondy Gateway API uses a parameter called `signature` to authenticate requests. This signature is a SHA-1 hash the merchant generates using their payment key.
+
+The `signature` is the parameter that will secure communication. You must generate the `signature` for each API request using your payment key. Follow the steps outlined in the [Signatures](/docs/signatures) documentation page to create and use it correctly.
+
+Below is an example of an API request to create a payment link. The `signature` is sent as part of the `request` object.
+
+
+  ```bash 
+  curl -L 'https://pay.fondy.com/api/checkout/url' \
+  -H 'Content-Type: application/json' \
+  -d '{
+     "request": {
+       "server_callback_url": "http://myshop/callback/",
+       "order_id": "TestOrder2",
+       "currency": "USD",
+       "merchant_id": 1396424,
+       "order_desc": "Test payment",
+       "amount": 1000,
+       "signature": "91ea7da493a8367410fe3d7f877fb5e0ed666490"
+     }
+  }'
+  ```
+
+
+<Callout type="info" title="Test Payment Key">
+  To test your integration, use the test payment key, merchant ID, and cards provided in the [Test Gateway Payments](/docs/test-gateway-payments).
+
+  When you are testing, the Fondy Gateway API response may include an additional parameter, `response_signature_string`. This parameter is not available in production.
+</Callout>
+
+<Callout type="warning" title="Important">
+  * Do not use your production keys or sensitive information while testing your integration.
+  * Verify the signature in each API response. This helps ensure the integrity of the communication between your application and the Fondy Gateway.
+</Callout>
+
